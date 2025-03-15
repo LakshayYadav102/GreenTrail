@@ -1,0 +1,91 @@
+/* Full-screen loading container */
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #a8e063, #56ab2f); /* Green Gradient */
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+  }
+  
+  /* Animated text */
+  .loading-text {
+    font-size: 3rem;
+    font-weight: bold;
+    font-family: "Poppins", sans-serif;
+    margin-top: 20px;
+    letter-spacing: 2px;
+    animation: fadeIn 2s ease-in-out infinite alternate;
+  }
+  
+  /* Subtext */
+  .sub-text {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    margin-top: 10px;
+  }
+  
+  /* Leaf animation */
+  .leaves {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+  
+  .leaf {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    opacity: 0.7;
+    border-radius: 50%;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: float 2s infinite ease-in-out;
+  }
+  
+  .leaf:nth-child(1) {
+    top: 10px;
+    left: 10px;
+    animation-delay: 0s;
+  }
+  
+  .leaf:nth-child(2) {
+    top: 30px;
+    left: 40px;
+    animation-delay: 0.5s;
+  }
+  
+  .leaf:nth-child(3) {
+    top: 50px;
+    left: 20px;
+    animation-delay: 1s;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0.5;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(10deg);
+    }
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+  }
+  

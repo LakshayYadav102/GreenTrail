@@ -1,0 +1,150 @@
+/* General Styles */
+.home-page {
+    font-family: 'publico', Publico;
+    margin: 0;
+    padding: 0;
+    background-color: #f0ecd4;
+}
+
+/* Hero Section */
+.hero-section {
+    background: url('../assets/home.jpg') no-repeat center center/cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+    padding: 0 20px;
+    color: #fff;
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.eco-title {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #058915;
+    animation: title-fade-in 2s ease-out;
+}
+
+.hero-text {
+    font-size: 1.5rem;
+    margin-bottom: 40px;
+    color: #629957;
+    animation: text-fade-in 2s ease-out;
+}
+
+/* CTA Buttons */
+.cta-buttons .btn-lg {
+    font-size: 1.3rem;
+    padding: 15px 30px;
+    margin: 10px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.cta-buttons .btn-primary {
+    background-color: #66bb6a;
+    border-color: #66bb6a;
+}
+
+.cta-buttons .btn-primary:hover {
+    background-color: #388e3c;
+}
+
+.cta-buttons .btn-outline-light {
+    border-color: #639c5d;
+    color: #589e77;
+    background-color: transparent;
+}
+
+.cta-buttons .btn-outline-light:hover {
+    background-color: #66bb6a;
+    color: #ffffff;
+}
+
+/* About Us & Contact Us Sections */
+.about-us, .contact-us {
+    padding: 80px 20px;
+    text-align: center;
+    background-color: #f0ecd4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.container {
+    max-width: 800px;
+    width: 90%;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #058915;
+}
+
+.section-text {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Contact Us Button */
+.contact-us .btn-lg {
+    font-size: 1.2rem;
+    padding: 12px 25px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Footer Styling */
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+/* Animations */
+@keyframes title-fade-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes text-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .eco-title {
+        font-size: 3rem;
+    }
+
+    .hero-text {
+        font-size: 1.2rem;
+    }
+
+    .cta-buttons .btn-lg {
+        width: 100%;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .section-text {
+        font-size: 1.1rem;
+        padding: 0 15px;
+    }
+}

@@ -1,0 +1,131 @@
+/* Eco Theme */
+:root {
+  --primary-green: #2ECC71;
+  --secondary-green: #27AE60;
+  --earth-brown: #8D6E63;
+  --forest-dark: #2C3E50;
+  --eco-gradient: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+}
+
+/* Background */
+.eco-register-container {
+  min-height: 100vh;
+  background: var(--eco-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eco-background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><path fill="%2327AE60" fill-opacity="0.1" d="M28.6 12.1L50 28.6l21.4-16.5v32.9L50 78.5 28.6 45V12.1zM50 0L0 37.2v25.6L50 100l50-37.2V37.2L50 0z"/></svg>');
+}
+
+/* Card Styling */
+.eco-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 440px;
+}
+
+.eco-card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.eco-card-header h2 {
+  color: var(--forest-dark);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.eco-subtitle {
+  color: var(--earth-brown);
+  font-size: 0.95rem;
+}
+
+.eco-icon {
+  display: block;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Form Elements */
+.eco-input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.eco-input {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  padding: 1.2rem 1rem !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.eco-input:focus {
+  border-color: var(--primary-green) !important;
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.25) !important;
+}
+
+.eco-label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #95a5a6;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  background: white;
+  padding: 0 0.3rem;
+}
+
+.eco-label.active {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: var(--primary-green);
+}
+
+/* Button Styling */
+.eco-button {
+  background: var(--eco-gradient) !important;
+  border: none !important;
+  color: white !important;
+  padding: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  width: 100%;
+  transition: transform 0.2s ease !important;
+}
+
+.eco-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+.eco-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 2px;
+}
+
+/* Alert Styling */
+.eco-alert {
+  margin-top: 1.5rem;
+  border-radius: 8px;
+}
+
+@media (max-width: 576px) {
+  .eco-card {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+}

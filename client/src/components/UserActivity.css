@@ -1,0 +1,47 @@
+.user-activity-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+  
+  .user-activity-card .card-body {
+    padding: 20px;
+  }
+  
+  h2 {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .list-group-item {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .list-group-item strong {
+    color: #333;
+  }
+  
+  .btn {
+    font-size: 1rem;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-danger {
+    color: red;
+  }
+  

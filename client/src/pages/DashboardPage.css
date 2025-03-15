@@ -1,0 +1,163 @@
+/* Loading & Error States */
+.loading-container, .error-container {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  padding: 2rem 1rem;
+  max-width: 1400px;
+}
+
+/* Title Styling */
+.dashboard-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 3rem;
+  background: linear-gradient(135deg, #2ECC71, #27AE60);
+  background-clip: text;  /* Standard Property */
+  -webkit-background-clip: text; /* For Safari & Chrome */
+  -moz-background-clip: text; /* For Mozilla (Future-proofing) */
+  -ms-background-clip: text; /* For Edge (Future-proofing) */
+  -o-background-clip: text; /* For Opera (Future-proofing) */
+  -webkit-text-fill-color: transparent;
+}
+
+
+.title-underline {
+  width: 80px;
+  height: 4px;
+  background: #2ECC71;
+  margin: 0.5rem auto;
+  border-radius: 2px;
+}
+
+/* Eco Card Styling */
+.eco-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  min-height: 320px;
+}
+
+.eco-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(46, 204, 113, 0.15);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.eco-card .card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.eco-card .card-text {
+  color: #5a6a7a;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Weather Card Specific */
+.weather-info {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.weather-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(46, 204, 113, 0.05);
+  border-radius: 8px;
+}
+
+.aqi-badge {
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* Button Styling */
+.btn-eco {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.btn-eco-primary {
+  background: #3498db;
+  color: white;
+}
+
+.btn-eco-primary:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+.btn-eco-success {
+  background: #2ECC71;
+  color: white;
+}
+
+.btn-eco-success:hover {
+  background: #27AE60;
+}
+
+/* Graph Section */
+.eco-graph {
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin: 2rem auto;
+  max-width: 800px;
+}
+
+.graph-title {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.graph-icon {
+  font-size: 1.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-title {
+    font-size: 2rem;
+  }
+  
+  .eco-card {
+    min-height: auto;
+    margin-bottom: 1.5rem;
+  }
+  
+  .card-icon {
+    font-size: 2rem;
+  }
+}

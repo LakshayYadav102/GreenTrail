@@ -1,0 +1,84 @@
+.floating-scan-button {
+    position: fixed;
+    bottom: 30px;
+    left: 30px; /* Changed from right to left */
+    z-index: 1000;
+    border-radius: 30px;
+    padding: 15px 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }  
+  
+  .floating-scan-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Enhanced loading spinner */
+.analyze-button .spinner {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-width: 2px;
+  }
+
+  .object-detection-container {
+  padding: 20px;
+}
+
+.camera-preview {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8f9fa;
+  min-height: 300px;
+}
+
+.uploaded-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 300px;
+  border: 2px dashed #dee2e6;
+}
+
+.modal-content {
+  border-radius: 15px;
+  overflow: hidden;
+  border: none;
+}
+
+.modal-header {
+  background: #28a745;
+  color: white;
+  border-bottom: none;
+  padding: 1.5rem;
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+video {
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.alert {
+  border-radius: 8px;
+  margin-top: 1rem;
+}

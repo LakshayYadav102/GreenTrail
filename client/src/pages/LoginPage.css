@@ -1,0 +1,95 @@
+/* 🌍 Background Styling */
+.login-page {
+  background: url('https://source.unsplash.com/1600x900/?nature,green') no-repeat center center/cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🎨 Glassmorphism Container */
+.login-container {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 40px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ✨ Stylish Form Container */
+.login-form-container {
+  text-align: center;
+}
+
+/* 🏆 Branding */
+.brand {
+  color: #FFD700;
+  font-weight: bold;
+}
+
+/* 🖊️ Form Labels */
+.form-label {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+/* 🎨 Input Fields */
+.form-control {
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  color: #333;
+  padding: 12px;
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus {
+  box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.8);
+}
+
+/* 🎨 Buttons */
+.login-button {
+  background: linear-gradient(45deg, #28a745, #008000);
+  color: white;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  padding: 12px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.login-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #32CD32, #228B22);
+}
+
+/* 🏠 Home Button */
+.home-button {
+  background: linear-gradient(45deg, #ff6347, #ff4500);
+  color: white;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  padding: 12px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.home-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #ff7f50, #ff8c00);
+}
+
+/* 🔔 Success & Error Alerts */
+.alert {
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* ✅ Mobile Responsive */
+@media (max-width: 600px) {
+  .login-container {
+    width: 90%;
+  }
+}
