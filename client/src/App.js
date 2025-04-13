@@ -15,6 +15,9 @@ import EcoQuiz from "./games/EcoQuiz";
 import EcoRunner from "./games/EcoRunner";
 import Challenges from "./components/Challenges"; // ✅ Import Challenges Page
 import ProfilePage from "./pages/ProfilePage";
+import BlogList from "./components/blogs/BlogList";
+import BlogDetails from "./components/blogs/BlogDetails";
+import BlogEditor from "./components/blogs/BlogEditor";
 
 const AppContent = () => {
   const location = useLocation();
@@ -52,6 +55,7 @@ const AppContent = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+
             {isLoggedIn && (
               <>
                 <Route path="/dashboard" element={<DashboardPage />} />
@@ -64,6 +68,12 @@ const AppContent = () => {
                 <Route path="/games/eco-runner" element={<EcoRunner />} />
                 <Route path="/challenges" element={<Challenges />} /> {/* ✅ Added Challenges Route */}
                 <Route path="/profile" element={<ProfilePage />} />
+
+                {/* Protected Blog Routes */}
+                <Route path="/blogs" element={<BlogList />} />
+                <Route path="/blogs/:id" element={<BlogDetails />} />
+                <Route path="/blogs/create" element={<BlogEditor />} />
+                
 
               </>
             )}

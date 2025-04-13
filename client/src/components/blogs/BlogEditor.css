@@ -1,0 +1,49 @@
+.editor-container {
+    max-width: 800px;
+    padding: 2rem 1rem;
+  }
+  
+  .editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .title-input {
+    font-size: 2rem;
+    font-weight: 700;
+    border: none;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: none !important;
+  }
+  
+  .title-input:focus {
+    box-shadow: none !important;
+  }
+  
+  .quill-editor {
+    height: 60vh;
+    margin-bottom: 2rem;
+  }
+  
+  .publish-btn {
+    background: #2ECC71;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+  }
+  
+  .publish-btn:hover {
+    background: #27AE60;
+  }
+  
+  .ql-toolbar {
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .ql-container {
+    border-radius: 0 0 8px 8px;
+    font-size: 1.1rem;
+  }

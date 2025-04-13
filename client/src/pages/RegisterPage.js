@@ -85,8 +85,8 @@ const RegisterPage = () => {
                 required
               />
               <label className={`eco-label ${(activeField === 'email' || formData.email) ? 'active' : ''}`}>
-  Email Address
-</label>
+                Email Address
+                 </label>
                 
             </Form.Group>
 

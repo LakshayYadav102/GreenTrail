@@ -42,6 +42,14 @@ const Navbar = () => {
       <div className="nav-buttons">
         <button 
           className="nav-button"
+          onClick={() => navigate("/blogs")}
+        >
+          <span className="nav-icon">📝</span>
+          <span className="nav-text">Blogs</span>
+        </button>
+
+        <button 
+          className="nav-button"
           onClick={() => navigate("/challenges")}
         >
           <span className="nav-icon">🌍</span>
