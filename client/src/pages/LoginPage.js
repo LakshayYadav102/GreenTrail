@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './LoginPage.css'; // Import the updated CSS
+import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi';
+import './LoginPage.css';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -18,11 +19,8 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-
-      console.log('Login Response:', response.data);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', response.data.userId);
-
       setMessage('Login successful!');
       setError('');
       navigate('/dashboard');
@@ -37,44 +35,82 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
+      <div className="environmental-overlay"></div>
       <Container className="login-container">
         <div className="login-form-container">
-          <h3>Login to <span className="brand">GreenTrail</span></h3>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formBasicEmail">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+          <div className="brand-container">
+            <div className="brand-logo">🌿</div>
+            <h1 className="brand-text">GreenTrail</h1>
+            <p className="brand-tagline">Step into Sustainable Adventures</p>
+          </div>
+
+          <Form onSubmit={handleSubmit} className="eco-form">
+            <Form.Group controlId="formBasicEmail" className="eco-form-group">
+              <div className="input-decoration">
+                <div className="input-icon">
+                  <FiUser className="icon" />
+                </div>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="eco-input"
+                />
+                <div className="input-highlight"></div>
+              </div>
             </Form.Group>
 
-            <Form.Group controlId="formBasicPassword" className="mt-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+            <Form.Group controlId="formBasicPassword" className="eco-form-group">
+              <div className="input-decoration">
+                <div className="input-icon">
+                  <FiLock className="icon" />
+                </div>
+                <Form.Control
+                  type="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="eco-input"
+                />
+                <div className="input-highlight"></div>
+              </div>
             </Form.Group>
 
             <Button variant="primary" type="submit" className="mt-4 w-100 login-button" disabled={isLoading}>
-              {isLoading ? <Spinner animation="border" size="sm" /> : 'Login'}
+              {isLoading ? (
+                <div className="leaf-spinner">
+                  <div className="leaf">🌱</div>
+                </div>
+              ) : (
+                <>
+                  Continue Journey
+                  <FiArrowRight className="button-icon" />
+                </>
+              )}
             </Button>
 
-            {/* ✅ Added "Go to Home" Button */}
-            <Button variant="secondary" className="mt-3 w-100 home-button" onClick={() => navigate("/")}>
-              🏠 Go to Home
-            </Button>
+            <div className="additional-options">
+              <Button variant="link" className="eco-link" onClick={() => navigate("/register")}>
+                Create New Trail
+              </Button>
+            </div>
           </Form>
 
-          {message && <Alert variant="success" className="mt-3">{message}</Alert>}
-          {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+          {message && (
+            <Alert variant="success" className="eco-alert">
+              <span className="alert-icon">🌱</span>
+              {message}
+            </Alert>
+          )}
+          {error && (
+            <Alert variant="danger" className="eco-alert">
+              <span className="alert-icon">⚠️</span>
+              {error}
+            </Alert>
+          )}
         </div>
       </Container>
     </div>

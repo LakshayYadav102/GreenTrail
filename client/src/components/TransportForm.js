@@ -10,23 +10,28 @@ const TransportForm = ({ transportData, setTransportData }) => {
   };
 
   return (
-    <Form>
-      {/* 🚗 Distance Traveled */}
-      <Form.Group controlId="distance">
-        <Form.Label>Distance Traveled (km)</Form.Label>
+    <div className="transport-form">
+      <Form.Group controlId="distance" className="eco-form-group">
+        <Form.Label className="form-label">Distance Traveled (km)</Form.Label>
         <Form.Control
           type="number"
           name="distance"
-          value={transportData.distance}
+          value={transportData.distance || 0}
           onChange={handleChange}
-          placeholder="Enter distance in kilometers"
+          className="eco-input"
+          placeholder="Enter distance in km"
         />
       </Form.Group>
 
-      {/* 🚕 Mode of Transport */}
-      <Form.Group controlId="transportType">
-        <Form.Label>Mode of Transport</Form.Label>
-        <Form.Control as="select" name="transportType" value={transportData.transportType} onChange={handleChange}>
+      <Form.Group controlId="transportType" className="eco-form-group">
+        <Form.Label className="form-label">Mode of Transport</Form.Label>
+        <Form.Control
+          as="select"
+          name="transportType"
+          value={transportData.transportType || 'petrol'}
+          onChange={handleChange}
+          className="eco-input"
+        >
           <option value="petrol">Car (Petrol)</option>
           <option value="diesel">Car (Diesel)</option>
           <option value="cng">Car (CNG)</option>
@@ -38,7 +43,7 @@ const TransportForm = ({ transportData, setTransportData }) => {
           <option value="walking">Walking</option>
         </Form.Control>
       </Form.Group>
-    </Form>
+    </div>
   );
 };
 

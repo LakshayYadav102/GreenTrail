@@ -1,131 +1,204 @@
-/* Eco Theme */
-:root {
-  --primary-green: #2ECC71;
-  --secondary-green: #27AE60;
-  --earth-brown: #8D6E63;
-  --forest-dark: #2C3E50;
-  --eco-gradient: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
-}
-
-/* Background */
-.eco-register-container {
+/* RegisterPage.css - Matching Environmental Theme */
+.register-page {
+  position: relative;
+  background: linear-gradient(135deg, rgba(18, 55, 42, 0.95), rgba(8, 28, 21, 0.95)),
+    url('https://images.unsplash.com/photo-1476231682828-37e571bc172f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
   min-height: 100vh;
-  background: var(--eco-gradient);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-.eco-background {
-  position: fixed;
+.environmental-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><path fill="%2327AE60" fill-opacity="0.1" d="M28.6 12.1L50 28.6l21.4-16.5v32.9L50 78.5 28.6 45V12.1zM50 0L0 37.2v25.6L50 100l50-37.2V37.2L50 0z"/></svg>');
+  background: linear-gradient(45deg, rgba(34, 139, 34, 0.1), rgba(0, 100, 0, 0.1));
+  z-index: 0;
 }
 
-/* Card Styling */
-.eco-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  padding: 2.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+.register-container {
+  position: relative;
+  backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px;
   width: 100%;
   max-width: 440px;
+  box-shadow: 0 8px 32px rgba(0, 40, 20, 0.3);
+  z-index: 1;
 }
 
-.eco-card-header {
+.register-form-container {
   text-align: center;
-  margin-bottom: 2rem;
 }
 
-.eco-card-header h2 {
-  color: var(--forest-dark);
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+.brand-container {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-.eco-subtitle {
-  color: var(--earth-brown);
-  font-size: 0.95rem;
+.brand-logo {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 8px rgba(0, 40, 20, 0.3));
 }
 
-.eco-icon {
-  display: block;
+.brand-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #e8f5e9;
   font-size: 2.5rem;
-  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 8px rgba(0, 40, 20, 0.3);
+  margin-bottom: 8px;
 }
 
-/* Form Elements */
-.eco-input-group {
+.brand-tagline {
+  color: #c8e6c9;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+.eco-form-group {
+  margin-bottom: 30px;
+}
+
+.input-decoration {
   position: relative;
-  margin-bottom: 1.5rem;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: #c8e6c9;
 }
 
 .eco-input {
-  background: rgba(255, 255, 255, 0.9) !important;
-  border: 2px solid #e0e0e0 !important;
-  border-radius: 8px !important;
-  padding: 1.2rem 1rem !important;
-  font-size: 1rem !important;
-  transition: all 0.3s ease !important;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #e8f5e9;
+  padding: 14px 20px 14px 45px;
+  transition: all 0.3s ease;
 }
 
 .eco-input:focus {
-  border-color: var(--primary-green) !important;
-  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.25) !important;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #4caf50;
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
 }
 
-.eco-label {
+.input-highlight {
   position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #95a5a6;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  background: white;
-  padding: 0 0.3rem;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  transition: width 0.3s ease;
 }
 
-.eco-label.active {
-  top: 0;
-  transform: translateY(-50%);
-  font-size: 0.8rem;
-  color: var(--primary-green);
-}
-
-/* Button Styling */
-.eco-button {
-  background: var(--eco-gradient) !important;
-  border: none !important;
-  color: white !important;
-  padding: 1rem !important;
-  font-weight: 600 !important;
-  border-radius: 8px !important;
+.eco-input:focus ~ .input-highlight {
   width: 100%;
-  transition: transform 0.2s ease !important;
 }
 
-.eco-button:hover {
+.register-button {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.register-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
 }
 
-.eco-spinner {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-width: 2px;
+.register-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
 }
 
-/* Alert Styling */
+.register-button:hover::after {
+  left: 150%;
+}
+
+.leaf-spinner {
+  position: relative;
+  height: 24px;
+}
+
+.leaf-spinner .leaf {
+  font-size: 1.5rem;
+  animation: leaf-spin 1.2s ease-in-out infinite;
+}
+
 .eco-alert {
-  margin-top: 1.5rem;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
 }
 
-@media (max-width: 576px) {
-  .eco-card {
-    padding: 1.5rem;
-    margin: 1rem;
+.additional-options {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.eco-link {
+  color: #c8e6c9 !important;
+  text-decoration: none;
+  position: relative;
+  padding: 0;
+}
+
+.eco-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.eco-link:hover::after {
+  width: 100%;
+}
+
+@keyframes leaf-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    width: 90%;
+    padding: 30px;
   }
 }

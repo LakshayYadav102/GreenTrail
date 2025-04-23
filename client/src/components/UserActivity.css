@@ -1,47 +1,127 @@
 .user-activity-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: none;
-  }
-  
-  .user-activity-card .card-body {
-    padding: 20px;
-  }
-  
-  h2 {
-    font-weight: 600;
-    color: #333;
-  }
-  
-  .card-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #444;
-  }
-  
-  .list-group-item {
-    font-size: 1rem;
-    color: #555;
-  }
-  
-  .list-group-item strong {
-    color: #333;
-  }
-  
-  .btn {
-    font-size: 1rem;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-  
-  .text-center {
-    text-align: center;
-  }
-  
-  .text-danger {
-    color: red;
-  }
-  
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.user-activity-card .card-body {
+  padding: 20px;
+}
+
+h2 {
+  font-weight: 600;
+  color: #333;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.list-group-item {
+  font-size: 1rem;
+  color: #555;
+}
+
+.list-group-item strong {
+  color: #333;
+}
+
+.btn {
+  font-size: 1rem;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-danger {
+  color: red;
+}
+
+/* Chatbot-like button at the bottom-right */
+.chatbot-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #00aaff;
+  color: white;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-icon {
+  margin-right: 5px;
+}
+
+.chatbot-text {
+  font-size: 14px;
+}
+
+.chatbot-toggle-btn:hover {
+  background-color: #0088cc;
+}
+
+/* Prediction Panel */
+.prediction-panel {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 320px; /* Slightly adjusted width for better fitting */
+  max-height: 400px;
+  overflow-y: auto; /* Allows scrolling if content exceeds the panel height */
+  z-index: 9999;
+  font-size: 14px;
+}
+
+.prediction-panel h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.prediction-panel p {
+  color: #555;
+  line-height: 1.5;
+}
+
+.prediction-panel ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.prediction-panel li {
+  margin-bottom: 10px;
+}
+
+.prediction-panel button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #ff4747;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.prediction-panel button:hover {
+  background-color: #e03e3e;
+}

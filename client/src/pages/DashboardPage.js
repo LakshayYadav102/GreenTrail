@@ -1,12 +1,13 @@
+
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Spinner, Alert, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import GraphComponent from '../components/GraphComponent';
 import Chatbot from '../components/Chatbot';
+import ObjectDetection from '../components/ObjectDetection';
 import './DashboardPage.css';
-import ObjectDetection from "../components/ObjectDetection";
 
-const API_KEY = "bc37a8c779f09599ac7f5d53566fdae4"; 
+const API_KEY = "bc37a8c779f09599ac7f5d53566fdae4";
 const CITY = "Gurgaon";
 const LAT = "28.4986";
 const LON = "77.0469";
@@ -16,8 +17,18 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [weather, setWeather] = useState(null);
-  const [aqi, setAqi] = useState(null); // ✅ AQI State
+  const [aqi, setAqi] = useState(null);
   const [showGraph, setShowGraph] = useState(false);
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState('');
+
+  const quotes = [
+    "Step Lightly, Thrive Greenly",
+    "Green Today, Thriving Tomorrow",
+    "Sustain the Planet, Sustain Our Future",
+    "Eco Living, Made Simple",
+    "Plant the Seed for a Greener World"
+  ];
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
@@ -29,9 +40,34 @@ const DashboardPage = () => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    const typeQuote = async () => {
+      const currentQuote = quotes[currentQuoteIndex];
+      
+      // Type out the new quote
+      for (let i = 0; i <= currentQuote.length; i++) {
+        setDisplayedText(currentQuote.slice(0, i));
+        await new Promise(resolve => setTimeout(resolve, 100)); // Typing speed
+      }
+
+      // Wait before starting to erase
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Erase the quote from right to left
+      for (let i = currentQuote.length; i >= 0; i--) {
+        setDisplayedText(currentQuote.slice(0, i));
+        await new Promise(resolve => setTimeout(resolve, 50)); // Erasing speed
+      }
+
+      // Move to the next quote
+      setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
+    };
+
+    typeQuote();
+  }, [currentQuoteIndex, quotes.length]);
+
   const fetchWeatherAndAQI = async () => {
     try {
-      // 🌤 Fetch Weather
       const weatherResponse = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&appid=${API_KEY}`
       );
@@ -40,19 +76,16 @@ const DashboardPage = () => {
       setWeather(weatherData);
       localStorage.setItem('weatherData', JSON.stringify(weatherData));
 
-      // 🏭 Fetch AQI
       const aqiResponse = await fetch(
         `https://api.openweathermap.org/data/2.5/air_pollution?lat=${LAT}&lon=${LON}&appid=${API_KEY}`
       );
       if (!aqiResponse.ok) throw new Error('Failed to fetch AQI');
       const aqiData = await aqiResponse.json();
 
-      // ✅ Convert OpenWeatherMap AQI (1-5) → Real AQI (0-500)
       const apiAqi = aqiData.list[0]?.main?.aqi || 1;
       const mappedAqi = mapAqi(apiAqi);
       setAqi(mappedAqi);
       localStorage.setItem('aqiData', JSON.stringify(mappedAqi));
-
     } catch (error) {
       setError('Error fetching weather or AQI data');
     }
@@ -62,7 +95,6 @@ const DashboardPage = () => {
     fetchWeatherAndAQI();
   }, []);
 
-  // 🔹 Convert API AQI (1-5) → Real AQI (0-500)
   const mapAqi = (apiAqi) => {
     const aqiRanges = {
       1: { value: "0-50", text: "Good", color: "green" },
@@ -71,7 +103,7 @@ const DashboardPage = () => {
       4: { value: "151-200", text: "Unhealthy", color: "red" },
       5: { value: "201-300+", text: "Very Unhealthy", color: "purple" }
     };
-    return aqiRanges[apiAqi] || aqiRanges[1]; // Default to "Good"
+    return aqiRanges[apiAqi] || aqiRanges[1];
   };
 
   if (loading) {
@@ -97,38 +129,35 @@ const DashboardPage = () => {
   }
 
   return (
-    <Container className="dashboard-container">
+    <Container fluid className="dashboard-container">
       <h1 className="dashboard-title">
-        Welcome to GreenTrail
+        {displayedText}
         <div className="title-underline"></div>
       </h1>
 
-      <Row className="g-4">
-        {/* Track Footprint Card */}
-        <Col xs={12} md={6} lg={4}>
-          <Card className="eco-card track-card">
-            <Card.Body>
+      <Row className="g-4 mb-4">
+        <Col xs={12} sm={6} lg={3}>
+          <Card className="eco-card track-card h-100">
+            <Card.Body className="d-flex flex-column">
               <div className="card-icon">🌱</div>
               <Card.Title>Track Your Footprint</Card.Title>
-              <Card.Text>
+              <Card.Text className="flex-grow-1">
                 Monitor and analyze your carbon emissions with detailed insights.
               </Card.Text>
-              <Link to="/track" className="btn btn-eco-primary">
+              <Link to="/track" className="btn btn-eco-primary mt-auto">
                 Start Tracking →
               </Link>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Weather & AQI Card */}
-        <Col xs={12} md={6} lg={4}>
-          <Card className="eco-card weather-card">
-            <Card.Body>
+        <Col xs={12} sm={6} lg={3}>
+          <Card className="eco-card weather-card h-100">
+            <Card.Body className="d-flex flex-column">
               <div className="card-icon">⛅</div>
               <Card.Title>Environment Status</Card.Title>
-              
               {weather ? (
-                <div className="weather-info">
+                <div className="weather-info flex-grow-1">
                   <div className="weather-item">
                     <span>🌡 Temperature</span>
                     <strong>{weather.main.temp}°C</strong>
@@ -151,23 +180,37 @@ const DashboardPage = () => {
               ) : (
                 <Spinner animation="border" variant="info" />
               )}
-              <Button onClick={fetchWeatherAndAQI} className="btn btn-eco-secondary">
+              <Button onClick={fetchWeatherAndAQI} className="btn btn-eco-secondary mt-auto">
                 Refresh Data ⟳
               </Button>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Activities Card */}
-        <Col xs={12} md={6} lg={4}>
-          <Card className="eco-card activities-card">
-            <Card.Body>
+        <Col xs={12} sm={6} lg={3}>
+          <Card className="eco-card donation-card h-100">
+            <Card.Body className="d-flex flex-column">
+              <div className="card-icon">🌳</div>
+              <Card.Title>Tree Offset</Card.Title>
+              <Card.Text className="flex-grow-1">
+                See how many trees can offset your carbon footprint or donate to plant more.
+              </Card.Text>
+              <Link to="/donation" className="btn btn-eco-success mt-auto">
+                Plant Tree
+              </Link>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col xs={12} sm={6} lg={3}>
+          <Card className="eco-card activities-card h-100">
+            <Card.Body className="d-flex flex-column">
               <div className="card-icon">📊</div>
               <Card.Title>Your Activities</Card.Title>
-              <Card.Text>
+              <Card.Text className="flex-grow-1">
                 Review your historical data and sustainability progress.
               </Card.Text>
-              <Link to="/user-activity" className="btn btn-eco-success">
+              <Link to="/user-activity" className="btn btn-eco-success mt-auto">
                 View History →
               </Link>
             </Card.Body>
@@ -175,19 +218,18 @@ const DashboardPage = () => {
         </Col>
       </Row>
 
-      {/* 🔹 Emission Analytics - Now Centered Below Environment Status */}
-      <Row className="justify-content-center mt-4">
-        <Col xs={12} md={8} lg={6}>
-          <Card className="eco-card graph-card">
-            <Card.Body>
+      <Row className="justify-content-center g-4">
+        <Col xs={12} md={10} lg={8}>
+          <Card className="eco-card graph-card h-100">
+            <Card.Body className="d-flex flex-column">
               <div className="card-icon">📈</div>
               <Card.Title>Emission Analytics</Card.Title>
-              <Card.Text>
+              <Card.Text className="flex-grow-1">
                 Visualize your carbon footprint trends over different time periods.
               </Card.Text>
-              <Button 
-                onClick={() => setShowGraph(!showGraph)} 
-                className="btn btn-eco-info"
+              <Button
+                onClick={() => setShowGraph(!showGraph)}
+                className="btn btn-eco-info mt-auto"
               >
                 {showGraph ? 'Hide Analytics' : 'Show Analytics'}
               </Button>

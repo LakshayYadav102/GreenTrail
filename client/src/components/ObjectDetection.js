@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button, Modal, Spinner, Alert } from 'react-bootstrap';
 import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as tf from "@tensorflow/tfjs";
+import { createPortal } from 'react-dom';
 import "./ObjectDetection.css";
 
 const carbonFootprintData = {
@@ -149,16 +150,21 @@ const ObjectDetection = () => {
       setLoading(false);
     }
   };
+
+  // Render the floating button using a portal
+  const floatingButton = (
+    <Button 
+      variant="success" 
+      className="floating-scan-button"
+      onClick={() => setShowModal(true)}
+    >
+      ♻️ Scan Waste
+    </Button>
+  );
+
   return (
     <>
-      <Button 
-        variant="success" 
-        className="floating-scan-button"
-        onClick={() => setShowModal(true)}
-      >
-        ♻️ Scan Waste
-      </Button>
-
+      {createPortal(floatingButton, document.body)}
       <Modal show={showModal} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>AI Waste Scanner</Modal.Title>

@@ -1,0 +1,85 @@
+.top-performer {
+  background-color: rgba(40, 167, 69, 0.05) !important;
+}
+
+.top-performer:hover {
+  background-color: rgba(40, 167, 69, 0.1) !important;
+}
+
+.progress-green .progress-bar {
+  background-color: #28a745;
+  border-radius: 4px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Medal colors */
+.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+/* Table row hover effect */
+.table-hover tbody tr:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Background image for the eco container with fallback */
+.eco-container {
+  background-image: url('/assets/eco-background.jpg'), /* Local fallback */
+                    url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  padding: 2rem;
+  border-radius: 10px;
+  min-height: 100vh; /* Ensure container takes full height for visibility */
+  position: relative;
+  z-index: 1; /* Ensure it’s above other elements */
+}
+
+/* Debugging: Add a pseudo-element to check if container renders */
+.eco-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1); /* Slight overlay to confirm container */
+  z-index: -1;
+}
+
+/* Ensure cards have a semi-transparent background for readability */
+.eco-card {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(5px); /* Add blur for better contrast */
+}
+
+/* Styling for form elements to match the eco theme */
+.eco-form-group .form-label {
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.eco-form-group .eco-input {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #28a745;
+}

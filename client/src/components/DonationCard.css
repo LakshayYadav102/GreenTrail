@@ -1,0 +1,149 @@
+.donation-container {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    overflow: hidden;
+  }
+  
+  .particles-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  
+  .sidebar {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  
+  .sidebar-title {
+    color: #28a745;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .main-content {
+    padding: 20px;
+  }
+  
+  .eco-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  
+  .eco-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .eco-card h5 {
+    color: #28a745;
+    font-weight: 600;
+  }
+  
+  .btn-success, .btn-primary {
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-success:hover, .btn-primary:hover {
+    transform: scale(1.05);
+  }
+  
+  .progress-bar {
+    border-radius: 10px;
+    font-weight: bold;
+  }
+  
+  .history-item {
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+  }
+  
+  .history-item:hover {
+    background: #f1f8e9;
+  }
+  
+  .impact-calculator {
+    color: #388e3c;
+    font-weight: 500;
+    margin-bottom: 15px;
+  }
+  
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+  }
+  
+  .achievement-card {
+    background: #f1f8e9;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  
+  .achievement-card.unlocked {
+    background: #c8e6c9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .achievement-card.locked {
+    opacity: 0.6;
+  }
+  
+  .achievement-card h6 {
+    color: #28a745;
+    margin: 10px 0;
+  }
+  
+  .chatbot-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+  }
+  
+  .chatbot-toggle-btn:hover {
+    background: #218838;
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+      position: relative;
+      margin-bottom: 20px;
+    }
+  
+    .main-content {
+      padding: 10px;
+    }
+  
+    .achievements-grid {
+      grid-template-columns: 1fr;
+    }
+  }

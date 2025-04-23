@@ -8,6 +8,8 @@ const activityRoutes = require('./routes/activityRoutes');
 const challengeRoutes = require('./routes/challengeRoutes'); // ✅ Added challenge routes
 const profileRoutes = require("./routes/profileRoutes");
 const blogRoutes = require("./routes/blogRoutes"); // Import blog routes
+const predictionRoute = require('./routes/predictionRoute');
+const donationRoutes = require('./routes/donationRoutes.');
 const app = express();
 
 // Load environment variables
@@ -29,6 +31,11 @@ app.use("/api/profile", profileRoutes);
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api/blogs", blogRoutes);
+
+app.use('/api', predictionRoute); // 🔗 Adds /api/predict route
+
+app.use('/api/donations', donationRoutes);
+
 
 
 // Authentication Routes

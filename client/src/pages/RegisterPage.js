@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FiUser, FiMail, FiLock } from 'react-icons/fi';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
@@ -10,7 +11,8 @@ const RegisterPage = () => {
     email: '',
     password: ''
   });
-  const [message, setMessage] = useState({ text: '', type: '' });
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeField, setActiveField] = useState('');
   const navigate = useNavigate();
@@ -21,16 +23,13 @@ const RegisterPage = () => {
 
     try {
       await axios.post('http://localhost:5000/api/auth/register', formData);
-      setMessage({ 
-        text: 'Registration successful! Redirecting to login...', 
-        type: 'success' 
-      });
+      setMessage('Registration successful! Redirecting to login...');
+      setError('');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setMessage({ 
-        text: err.response?.data?.message || 'Registration failed. Please try again.', 
-        type: 'danger' 
-      });
+      console.error('Registration Error:', err);
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setMessage('');
     } finally {
       setIsLoading(false);
     }
@@ -41,93 +40,108 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="eco-register-container">
-      <div className="eco-background">
-        <div className="leaf-pattern"></div>
-      </div>
-
-      <Container className="eco-form-container">
-        <div className="eco-card">
-          <div className="eco-card-header">
-            <h2>
-              <span className="eco-icon">🌿</span>
-              Join EcoTrack
-            </h2>
-            <p className="eco-subtitle">Start your sustainability journey</p>
+    <div className="register-page">
+      <div className="environmental-overlay"></div>
+      <Container className="register-container">
+        <div className="register-form-container">
+          <div className="brand-container">
+            <div className="brand-logo">🌿</div>
+            <h1 className="brand-text">GreenTrail</h1>
+            <p className="brand-tagline">Begin Your Sustainable Journey</p>
           </div>
 
           <Form onSubmit={handleSubmit} className="eco-form">
-            <Form.Group controlId="username" className="eco-input-group">
-              <Form.Control
-                name="username"
-                type="text"
-                className="eco-input"
-                value={formData.username}
-                onChange={handleChange}
-                onFocus={() => setActiveField('username')}
-                onBlur={() => setActiveField('')}
-                required
-              />
-             <label className={`eco-label ${(activeField === 'username' || formData.username) ? 'active' : ''}`}>
-  Username
-</label>
+            <Form.Group controlId="username" className="eco-form-group">
+              <div className="input-decoration">
+                <div className="input-icon">
+                  <FiUser className="icon" />
+                </div>
+                <Form.Control
+                  name="username"
+                  type="text"
+                  placeholder="Enter username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  onFocus={() => setActiveField('username')}
+                  onBlur={() => setActiveField('')}
+                  required
+                  className="eco-input"
+                />
+                <div className="input-highlight"></div>
+              </div>
             </Form.Group>
 
-            <Form.Group controlId="email" className="eco-input-group">
-              <Form.Control
-                name="email"
-                type="email"
-                className="eco-input"
-                value={formData.email}
-                onChange={handleChange}
-                onFocus={() => setActiveField('email')}
-                onBlur={() => setActiveField('')}
-                required
-              />
-              <label className={`eco-label ${(activeField === 'email' || formData.email) ? 'active' : ''}`}>
-                Email Address
-                 </label>
-                
+            <Form.Group controlId="email" className="eco-form-group">
+              <div className="input-decoration">
+                <div className="input-icon">
+                  <FiMail className="icon" />
+                </div>
+                <Form.Control
+                  name="email"
+                  type="email"
+                  placeholder="Enter email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onFocus={() => setActiveField('email')}
+                  onBlur={() => setActiveField('')}
+                  required
+                  className="eco-input"
+                />
+                <div className="input-highlight"></div>
+              </div>
             </Form.Group>
 
-            <Form.Group controlId="password" className="eco-input-group">
-              <Form.Control
-                name="password"
-                type="password"
-                className="eco-input"
-                value={formData.password}
-                onChange={handleChange}
-                onFocus={() => setActiveField('password')}
-                onBlur={() => setActiveField('')}
-                required
-              />
-              <label className={`eco-label ${(activeField === 'password' || formData.password) ? 'active' : ''}`}>
-                Password
-              </label>
+            <Form.Group controlId="password" className="eco-form-group">
+              <div className="input-decoration">
+                <div className="input-icon">
+                  <FiLock className="icon" />
+                </div>
+                <Form.Control
+                  name="password"
+                  type="password"
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onFocus={() => setActiveField('password')}
+                  onBlur={() => setActiveField('')}
+                  required
+                  className="eco-input"
+                />
+                <div className="input-highlight"></div>
+              </div>
             </Form.Group>
 
             <Button 
               type="submit" 
-              className="eco-button"
+              className="mt-4 w-100 register-button"
               disabled={isLoading}
             >
               {isLoading ? (
-                <Spinner 
-                  animation="border" 
-                  role="status"
-                  className="eco-spinner"
-                >
-                  <span className="visually-hidden">Loading...</span>
-                </Spinner>
+                <div className="leaf-spinner">
+                  <div className="leaf">🌱</div>
+                </div>
               ) : (
                 'Create Account'
               )}
             </Button>
+
+            <div className="additional-options">
+              <Button variant="link" className="eco-link" onClick={() => navigate("/login")}>
+                Already have an account? Sign In
+              </Button>
+            </div>
           </Form>
 
-          {message.text && (
-            <Alert variant={message.type} className="eco-alert">
-              {message.text}
+          {message && (
+            <Alert variant="success" className="eco-alert">
+              <span className="alert-icon">🌱</span>
+              {message}
+            </Alert>
+          )}
+          {error && (
+            <Alert variant="danger" className="eco-alert">
+              <span className="alert-icon">⚠️</span>
+              {error}
             </Alert>
           )}
         </div>

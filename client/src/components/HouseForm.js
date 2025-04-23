@@ -10,45 +10,47 @@ const HouseForm = ({ houseData, setHouseData }) => {
   };
 
   return (
-    <Form>
-      {/* ⚡ Electricity Usage */}
-      <Form.Group controlId="electricityUsage">
-        <Form.Label>Electricity Usage (kWh per month)</Form.Label>
+    <div className="house-form">
+      <Form.Group controlId="electricityUsage" className="eco-form-group">
+        <Form.Label className="form-label">Electricity Usage (kWh/month)</Form.Label>
         <Form.Control
-  type="number"
-  name="electricityUsage"
-  value={houseData.electricityUsage || ""}
-  onChange={handleChange}
-  placeholder="Enter electricity usage in kWh"
-/>
-
+          type="number"
+          name="electricityUsage"
+          value={houseData.electricityUsage || ""}
+          onChange={handleChange}
+          className="eco-input"
+          placeholder="Enter kWh"
+        />
       </Form.Group>
 
-      {/* 🔥 LPG Usage */}
-      <Form.Group controlId="lpgUsage">
-        <Form.Label>LPG Usage (kg per month)</Form.Label>
+      <Form.Group controlId="lpgUsage" className="eco-form-group">
+        <Form.Label className="form-label">LPG Usage (kg/month)</Form.Label>
         <Form.Control
-  type="number"
-  name="lpgUsage"
-  value={houseData.lpgUsage || ""}
-  onChange={handleChange}
-  placeholder="Enter LPG usage in kg"
-/>
-
+          type="number"
+          name="lpgUsage"
+          value={houseData.lpgUsage || ""}
+          onChange={handleChange}
+          className="eco-input"
+          placeholder="Enter kg"
+        />
       </Form.Group>
 
-      {/* ☀️ Renewable Energy Usage */}
-      <Form.Group controlId="renewableEnergy">
-        <Form.Label>Renewable Energy Contribution</Form.Label>
-        <Form.Control as="select" name="renewableEnergy" value={houseData.renewableEnergy || "none"} onChange={handleChange}>
-  <option value="none">No Renewable Energy</option>
-  <option value="solar">Solar Panels</option>
-  <option value="wind">Wind Energy</option>
-  <option value="hydro">Hydropower</option>
-</Form.Control>
-
+      <Form.Group controlId="renewableEnergy" className="eco-form-group">
+        <Form.Label className="form-label">Renewable Energy</Form.Label>
+        <Form.Control
+          as="select"
+          name="renewableEnergy"
+          value={houseData.renewableEnergy || "none"}
+          onChange={handleChange}
+          className="eco-input"
+        >
+          <option value="none">No Renewable Energy</option>
+          <option value="solar">Solar Panels</option>
+          <option value="wind">Wind Energy</option>
+          <option value="hydro">Hydropower</option>
+        </Form.Control>
       </Form.Group>
-    </Form>
+    </div>
   );
 };
 

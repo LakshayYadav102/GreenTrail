@@ -1,29 +1,37 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
+import { FaCalendarAlt } from 'react-icons/fa';
 
 const DatePicker = ({ fromDate, toDate, onFromDateChange, onToDateChange }) => {
   return (
-    <Form style={{ color: 'white' }}>
-      <Form.Group controlId="fromDate" style={{ backgroundColor: '#444', padding: '10px', borderRadius: '5px' }}>
-        <Form.Label>From</Form.Label>
-        <Form.Control
-          type="date"
-          value={fromDate}
-          onChange={(e) => onFromDateChange(e.target.value)}
-          style={{ backgroundColor: '#555', color: 'white' }}
-        />
-      </Form.Group>
-
-      <Form.Group controlId="toDate" style={{ backgroundColor: '#444', padding: '10px', borderRadius: '5px' }}>
-        <Form.Label>To</Form.Label>
-        <Form.Control
-          type="date"
-          value={toDate}
-          onChange={(e) => onToDateChange(e.target.value)}
-          style={{ backgroundColor: '#555', color: 'white' }}
-        />
-      </Form.Group>
-    </Form>
+    <div className="date-picker-container">
+      <div className="date-input-group">
+        <div className="date-input">
+          <label className="date-label">
+            <FaCalendarAlt className="date-icon" />
+            From Date
+          </label>
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => onFromDateChange(e.target.value)}
+            className="date-input-field"
+          />
+        </div>
+        
+        <div className="date-input">
+          <label className="date-label">
+            <FaCalendarAlt className="date-icon" />
+            To Date
+          </label>
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => onToDateChange(e.target.value)}
+            className="date-input-field"
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
