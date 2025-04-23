@@ -79,4 +79,11 @@ GreenTrail is an interactive web platform promoting eco-conscious living through
 - MongoDB
 - Python (for ML model)
 
+- ## 📽 Demo Video
+
+Watch the GreenTrail demo to see all features in action:
+
+👉 [Watch Demo Video on Google Drive](https://drive.google.com/file/d/1CEsiFqQyPMPYXDQ5F0yvxNe3kHfrpv1C/view?usp=sharing)
+
+
 
