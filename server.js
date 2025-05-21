@@ -17,10 +17,11 @@ dotenv.config();
 console.log("JWT_SECRET:", process.env.JWT_SECRET);  // Debugging env file
 
 // ✅ Enable CORS (Allow requests from frontend)
-app.use(cors({ 
-  origin: "http://localhost:3000", // Allow only frontend requests
-  credentials: true, // Allow cookies and auth headers
+app.use(cors({
+  origin: ["http://localhost:3000", "https://green-trail-27d683.netlify.app"],
+  credentials: true,
 }));
+
 
 // Middleware
 app.use(express.json());
