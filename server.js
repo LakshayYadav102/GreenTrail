@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') }); // ← moved to top + absolute path
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -10,7 +10,7 @@ const challengeRoutes = require('./routes/challengeRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const predictionRoute = require('./routes/predictionRoute');
-const donationRoutes = require('./routes/donationRoutes.'); // ← removed trailing dot
+const donationRoutes = require('./routes/donationRoutes.');
 const rideRoutes = require('./routes/rideRoutes');
 const evRoutes = require('./routes/evRoutes');
 const http = require('http');
@@ -28,29 +28,34 @@ const app = express();
 app.use(express.json({ limit: '150mb' }));
 app.use(express.urlencoded({ extended: true, limit: '150mb' }));
 const server = http.createServer(app);
+
 const io = socketIo(server, {
   cors: {
-    origin: ['http://localhost:3000', 'https://greenverse1.netlify.app/login', 'https://<your-frontend>.onrender.com'],
-    methods: ["GET", "POST"],
+    origin: [
+      'http://localhost:3000', 
+      'https://greenverse1.netlify.app', 
+      'https://green-trail-27d683.netlify.app'
+    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true
   }
 });
 
-// ──────────────── Debug: confirm .env was loaded ────────────────
 console.log("[ENV LOAD CHECK] MONGO_URI:", process.env.MONGO_URI ? "present" : "MISSING");
 console.log("[ENV LOAD CHECK] JWT_SECRET:", process.env.JWT_SECRET ? "present" : "MISSING");
 console.log("[ENV LOAD CHECK] CLOUDINARY_URL:", process.env.CLOUDINARY_URL || "MISSING");
 
-// Enable CORS
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://green-trail-27d683.netlify.app', 'https://<your-frontend>.onrender.com'],
+  origin: [
+    'http://localhost:3000', 
+    'https://greenverse1.netlify.app', 
+    'https://green-trail-27d683.netlify.app'
+  ],
   credentials: true,
 }));
 
-// Middleware
 app.use(express.json());
 
-// Log all requests and responses
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} Headers: ${JSON.stringify(req.headers)}`);
   res.on('finish', () => {
@@ -59,10 +64,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Static uploads
 app.use('/uploads', express.static('uploads'));
 
-// Routes
 app.use('/api/ev', evRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', calculateRoutes);
@@ -79,12 +82,10 @@ app.use("/api/food-conversations", foodConversationRoutes);
 app.use("/api/ecolearn", ecolearnRoutes);
 app.use("/api/store", storeRoutes);
 
-// Test route to verify server
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running correctly' });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', {
     message: err.message,
@@ -95,7 +96,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal server error', error: err.message });
 });
 
-// 🔄 Auto-expire food donations (AVAILABLE → EXPIRED)
 const expireFoodDonations = async () => {
   try {
     const now = new Date();
@@ -108,7 +108,6 @@ const expireFoodDonations = async () => {
     for (const donation of expiredDonations) {
       donation.status = "EXPIRED";
 
-      // 🌱 Eco-friendly handling
       if (donation.foodCategory === "raw") {
         donation.expiredHandling = "COMPOST";
       } else {
@@ -128,16 +127,13 @@ const expireFoodDonations = async () => {
   }
 };
 
-// ⏱️ Run expiry check every 10 minutes
 setInterval(() => {
   expireFoodDonations();
 }, 10 * 60 * 1000);
 
-// Socket.io for real-time chat (ride + food)
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  // ─────────────── Ride Chat Events ───────────────
   socket.on('joinRide', (rideId) => {
     socket.join(rideId);
     console.log(`User ${socket.id} joined ride ${rideId}`);
@@ -177,15 +173,12 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ─────────────── Food Chat Events ───────────────
-  // 🔹 Join Food Conversation Room
   socket.on("joinFoodConversation", (conversationId) => {
     const room = `food_${conversationId}`;
     socket.join(room);
     console.log(`User ${socket.id} joined food conversation ${conversationId} (room: ${room})`);
   });
 
-  // 🔹 Send Food Message (Real-time)
   socket.on("sendFoodMessage", async ({ conversationId, senderId, message }) => {
     try {
       const FoodConversation = require("./models/FoodConversation");
@@ -197,7 +190,6 @@ io.on('connection', (socket) => {
         return;
       }
 
-      // Authorization check
       if (
         conversation.donor.toString() !== senderId &&
         conversation.receiver.toString() !== senderId
@@ -215,11 +207,9 @@ io.on('connection', (socket) => {
       conversation.messages.push(newMessage);
       await conversation.save();
 
-      // Populate sender username for broadcast
       const populatedConversation = await FoodConversation.findById(conversationId)
         .populate("messages.sender", "username");
 
-      // Broadcast to everyone in the room
       io.to(`food_${conversationId}`).emit("newFoodMessage", {
         conversation: populatedConversation,
       });
@@ -235,7 +225,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected successfully'))
   .catch((error) => {
@@ -243,7 +232,6 @@ mongoose.connect(process.env.MONGO_URI)
     process.exit(1);
   });
 
-// Start server
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
