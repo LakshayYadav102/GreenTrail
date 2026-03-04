@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api"; // Changed to centralized API
 import GreenverseNavbar from "../../components/GreenverseNavbar";
 import "./EcoStoreOrders.css";
-
-const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 function EcoStoreOrders() {
   const navigate = useNavigate();
@@ -20,9 +18,8 @@ function EcoStoreOrders() {
 
     const fetchOrders = async () => {
       try {
-        const res = await axios.get(`${apiBaseUrl}/api/store/orders`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        // CLEANED FOR HOSTING: Removed apiBaseUrl and manual headers
+        const res = await api.get(`/store/orders`);
         setOrders(res.data);
       } catch (err) {
         console.error("Failed to load orders");

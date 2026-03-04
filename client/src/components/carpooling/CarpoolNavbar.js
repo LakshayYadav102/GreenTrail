@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import "./CarpoolNavbar.css";
 
 const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -22,9 +22,7 @@ function CarpoolNavbar() {
 
   useEffect(() => {
     if (token) {
-      axios.get(`${apiBaseUrl}/api/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      api.get(`/profile`)
       .then(res => {
         if (res.data.profilePic) {
           setProfilePic(`${apiBaseUrl}${res.data.profilePic}`);

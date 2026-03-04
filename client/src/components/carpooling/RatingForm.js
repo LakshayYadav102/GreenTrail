@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "../../services/api";
+import api from "../../services/api";
 
 function RatingForm({ rideId, revieweeId, onSubmitSuccess }) {
   const [rating, setRating] = useState(5);
@@ -9,10 +9,9 @@ function RatingForm({ rideId, revieweeId, onSubmitSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
+      const res = await api.post(
         "/rides/ratings",
-        { rideId, revieweeId, rating, review },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { rideId, revieweeId, rating, review }
       );
       alert("Rating submitted!");
       onSubmitSuccess(res.data.rating);

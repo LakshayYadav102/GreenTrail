@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api"; // Centralized API instance
 import "./EcoLearnFeed.css";
 import CommentModal from "./CommentModal";
 
@@ -29,14 +30,9 @@ function EcoLearnFeed() {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/ecolearn/feed", {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setVideos(data || []);
+        // CLEANED FOR HOSTING: Replaced native fetch with api instance
+        const res = await api.get("/ecolearn/feed");
+        setVideos(res.data || []);
         setError(null);
       } catch (err) {
         console.error("Feed fetch error:", err);
@@ -44,7 +40,7 @@ function EcoLearnFeed() {
       }
     };
     fetchVideos();
-  }, [token]);
+  }, []); // Removed token dependency as it's handled globally by interceptor
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,9 +51,8 @@ function EcoLearnFeed() {
             video.play().catch(() => {});
             setTimeout(() => {
               if (!video.paused && !video.ended) {
-                fetch(`http://localhost:5000/api/ecolearn/view/${video.dataset.id}`, {
-                  method: "POST",
-                }).catch(() => {});
+                // CLEANED FOR HOSTING: Track views via api service
+                api.post(`/ecolearn/view/${video.dataset.id}`).catch(() => {});
               }
             }, 3500);
           } else {
@@ -89,6 +84,7 @@ function EcoLearnFeed() {
     setLikingVideos((prev) => new Set([...prev, videoId]));
     const previousVideos = [...videos];
 
+    // Optimistic UI Update
     setVideos((prev) =>
       prev.map((v) =>
         v._id === videoId
@@ -102,12 +98,9 @@ function EcoLearnFeed() {
     );
 
     try {
-      const res = await fetch(`http://localhost:5000/api/ecolearn/like/${videoId}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Like failed");
+      // CLEANED FOR HOSTING
+      const res = await api.post(`/ecolearn/like/${videoId}`);
+      const data = res.data;
 
       setVideos((prev) =>
         prev.map((v) =>
@@ -118,7 +111,7 @@ function EcoLearnFeed() {
       );
     } catch (err) {
       console.error("Like error:", err);
-      setVideos(previousVideos);
+      setVideos(previousVideos); // Revert on failure
       alert("Failed to update like");
     } finally {
       setLikingVideos((prev) => {
@@ -137,6 +130,7 @@ function EcoLearnFeed() {
     setFollowingUsers((prev) => new Set([...prev, userId]));
     const previousVideos = [...videos];
 
+    // Optimistic UI Update
     setVideos((prev) =>
       prev.map((video) =>
         video.user?._id === userId
@@ -155,15 +149,9 @@ function EcoLearnFeed() {
     );
 
     try {
-      const res = await fetch(`http://localhost:5000/api/ecolearn/follow/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Follow failed");
+      // CLEANED FOR HOSTING
+      const res = await api.post(`/ecolearn/follow/${userId}`);
+      const data = res.data;
 
       setVideos((prev) =>
         prev.map((video) =>
@@ -178,7 +166,7 @@ function EcoLearnFeed() {
       );
     } catch (err) {
       console.error("[Follow] Error:", err);
-      setVideos(previousVideos);
+      setVideos(previousVideos); // Revert on failure
       alert("Failed to follow/unfollow");
     } finally {
       setFollowingUsers((prev) => {

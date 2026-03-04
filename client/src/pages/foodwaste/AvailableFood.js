@@ -20,9 +20,8 @@ function AvailableFood() {
     }
 
     try {
-      const res = await api.get("/food-donations/available", {  // ← FIXED HERE
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // CLEANED FOR HOSTING: Removed manual headers, API interceptor handles token
+      const res = await api.get("/food-donations/available");
       setAvailableFood(res.data);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -54,9 +53,9 @@ function AvailableFood() {
     }
 
     try {
-      await api.patch(`/food-donations/${foodId}/accept`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // CLEANED FOR HOSTING: Removed manual headers and empty body object
+      await api.patch(`/food-donations/${foodId}/accept`);
+      
       alert("Food accepted successfully!");
       fetchAvailableFood(); // refresh list
     } catch (error) {

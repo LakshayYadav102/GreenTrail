@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import api from "../../services/api"; // Updated to use central api
 import "./CreatorProfile.css";
 
 function CreatorProfile() {
@@ -39,22 +40,11 @@ function CreatorProfile() {
         setLoading(true);
         setError(null);
 
-        const headers = {};
-        if (token) {
-          headers.Authorization = `Bearer ${token}`;
-        }
+        // Updated to use the api instance. 
+        // Token headers are automatically attached by the interceptor.
+        const res = await api.get(`/ecolearn/creator/${userId}`);
 
-        const res = await fetch(
-          `http://localhost:5000/api/ecolearn/creator/${userId}`,
-          { headers }
-        );
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`Server responded with ${res.status}: ${errorText}`);
-        }
-
-        const data = await res.json();
+        const data = res.data;
 
         if (!data.creator) {
           throw new Error("No creator data returned from server");
@@ -65,30 +55,25 @@ function CreatorProfile() {
         setVideos(data.videos || []);
       } catch (err) {
         console.error("Failed to load creator profile:", err);
-        setError(err.message || "Failed to load profile");
+        setError(err.response?.data?.message || err.message || "Failed to load profile");
       } finally {
         setLoading(false);
       }
     };
 
     fetchCreator();
-  }, [userId, token]);
+  }, [userId]); // Removed token dependency as it's handled globally
 
   const handleFollowClick = async () => {
     if (!token) return alert("Please log in to follow users");
     
     try {
       setFollowLoading(true);
-      const res = await fetch(`http://localhost:5000/api/ecolearn/follow/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
       
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Follow failed");
+      // Updated to use api instance
+      const res = await api.post(`/ecolearn/follow/${userId}`);
+      
+      const data = res.data;
 
       setIsFollowing(data.following);
       setCreator((prev) => ({
@@ -108,21 +93,18 @@ function CreatorProfile() {
     if (!window.confirm("Are you sure you want to completely delete this video?")) return;
     
     try {
-      const res = await fetch(`http://localhost:5000/api/ecolearn/video/${videoId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Updated to use api instance
+      const res = await api.delete(`/ecolearn/video/${videoId}`);
       
-      const data = await res.json();
-      if (res.ok) {
+      if (res.status === 200 || res.status === 204) { // Axios standard ok statuses
         // Remove video from UI instantly
         setVideos((prev) => prev.filter(v => v._id !== videoId));
       } else {
-        alert(data.message || "Failed to delete video");
+        alert(res.data?.message || "Failed to delete video");
       }
     } catch (err) {
       console.error("Delete Error", err);
-      alert("Server error while deleting video.");
+      alert(err.response?.data?.message || "Server error while deleting video.");
     }
   };
 

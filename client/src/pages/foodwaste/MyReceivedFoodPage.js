@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GreenverseNavbar from "../../components/foodwaste/FoodWasteNavbar";
-import api from "../../services/api";
+import api from "../../services/api"; // Centralized API
 import "./MyReceivedFoodPage.css";
 
 function MyReceivedFoodPage() {
@@ -28,9 +28,8 @@ function MyReceivedFoodPage() {
     }
 
     try {
-      const res = await api.get("/food-donations/received", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // CLEANED FOR HOSTING: Removed manual headers
+      const res = await api.get("/food-donations/received");
 
       // Apply fallback carbon to each item for display
       const fixedReceived = (res.data.received || []).map(item => ({

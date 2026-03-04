@@ -1,46 +1,55 @@
-// components/carpooling/Chat.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import io from 'socket.io-client';
-
-const socket = io('http://localhost:5000', {
-  auth: { token: localStorage.getItem("token") }
-});
 
 function Chat({ rideId, initialMessages }) {
   const [messages, setMessages] = useState(initialMessages || []);
   const [message, setMessage] = useState("");
   const userId = localStorage.getItem("userId");
+  
+  // Use a ref for the socket to avoid re-initializing on every render
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    console.log(`Chat component mounted for ride ${rideId}, initial messages:`, initialMessages);
+    // Dynamically use Render URL or localhost
+    const SOCKET_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    
+    // Initialize connection
+    socketRef.current = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+      transports: ['websocket', 'polling'] // Better compatibility for cloud hosting
+    });
+
+    console.log(`Chat component mounted for ride ${rideId}`);
     setMessages(initialMessages || []);
 
-    socket.emit('joinRide', rideId);
-    console.log(`Emitted joinRide for ride ${rideId}`);
+    socketRef.current.emit('joinRide', rideId);
 
-    socket.on('newMessage', (msg) => {
-      console.log(`Received new message for ride ${rideId}:`, msg);
+    socketRef.current.on('newMessage', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
 
-    socket.on('connect_error', (err) => {
-      console.error(`Socket connection error for ride ${rideId}:`, err.message);
+    socketRef.current.on('connect_error', (err) => {
+      console.error(`Socket connection error:`, err.message);
     });
 
     return () => {
-      console.log(`Cleaning up socket listeners for ride ${rideId}`);
-      socket.off('newMessage');
-      socket.off('connect_error');
+      if (socketRef.current) {
+        socketRef.current.emit('leaveRide', rideId); // Good practice to leave room
+        socketRef.current.off('newMessage');
+        socketRef.current.off('connect_error');
+        socketRef.current.disconnect();
+      }
     };
   }, [rideId, initialMessages]);
 
   const sendMessage = () => {
-    if (!message.trim()) {
-      console.log("Empty message not sent");
-      return;
-    }
-    console.log(`Sending message for ride ${rideId}: ${message}`);
-    socket.emit('sendMessage', { rideId, message, senderId: userId });
+    if (!message.trim() || !socketRef.current) return;
+    
+    socketRef.current.emit('sendMessage', { 
+      rideId, 
+      message, 
+      senderId: userId 
+    });
     setMessage("");
   };
 
@@ -53,20 +62,29 @@ function Chat({ rideId, initialMessages }) {
         ) : (
           messages.map((msg, i) => (
             <p key={i} className={`text-sm ${msg.sender._id === userId ? 'text-right' : 'text-left'}`}>
-              <span className="font-bold">{msg.sender._id === userId ? 'You' : msg.sender.name}: </span>{msg.message}
+              <span className="font-bold">
+                {msg.sender._id === userId ? 'You' : (msg.sender.name || 'User')}: 
+              </span>
+              {msg.message}
             </p>
           ))
         )}
       </div>
-      <input
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type message..."
-        className="w-full p-2 border rounded-lg mb-2"
-      />
-      <button onClick={sendMessage} className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">
-        Send
-      </button>
+      <div className="flex gap-2">
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type message..."
+          className="w-full p-2 border rounded-lg"
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+        />
+        <button 
+          onClick={sendMessage} 
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 }

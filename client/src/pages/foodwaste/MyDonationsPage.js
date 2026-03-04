@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GreenverseNavbar from "../../components/foodwaste/FoodWasteNavbar";
-import api from "../../services/api";
+import api from "../../services/api"; // Centralized API
 import "./MyDonationsPage.css";
 
 function MyDonationsPage() {
@@ -22,9 +22,8 @@ function MyDonationsPage() {
     if (!token) return navigate("/login");
 
     try {
-      const res = await api.get("/food-donations/my", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // CLEANED FOR HOSTING: Removed manual headers
+      const res = await api.get("/food-donations/my");
 
       // Apply fallback for display
       const fixedDonations = (res.data.donations || []).map(d => ({

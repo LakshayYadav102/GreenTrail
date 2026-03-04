@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../../services/api";
+import api from "../../services/api"; // Centralized API
 import "./FoodWasteProfilePage.css";
 
 function FoodWasteProfilePage() {
@@ -8,17 +8,15 @@ function FoodWasteProfilePage() {
   const [receivedSummary, setReceivedSummary] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  // Token is handled by api.js interceptor now
+  // const token = localStorage.getItem("token"); 
 
   const fetchData = async () => {
     try {
+      // CLEANED FOR HOSTING: Removed manual headers
       const [donationRes, receivedRes] = await Promise.all([
-        api.get("/food-donations/my", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        api.get("/food-donations/received", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        api.get("/food-donations/my"),
+        api.get("/food-donations/received"),
       ]);
 
       // Extract user info returned from the updated /my endpoint

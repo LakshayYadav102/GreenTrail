@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import axios from '../../services/api';
+import api from '../../services/api';
 import './Map.css'; // Ensure this CSS file exists
 
 // Fix default Leaflet icon issues
@@ -76,7 +76,7 @@ const Map = () => {
     setError(null);
     try {
       console.log('Fetching stations for:', { lat: position.lat, lon: position.lon, radius: searchRadius });
-      const res = await axios.get('/ev/nearby', {
+      const res = await api.get('/ev/nearby', {
         params: { lat: position.lat, lon: position.lon, radius: searchRadius },
       });
       console.log('Stations received:', res.data.length);

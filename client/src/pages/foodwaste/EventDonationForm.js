@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GreenverseNavbar from "../../components/GreenverseNavbar";
-import api from "../../services/api";
+import api from "../../services/api"; // Using centralized api
 import "./EventDonationForm.css";
 
 function EventDonationForm() {
@@ -74,11 +74,8 @@ function EventDonationForm() {
         contactNumber: formData.contactNumber,
       };
 
-      await api.post("/food-donations", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // CLEANED FOR HOSTING: Auth header handled by api interceptor
+      await api.post("/food-donations", payload);
 
       alert("Event food donation created successfully!");
       

@@ -1,8 +1,7 @@
-// pages/carpooling/RideRequest.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GreenverseNavbar from "../../components/GreenverseNavbar";
-import axios from "../../services/api";
+import api from "../../services/api"; // Using centralized API instance
 import "./RideRequest.css";
 
 function RideRequest() {
@@ -45,13 +44,13 @@ function RideRequest() {
     }
 
     try {
-      await axios.post("/rides/request", form, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      // CLEANED FOR HOSTING: Removed manual headers, api interceptor handles token
+      await api.post("/rides/request", form);
+      
       alert("Ride request posted successfully!");
-      navigate("/ride/find"); // Changed to navigate to FindRide
+      navigate("/ride/find"); 
     } catch (err) {
-      console.error("Error posting ride request:", err.message, err.response?.data);
+      console.error("Error posting ride request:", err.message);
       setError(err.response?.data?.error || "Error posting ride request");
     } finally {
       setLoading(false);

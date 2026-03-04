@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// NAVBAR IMPORT REMOVED - Handled by App.js
 import BookingModal from "../../components/carpooling/BookingModal";
 import Chat from "../../components/carpooling/Chat";
-import axios from "../../services/api";
+import api from "../../services/api";
 import io from "socket.io-client";
 import "./RideDetails.css";
 
@@ -33,13 +32,7 @@ function RideDetails() {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found in localStorage");
-      console.log(`Fetching ride details for ride ${id}`);
-      const res = await axios.get(`/rides/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      console.log("Ride details response:", res.data);
+      const res = await api.get(`/rides/${id}`);
       setRide(res.data);
       setEditForm({
         vehicle: res.data.vehicle || {},
@@ -58,21 +51,13 @@ function RideDetails() {
         additionalNotes: res.data.additionalNotes || "",
         carbonOffset: res.data.carbonOffset || false
       });
-      // Set initial messages
       setMessages(res.data.messages || []);
-      console.log("Initial messages loaded:", res.data.messages || []);
 
-      // Fetch bookings for this ride (for driver)
       if (res.data.driverId === userId) {
-        console.log(`Fetching bookings for ride ${id}`);
-        const bookingsRes = await axios.get(`/rides/${id}/bookings`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        console.log("Bookings response:", bookingsRes.data);
+        const bookingsRes = await api.get(`/rides/${id}/bookings`);
         setBookings(bookingsRes.data);
       }
     } catch (err) {
-      console.error("Error fetching ride details:", err.message, err.response?.data);
       setError(err.response?.data?.error || "Error fetching ride details");
     } finally {
       setLoading(false);
@@ -81,27 +66,28 @@ function RideDetails() {
 
   useEffect(() => {
     fetchRide();
-    // Initialize Socket.io
-    socket.current = io("http://localhost:5000", {
-      auth: { token: localStorage.getItem("token") }
+    
+    const SOCKET_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+    socket.current = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+      transports: ['websocket', 'polling']
     });
+    
     socket.current.on("connect", () => {
-      console.log(`Socket connected: ${socket.current.id}`);
       socket.current.emit("joinRide", id);
-      console.log(`Emitted joinRide for ride ${id}`);
     });
+    
     socket.current.on("newMessage", (message) => {
-      console.log(`Received new message for ride ${id}:`, message);
       setMessages((prev) => [...prev, message]);
     });
+    
     socket.current.on("connect_error", (err) => {
       console.error("Socket connection error:", err.message);
     });
+    
     return () => {
-      console.log(`Disconnecting socket for ride ${id}`);
       socket.current.disconnect();
     };
-    // eslint-disable-next-line
   }, [id]);
 
   const handleEditChange = (e) => {
@@ -164,27 +150,21 @@ function RideDetails() {
       return;
     }
     try {
-      await axios.patch(`/rides/${id}`, editForm, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      await api.patch(`/rides/${id}`, editForm);
       alert("Ride updated successfully!");
       setEditing(false);
       fetchRide();
     } catch (err) {
-      console.error("Error updating ride:", err.message, err.response?.data);
       setError(err.response?.data?.error || "Error updating ride");
     }
   };
 
   const handleBookingAction = async (bookingId, status) => {
     try {
-      await axios.post(`/rides/book/${bookingId}/status`, { status }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      await api.post(`/rides/book/${bookingId}/status`, { status });
       alert(`Booking ${status} successfully!`);
       fetchRide();
     } catch (err) {
-      console.error(`Error ${status} booking:`, err.message);
       setError(`Error ${status} booking`);
     }
   };
@@ -193,13 +173,10 @@ function RideDetails() {
     const reason = prompt("Reason for cancellation:");
     if (!reason) return;
     try {
-      await axios.post(`/rides/book/${bookingId}/cancel`, { reason }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      await api.post(`/rides/book/${bookingId}/cancel`, { reason });
       alert("Booking cancelled successfully!");
       fetchRide();
     } catch (err) {
-      console.error("Error cancelling booking:", err.message);
       setError("Error cancelling booking");
     }
   };
@@ -210,19 +187,16 @@ function RideDetails() {
       return;
     }
     try {
-      await axios.post(`/rides/ratings`, {
+      await api.post(`/rides/ratings`, {
         rideId: id,
         revieweeId,
         rating,
         review
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       alert("Rating submitted successfully!");
       setRating(0);
       setReview("");
     } catch (err) {
-      console.error("Error submitting rating:", err.message);
       setError(err.response?.data?.error || "Error submitting rating");
     }
   };
@@ -270,7 +244,6 @@ function RideDetails() {
 
   return (
     <>
-      {/* Animated Background */}
       <div className="ride-details-background">
         <div className="floating-details">🚙</div>
         <div className="floating-chat">💭</div>
@@ -280,7 +253,6 @@ function RideDetails() {
 
       <div className={`ride-details-container ${isLoaded ? 'loaded' : ''}`}>
         <div className="ride-details-glass">
-          {/* Header */}
           <div className="ride-header">
             <div className="header-content">
               <h1 className="main-title">Ride <span className="gradient-text">Details</span></h1>
@@ -302,7 +274,6 @@ function RideDetails() {
               </p>
             </div>
 
-            {/* Quick Actions */}
             <div className="quick-actions">
               {!isDriver && !userBooking && ride.status === 'upcoming' && (
                 <button
@@ -324,7 +295,6 @@ function RideDetails() {
             </div>
           </div>
 
-          {/* Navigation Tabs */}
           <div className="details-navigation">
             {sections.map((section) => (
               <button
@@ -338,9 +308,7 @@ function RideDetails() {
             ))}
           </div>
 
-          {/* Content Sections */}
           <div className="details-content">
-            {/* Ride Details Section */}
             {activeSection === "details" && (
               <div className="content-section active">
                 {editing ? (
@@ -348,7 +316,6 @@ function RideDetails() {
                     <div className="form-section">
                       <h3 className="section-title">✏️ Edit Ride Information</h3>
 
-                      {/* Vehicle Information */}
                       <div className="form-subsection">
                         <h4>🚗 Vehicle Details</h4>
                         <div className="form-grid">
@@ -431,7 +398,6 @@ function RideDetails() {
                         </div>
                       </div>
 
-                      {/* Trip Details */}
                       <div className="form-subsection">
                         <h4>📍 Trip Information</h4>
                         <div className="form-grid">
@@ -505,7 +471,6 @@ function RideDetails() {
                         </div>
                       </div>
 
-                      {/* Additional Details */}
                       <div className="form-subsection">
                         <h4>⚙️ Ride Preferences</h4>
                         <div className="form-grid">
@@ -571,7 +536,6 @@ function RideDetails() {
                         </div>
                       </div>
 
-                      {/* Stops Section */}
                       <div className="stops-section">
                         <label className="section-label">
                           <span className="label-icon">🛑</span>
@@ -611,7 +575,6 @@ function RideDetails() {
                   </form>
                 ) : (
                   <div className="details-grid">
-                    {/* Vehicle Card */}
                     <div className="detail-card">
                       <div className="card-header">
                         <h3>🚗 Vehicle Information</h3>
@@ -641,7 +604,6 @@ function RideDetails() {
                       </div>
                     </div>
 
-                    {/* Trip Card */}
                     <div className="detail-card">
                       <div className="card-header">
                         <h3>📍 Trip Details</h3>
@@ -677,7 +639,6 @@ function RideDetails() {
                       </div>
                     </div>
 
-                    {/* Preferences Card */}
                     <div className="detail-card">
                       <div className="card-header">
                         <h3>⚙️ Ride Preferences</h3>
@@ -716,7 +677,6 @@ function RideDetails() {
                       </div>
                     </div>
 
-                    {/* Passengers Card */}
                     <div className="detail-card">
                       <div className="card-header">
                         <h3>👥 Confirmed Passengers</h3>
@@ -745,7 +705,6 @@ function RideDetails() {
               </div>
             )}
 
-            {/* Bookings Management Section */}
             {activeSection === "bookings" && isDriver && (
               <div className="content-section active">
                 <div className="section-header">
@@ -821,7 +780,6 @@ function RideDetails() {
               </div>
             )}
 
-            {/* Chat Section */}
             {activeSection === "chat" && canChat && (
               <div className="content-section active">
                 <div className="section-header">
@@ -832,7 +790,6 @@ function RideDetails() {
               </div>
             )}
 
-            {/* Rating Section */}
             {activeSection === "rating" && canRate && (
               <div className="content-section active">
                 <div className="section-header">

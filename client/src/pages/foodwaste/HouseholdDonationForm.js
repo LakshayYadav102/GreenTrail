@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GreenverseNavbar from "../../components/GreenverseNavbar";
-import api from "../../services/api";
+import api from "../../services/api"; // Centralized API
 import "./HouseholdDonationForm.css";
 
 function HouseholdDonationForm() {
@@ -53,9 +53,8 @@ function HouseholdDonationForm() {
         notes: formData.notes,
       };
 
-      await api.post("/food-donations", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // CLEANED FOR HOSTING: Removed manual headers
+      await api.post("/food-donations", payload);
 
       alert("Donation submitted successfully!");
       navigate("/food-waste/donate");

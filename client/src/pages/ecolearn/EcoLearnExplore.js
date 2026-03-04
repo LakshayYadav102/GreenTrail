@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api"; // Added centralized API service
 import "./EcoLearnExplore.css";
 
 const categories = ["All", "Waste", "Energy", "Climate", "Food", "DIY", "Travel"];
@@ -16,21 +17,19 @@ function EcoLearnExplore() {
 
   const fetchVideos = async () => {
     try {
-      let url = `http://localhost:5000/api/ecolearn/explore?`;
-
+      // CLEANED FOR HOSTING: Using api instance and params object instead of manual string concatenation
+      const params = {};
       if (selectedCategory !== "All") {
-        url += `category=${selectedCategory}&`;
+        params.category = selectedCategory;
       }
-
       if (sortType === "trending") {
-        url += `sort=trending`;
+        params.sort = "trending";
       }
 
-      const res = await fetch(url);
-      const data = await res.json();
-      setVideos(data || []);
+      const res = await api.get("/ecolearn/explore", { params });
+      setVideos(res.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching explore videos:", err);
     }
   };
 

@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
-import api from "../../services/api";
+import api from "../../services/api"; // Using centralized API
 import "./FoodChatPage.css";
-
-const socket = io("http://localhost:5000"); // change if deployed
 
 function FoodChatPage() {
   const { donationId } = useParams();
@@ -12,23 +10,24 @@ function FoodChatPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
+  
+  // Use a ref for the socket to avoid re-initializing
+  const socketRef = useRef(null);
 
-  const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
   // Start conversation
   const startConversation = async () => {
     try {
-      const res = await api.post(
-        "/food-conversations/start",
-        { donationId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      // CLEANED FOR HOSTING: Auth header handled by api interceptor
+      const res = await api.post("/food-conversations/start", { donationId });
 
       setConversation(res.data);
 
       // Join socket room
-      socket.emit("joinFoodConversation", res.data._id);
+      if (socketRef.current) {
+         socketRef.current.emit("joinFoodConversation", res.data._id);
+      }
 
       setLoading(false);
     } catch (err) {
@@ -40,9 +39,9 @@ function FoodChatPage() {
 
   // Send message via socket
   const sendMessage = () => {
-    if (!message.trim()) return;
+    if (!message.trim() || !socketRef.current) return;
 
-    socket.emit("sendFoodMessage", {
+    socketRef.current.emit("sendFoodMessage", {
       conversationId: conversation._id,
       senderId: userId,
       message,
@@ -51,20 +50,32 @@ function FoodChatPage() {
     setMessage("");
   };
 
-  // Listen for new messages
+  // Initialize Socket and listeners
   useEffect(() => {
-    socket.on("newFoodMessage", ({ conversation }) => {
+    // Dynamically use Render URL or localhost for sockets
+    const SOCKET_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    
+    socketRef.current = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+      transports: ['websocket', 'polling']
+    });
+
+    socketRef.current.on("newFoodMessage", ({ conversation }) => {
       setConversation(conversation);
     });
 
     return () => {
-      socket.off("newFoodMessage");
+      if (socketRef.current) {
+        socketRef.current.off("newFoodMessage");
+        socketRef.current.disconnect();
+      }
     };
   }, []);
 
   useEffect(() => {
     startConversation();
-  }, []);
+    // eslint-disable-next-line
+  }, [donationId]);
 
   // Auto scroll
   useEffect(() => {
@@ -108,6 +119,7 @@ function FoodChatPage() {
           placeholder="Type your message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
         />
         <button onClick={sendMessage}>Send</button>
       </div>

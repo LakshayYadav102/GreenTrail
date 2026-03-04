@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true, limit: '150mb' }));
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ['http://localhost:3000', 'https://green-trail-27d683.netlify.app', 'https://<your-frontend>.onrender.com'],
+    origin: ['http://localhost:3000', 'https://greenverse1.netlify.app/login', 'https://<your-frontend>.onrender.com'],
     methods: ["GET", "POST"],
     credentials: true
   }

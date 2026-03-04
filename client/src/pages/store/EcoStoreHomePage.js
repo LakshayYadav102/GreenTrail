@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api"; // Changed to centralized API
 import GreenverseNavbar from "../../components/GreenverseNavbar";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import "./EcoStoreHomePage.css";
-
-const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // 🟢 INITIALIZE STRIPE 
 const stripeKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "pk_test_51T6w4uCELMghoBHl7rvGilqN7J6AcvxP4RKdHa4eFwMrm25MB6WWj3TNHtAqIXYPyg9nYrKSHXJBq6i2jua48kRA00BSSg555p";
@@ -110,14 +108,13 @@ function EcoStoreHomePage() {
 
   const fetchStoreData = async () => {
     try {
-      await axios.post(`${apiBaseUrl}/api/store/seed`);
-      const prodRes = await axios.get(`${apiBaseUrl}/api/store/products`);
+      // CLEANED FOR HOSTING: Using api instance, removed manual URLs and headers
+      await api.post(`/store/seed`);
+      const prodRes = await api.get(`/store/products`);
       setProducts(prodRes.data);
 
       if (token) {
-        const coinRes = await axios.get(`${apiBaseUrl}/api/profile/wallet`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const coinRes = await api.get(`/profile/wallet`);
         setUserCoins(coinRes.data.greenCoins || 0);
       }
     } catch (err) {
@@ -165,11 +162,10 @@ function EcoStoreHomePage() {
     setMessage({ type: "", text: "" });
 
     try {
-      const res = await axios.post(`${apiBaseUrl}/api/store/create-payment-intent`, {
+      // CLEANED FOR HOSTING: Using api instance
+      const res = await api.post(`/store/create-payment-intent`, {
         productId: selectedProduct._id,
         coinsToUse: coinsToUse
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (res.data.isFree) {
@@ -187,12 +183,11 @@ function EcoStoreHomePage() {
   const finalizeOrder = async () => {
     setIsProcessing(true);
     try {
-      const res = await axios.post(`${apiBaseUrl}/api/store/checkout`, {
+      // CLEANED FOR HOSTING: Using api instance
+      const res = await api.post(`/store/checkout`, {
         productId: selectedProduct._id,
         coinsToUse: coinsToUse,
         shippingAddress: shippingAddress
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       setMessage({ type: "success", text: "Order placed successfully! 🌿" });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RideCard from "../../components/carpooling/RideCard";
-import axios from "../../services/api";
+import api from "../../services/api"; // Changed from axios to our custom api service
 import "./FindRide.css";
 
 function FindRide() {
@@ -40,16 +40,13 @@ function FindRide() {
     setLoadingRides(true);
     setErrorRides(null);
     try {
-      const token = localStorage.getItem("token");
       const params = {};
       if (search.from) params.from = search.from;
       if (search.to) params.to = search.to;
       if (search.date) params.date = search.date;
 
-      const res = await axios.get("/rides/find", {
-        params,
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Token is now automatically handled by the api interceptor
+      const res = await api.get("/rides/find", { params });
       setRides(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setErrorRides(err.response?.data?.error || "Failed to fetch available rides");
@@ -61,10 +58,8 @@ function FindRide() {
   const fetchMyRequests = async () => {
     setLoadingRequests(true);
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("/rides/requests", {
-        params: { myRequests: true },
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await api.get("/rides/requests", {
+        params: { myRequests: true }
       });
       setMyRequests(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
@@ -77,10 +72,7 @@ function FindRide() {
   const fetchOpenRequests = async () => {
     setLoadingOpen(true);
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("/rides/requests", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get("/rides/requests");
       setOpenRequests(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setErrorOpen("Failed to fetch open ride requests");
@@ -91,10 +83,7 @@ function FindRide() {
 
   const cancelRequest = async (requestId) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(`/rides/request/${requestId}/cancel`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post(`/rides/request/${requestId}/cancel`);
       alert("Ride request cancelled successfully!");
       fetchMyRequests();
     } catch (err) {
@@ -219,7 +208,7 @@ function FindRide() {
                       <div className="fr-card-body">
                         <p><strong>From:</strong> {request.from}</p>
                         <p><strong>To:</strong> {request.to}</p>
-                        <p><strong>Requester:</strong> {request.requester?.name || "Member"}</p>
+                        <p><strong>Requester:</strong> {request.requester?.username || "Member"}</p>
                       </div>
                       <div className="fr-card-footer">
                         <button 

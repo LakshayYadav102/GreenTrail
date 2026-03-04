@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 import "./EcoLearnUpload.css";
 
 function EcoLearnUpload() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const [videoFile, setVideoFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -37,28 +37,13 @@ function EcoLearnUpload() {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:5000/api/ecolearn/upload",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: formData
-        }
-      );
+      await api.post("/ecolearn/upload", formData);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Video uploaded successfully!");
-        navigate("/ecolearn/feed");
-      } else {
-        alert(data.message || "Upload failed");
-      }
+      alert("Video uploaded successfully!");
+      navigate("/ecolearn/feed");
     } catch (error) {
       console.error(error);
-      alert("Server error");
+      alert(error.response?.data?.message || "Upload failed");
     } finally {
       setLoading(false);
     }
@@ -66,7 +51,6 @@ function EcoLearnUpload() {
 
   return (
     <>
-      {/* CUSTOM UPLOAD HEADER */}
       <div className="ecolearn-standalone-header">
         <h2 onClick={() => navigate("/ecolearn/feed")} style={{cursor: 'pointer'}}>EcoLearn</h2>
       </div>

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api"; // Using centralized API service
 import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
 import "./WalletPage.css";
-
-const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 function WalletPage() {
   const [walletData, setWalletData] = useState(null);
@@ -13,10 +11,8 @@ function WalletPage() {
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${apiBaseUrl}/api/profile/wallet-details`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // CLEANED FOR HOSTING: Removed manual token and apiBaseUrl
+        const response = await api.get("/profile/wallet-details");
         setWalletData(response.data);
       } catch (err) {
         setError("Failed to load wallet details.");

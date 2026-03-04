@@ -1,9 +1,8 @@
 // components/carpooling/BookingModal.jsx
 import React, { useState } from "react";
-import axios from "../../services/api";
+import api from "../../services/api";
 
 import "./BookingModal.css";
-
 
 function BookingModal({ ride, onClose, onBookingSuccess }) {
   const [seats, setSeats] = useState(1);
@@ -20,10 +19,9 @@ function BookingModal({ ride, onClose, onBookingSuccess }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(
+      const res = await api.post(
         `/rides/book/${ride._id}`,
-        { seatsBooked: Number(seats), paymentMethod },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { seatsBooked: Number(seats), paymentMethod }
       );
       if (paymentMethod === "online") {
         // Dummy payment simulation

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import axios from "../../services/api";
+import api from "../../services/api";
 import "./OfferRide.css";
 
 function OfferRide() {
@@ -110,11 +110,7 @@ function OfferRide() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found");
-      await axios.post("/rides/offer", form, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post("/rides/offer", form);
       alert("Ride offered successfully!");
       navigate("/my-trips");
     } catch (err) {

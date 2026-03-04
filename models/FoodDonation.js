@@ -40,6 +40,11 @@ const FoodDonationSchema = new mongoose.Schema(
     contactPerson: { type: String, default: "" },
     contactNumber: { type: String, default: "" },
 
+    carbonSaved: {
+      type: Number,
+      default: 0,
+    },
+
     status: {
       type: String,
       enum: ["AVAILABLE", "ACCEPTED", "EXPIRED"],

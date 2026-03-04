@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../../services/api";
 import "./CommentModal.css";
 
 function CommentModal({ videoId, isOpen, onClose }) {
@@ -6,7 +7,6 @@ function CommentModal({ videoId, isOpen, onClose }) {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!isOpen || !videoId) return;
@@ -16,20 +16,11 @@ function CommentModal({ videoId, isOpen, onClose }) {
       setError(null);
 
       try {
-        const res = await fetch("http://localhost:5000/api/ecolearn/feed", {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        });
-
-        if (!res.ok) throw new Error("Failed to load feed");
-
-        const data = await res.json();
-        const video = data.find((v) => v._id === videoId);
-
+        const res = await api.get("/ecolearn/feed");
+        const video = res.data.find((v) => v._id === videoId);
         setComments(video?.comments || []);
       } catch (err) {
-        console.error("Failed to fetch comments:", err);
+        console.error(err);
         setError("Couldn't load comments");
         setComments([]);
       } finally {
@@ -38,38 +29,23 @@ function CommentModal({ videoId, isOpen, onClose }) {
     };
 
     fetchComments();
-  }, [isOpen, videoId, token]);
+  }, [isOpen, videoId]);
 
   const handleSubmit = async () => {
     if (!text.trim()) return;
 
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/ecolearn/comment/${videoId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ text: text.trim() }),
-        }
-      );
+      const res = await api.post(`/ecolearn/comment/${videoId}`, {
+        text: text.trim()
+      });
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || "Failed to post comment");
-      }
-
-      const responseData = await res.json();
-
-      if (responseData.success) {
-        setComments(responseData.comments || []);
+      if (res.data.success) {
+        setComments(res.data.comments || []);
         setText("");
       }
     } catch (err) {
-      console.error("Post comment error:", err);
-      setError(err.message || "Failed to post comment");
+      console.error(err);
+      setError(err.response?.data?.message || err.message || "Failed to post comment");
     }
   };
 
@@ -85,9 +61,7 @@ function CommentModal({ videoId, isOpen, onClose }) {
 
         <div className="comment-list">
           {loading && <div className="loading">Loading comments...</div>}
-
           {error && <div className="error-message">{error}</div>}
-
           {!loading && !error && comments.length === 0 && (
             <p className="no-comments">No comments yet. Be the first! 🌱</p>
           )}

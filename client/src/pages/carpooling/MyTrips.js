@@ -1,7 +1,6 @@
-// pages/carpooling/MyTrips.jsx
 import React, { useEffect, useState } from "react";
 // NAVBAR IMPORT REMOVED - Handled by App.js
-import axios from "../../services/api";
+import api from "../../services/api"; // Changed from axios to our centralized api
 import { useNavigate } from "react-router-dom";
 import "./MyTrips.css";
 
@@ -22,14 +21,9 @@ function MyTrips() {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
-      console.log("Sending token:", token);
-      if (!token) {
-        throw new Error("No token found in localStorage");
-      }
-      const res = await axios.get("/rides/mytrips", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // CLEANED FOR HOSTING: Token is automatically attached by services/api.js
+      const res = await api.get("/rides/mytrips");
+      
       console.log("Response data:", res.data);
       setRidesOffered(Array.isArray(res.data.ridesOffered) ? res.data.ridesOffered : []);
       setBookings(Array.isArray(res.data.bookings) ? res.data.bookings : []);
@@ -271,7 +265,7 @@ function MyTrips() {
                             </div>
                             <div className="detail-item">
                               <span className="detail-icon">👤</span>
-                              <span>{booking.ride.driver?.name || "Unknown"}</span>
+                              <span>{booking.ride.driver?.username || booking.ride.driver?.name || "Unknown"}</span>
                             </div>
                           </div>
 
