@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+
 const CarbonPrediction = () => {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +19,7 @@ const CarbonPrediction = () => {
     }
 
     try {
-      const activityRes = await axios.get(`http://localhost:5000/api/activities/user/${userId}`);
+      const activityRes = await axios.get(`${apiBaseUrl}/api/activities/user/${userId}`);
       const activities = activityRes.data.activities;
 
       if (!activities || activities.length === 0) {
@@ -31,11 +34,12 @@ const CarbonPrediction = () => {
       const energyKwh = latest.energy || 0;
       const dietType = latest.diet === 'non-vegetarian' ? 1 : 0;
 
-      const predictionRes = await axios.post('http://localhost:5000/api/predict', {
-        transportation: transportKm,
-        energy: energyKwh,
-        dietType,
-      });
+      const predictionRes = await axios.post(`${apiBaseUrl}/api/predict`, {
+  transportation: transportKm,
+  energy: energyKwh,
+  dietType,
+});
+
 
       // Multiply by 7 to estimate weekly emissions
       setPrediction({

@@ -1,34 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { format } from "date-fns";
-import { Container, Button, Spinner, Alert, Form } from "react-bootstrap";
+import { Spinner, Alert } from "react-bootstrap";
 import "./BlogDetails.css";
+
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Helper function to generate beautiful initial-based avatars
+const generateAvatar = (name) => {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Eco')}&background=2ecc71&color=fff&bold=true&rounded=true`;
+};
 
 const BlogDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [comment, setComment] = useState("");
   const [hasLiked, setHasLiked] = useState(false);
-  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/blogs/${id}`);
+        const response = await axios.get(`${apiBaseUrl}/api/blogs/${id}`);
         const storedUserId = localStorage.getItem("userId");
         setBlog(response.data);
         setHasLiked(response.data.likedBy.includes(storedUserId));
-        setUserId(storedUserId);
       } catch (error) {
-        setError("Error fetching blog.");
+        setError("Error fetching blog. It might have been deleted.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchBlog();
   }, [id]);
 
@@ -36,16 +41,14 @@ const BlogDetails = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        window.location.href = "/login";
+        navigate("/login");
         return;
       }
-
       const response = await axios.put(
-        `http://localhost:5000/api/blogs/${id}/like`,
+        `${apiBaseUrl}/api/blogs/${id}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       setBlog(prev => ({
         ...prev,
         likes: response.data.likes,
@@ -55,23 +58,22 @@ const BlogDetails = () => {
     } catch (error) {
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        navigate("/login");
       }
-      console.error("Error liking blog:", error);
     }
   };
 
-  const handleComment = async () => {
-    if (!comment) return;
+  const handleComment = async (e) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
 
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:5000/api/blogs/${id}/comment`,
+        `${apiBaseUrl}/api/blogs/${id}/comment`,
         { text: comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       setBlog(prev => ({
         ...prev,
         comments: [...prev.comments, response.data.comment]
@@ -82,75 +84,107 @@ const BlogDetails = () => {
     }
   };
 
-  if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;
-  if (error) return <Alert variant="danger" className="text-center">{error}</Alert>;
+  if (loading) return <div className="gt-bd-loader"><Spinner animation="border" variant="success" /></div>;
+  if (error) return <Alert variant="danger" className="text-center m-5">{error}</Alert>;
+
+  const authorName = blog.author?.username || "Eco Warrior";
 
   return (
-    <Container className="blog-detail-container">
+    <div className="gt-bd-wrapper">
       {blog && (
-        <>
-          <article className="blog-article">
-            <header className="article-header">
-              <h1>{blog.title}</h1>
-              <div className="author-info">
-                <div className="author-meta">
-                  <span>By {blog.author?.username || "Eco Warrior"}</span>
-                  <span>{format(new Date(blog.createdAt), "MMM dd, yyyy • h:mm a")}</span>
-                </div>
-                <div className="article-stats">
-                  <span>❤️ {blog.likes} Likes</span>
-                  <span>👁️ {blog.views} Views</span>
+        <main className="gt-bd-container">
+          
+          <button className="gt-bd-back-link" onClick={() => navigate("/blogs")}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Community
+          </button>
+
+          <article className="gt-bd-article">
+            <header className="gt-bd-header">
+              <h1 className="gt-bd-title">{blog.title}</h1>
+              
+              <div className="gt-bd-meta-bar">
+                <div className="gt-bd-author-group">
+                  {/* Replaced broken image with dynamic avatar generator */}
+                  <img src={generateAvatar(authorName)} alt="Author" className="gt-bd-avatar" />
+                  <div className="gt-bd-details">
+                    <span className="gt-bd-name">{authorName}</span>
+                    <span className="gt-bd-date">
+                      {format(new Date(blog.createdAt), "MMM dd, yyyy")} · {blog.views} Views
+                    </span>
+                  </div>
                 </div>
               </div>
             </header>
 
+            {/* Premium Cover Image matching the list page */}
+            <div className="gt-bd-cover-wrapper">
+               <img 
+                  src={`https://picsum.photos/seed/${blog._id}/1200/600`} 
+                  alt="Article Cover" 
+                  className="gt-bd-cover-image" 
+                />
+            </div>
+
             <div 
-              className="article-content"
+              className="gt-bd-body"
               dangerouslySetInnerHTML={{ __html: blog.content }}
             />
-
-            <div className="interaction-section">
-              <Button 
-                variant={hasLiked ? "danger" : "outline-danger"} 
+            
+            <div className="gt-bd-footer-actions">
+              <button 
+                className={`gt-bd-huge-like-btn ${hasLiked ? 'liked' : ''}`} 
                 onClick={handleLike}
                 disabled={hasLiked}
               >
-                {hasLiked ? "❤️ Liked" : "❤️ Like"} ({blog.likes})
-              </Button>
+                <svg className="gt-like-svg" fill={hasLiked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                {hasLiked ? "Liked" : "Applaud this story"} ({blog.likes})
+              </button>
             </div>
           </article>
 
-          <section className="comments-section">
-            <h3>💬 Comments ({blog.comments.length})</h3>
+          <hr className="gt-bd-divider" />
+
+          {/* Comments Section */}
+          <section className="gt-bd-comments-section">
+            <h3 className="gt-bd-comments-title">Responses ({blog.comments.length})</h3>
             
-            <Form className="comment-form">
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Share your thoughts..."
+            <form className="gt-bd-comment-form" onSubmit={handleComment}>
+              <textarea
+                className="gt-bd-comment-input"
+                rows="3"
+                placeholder="What are your thoughts?"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
+                required
               />
-              <Button onClick={handleComment} className="mt-3">
-                Post Comment
-              </Button>
-            </Form>
+              <div className="gt-bd-comment-submit-row">
+                <button type="submit" className="gt-bd-comment-btn">Respond</button>
+              </div>
+            </form>
 
-            <div className="comment-list">
-              {blog.comments.map((c, index) => (
-                <div key={index} className="comment-card">
-                  <div className="comment-header">
-                    <strong>{c.user?.username || "Anonymous"}</strong>
-                    <span>{format(new Date(c.timestamp), "MMM dd, yyyy")}</span>
+            <div className="gt-bd-comments-list">
+              {blog.comments.map((c, index) => {
+                const commentAuthor = c.user?.username || "Anonymous";
+                return (
+                  <div key={index} className="gt-bd-comment-bubble">
+                    <div className="gt-bd-comment-header">
+                      <img src={generateAvatar(commentAuthor)} alt="User" className="gt-bd-avatar-small" />
+                      <div>
+                        <strong className="gt-bd-comment-author">{commentAuthor}</strong>
+                        <span className="gt-bd-comment-date">{format(new Date(c.timestamp), "MMM dd, yyyy")}</span>
+                      </div>
+                    </div>
+                    <p className="gt-bd-comment-text">{c.text}</p>
                   </div>
-                  <p>{c.text}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
-        </>
+
+        </main>
       )}
-    </Container>
+    </div>
   );
 };
 

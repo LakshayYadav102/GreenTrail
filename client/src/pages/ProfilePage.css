@@ -1,182 +1,173 @@
-.profile-container {
-    max-width: 800px;
-    margin: 100px auto 40px;
-    padding: 20px;
-  }
-  
-  .profile-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .profile-title {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-  }
-  
-  .glassmorphism {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-  }
-  
-  .profile-body {
-    display: flex;
-    gap: 3rem;
-    padding: 2rem;
-  }
-  
-  .avatar-section {
-    flex: 0 0 250px;
-    text-align: center;
-  }
-  
-  .avatar-wrapper {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
-    border-radius: 50%;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    border: 3px solid #007bff;
-  }
-  
-  .profile-pic {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: all 0.3s ease;
-  }
-  
-  .upload-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .avatar-wrapper:hover .upload-overlay {
-    opacity: 1;
-  }
-  
-  .upload-icon {
-    color: white;
-    font-size: 2rem;
-    animation: pulse 2s infinite;
-  }
-  
-  .upload-spinner {
-    color: white;
-  }
-  
-  .avatar-instruction {
-    color: #7f8c8d;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-  }
-  
-  .profile-form {
-    flex: 1;
-  }
-  
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-label {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
-  
-  .form-input {
-    border-radius: 8px;
-    border: 1px solid #dfe6e9;
-    padding: 0.8rem;
-    transition: all 0.3s ease;
-    width: 100%;
-  }
-  
-  .form-input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-  }
-  
-  .save-button {
-    width: 100%;
-    padding: 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    margin-top: 1.5rem;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #007bff, #00ff88);
-    border: none;
-  }
-  
-  .save-button:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-  }
-  
-  .alert-pop {
-    animation: slideIn 0.3s ease-out;
-    max-width: 500px;
-    margin: 0 auto 1rem;
-  }
-  
-  @keyframes slideIn {
-    from {
-      transform: translateY(-20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
-  
-  @media (max-width: 768px) {
-    .profile-body {
-      flex-direction: column;
-    }
-    
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .avatar-section {
-      flex: 0 0 auto;
-      margin-bottom: 2rem;
-    }
-    
-    .profile-title {
-      font-size: 2rem;
-    }
-  }
+/* FULL PAGE BACKGROUND */
+.gv-profile-page-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  padding: 40px 15px;
+  width: 100%;
+  display: block;
+}
+
+.gv-profile-container {
+  max-width: 900px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+.gv-profile-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* FORCE CARDS TO BE FULL WIDTH */
+.gv-profile-card.glassmorphism {
+  width: 100% !important;
+  background: rgba(25, 25, 35, 0.85) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px !important;
+  border: 1px solid rgba(46, 204, 113, 0.3) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  display: block !important;
+}
+
+.gv-greencoin-title {
+  color: #2ecc71;
+  font-weight: 800;
+  font-size: 2.2rem;
+  margin: 0.5rem 0;
+}
+
+.gv-text-muted-custom {
+  color: #a0aec0 !important;
+  font-size: 0.95rem;
+}
+
+.gv-coin-icon {
+  font-size: 2.5rem;
+  vertical-align: middle;
+  margin-right: 12px;
+  filter: drop-shadow(0 0 10px rgba(46, 204, 113, 0.4));
+}
+
+/* Avatar */
+.gv-avatar-section {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  width: 100%;
+}
+
+.gv-avatar-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #2ecc71;
+  box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+  transition: all 0.3s ease;
+}
+
+.gv-avatar-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(46, 204, 113, 0.5);
+}
+
+.gv-profile-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gv-upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.gv-avatar-wrapper:hover .gv-upload-overlay {
+  opacity: 1;
+}
+
+.gv-upload-icon {
+  font-size: 3rem;
+  color: white;
+}
+
+.gv-avatar-instruction {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Forms */
+.gv-form-label {
+  color: #ffffff !important;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+/* FORCE INPUTS TO BE WIDE AND VISIBLE */
+.gv-form-input {
+  width: 100% !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;
+  padding: 0.8rem 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.gv-form-input:focus {
+  border-color: #2ecc71 !important;
+  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.2) !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: #ffffff !important;
+}
+
+.gv-form-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* Button */
+.gv-save-button {
+  background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  border-radius: 30px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4) !important;
+}
+
+.gv-save-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6) !important;
+}
+
+@media (max-width: 768px) {
+  .gv-profile-title { font-size: 2.2rem; }
+  .gv-greencoin-title { font-size: 1.8rem; }
+}

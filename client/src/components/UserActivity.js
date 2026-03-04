@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Card, ListGroup, Button, Row, Col, Spinner } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import GraphComponent from './GraphComponent';
 import './UserActivity.css';
+
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const UserActivity = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showPrediction, setShowPrediction] = useState(false);
-  const [prediction, setPrediction] = useState(null);
-  const [predictionLoading, setPredictionLoading] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -22,7 +21,7 @@ const UserActivity = () => {
 
     const fetchUserActivities = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/activities/user/${userId}`);
+        const response = await axios.get(`${apiBaseUrl}/api/activities/user/${userId}`);
         setActivities(response.data);
       } catch (err) {
         setError('Error fetching activities');
@@ -35,131 +34,105 @@ const UserActivity = () => {
     fetchUserActivities();
   }, []);
 
-  const fetchPrediction = async () => {
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      setError('User not logged in');
-      return;
-    }
+  if (loading) {
+    return (
+      <div className="gt-activity-loader-wrapper">
+        <div className="gt-activity-spinner"></div>
+        <p>Loading your activity history...</p>
+      </div>
+    );
+  }
 
-    if (activities.length === 0) {
-      setError('No activities found to base prediction on');
-      return;
-    }
-
-    const latest = activities[activities.length - 1];
-
-    const transportKm = latest.transportation || 0;
-    const energyKwh = latest.energy || 0;
-    const dietType = latest.diet === 'non-vegetarian' ? 1 : 0;
-
-    try {
-      setPredictionLoading(true);
-      const { data } = await axios.post('http://localhost:5000/api/predict', {
-        transportation: transportKm,
-        energy: energyKwh,
-        dietType,
-        predictionRange: 7, // Fixed to 7 days
-      });
-      console.log('Predicted for 7 days:', data);
-
-      const totalEmission = (data.predicted_total_emission * 7).toFixed(2);
-
-      // Coefficients used for explanation purposes, multiplied by 7 for weekly estimate
-      setPrediction({
-        totalEmission,
-        transportEmission: (transportKm * 0.123 * 7).toFixed(2),
-        energyEmission: (energyKwh * 0.233 * 7).toFixed(2),
-        dietEmission: (dietType === 0 ? 0.5 * 7 : 1.2 * 7).toFixed(2),
-      });
-    } catch (err) {
-      console.error('Prediction error:', err);
-      setError('Failed to fetch prediction');
-    } finally {
-      setPredictionLoading(false);
-    }
-  };
-
-  const togglePredictionPanel = () => {
-    setShowPrediction(!showPrediction);
-    if (!showPrediction && !prediction) {
-      fetchPrediction();
-    }
-  };
-
-  if (loading) return <div className="text-center">Loading your activities...</div>;
-  if (error) return <div className="text-center text-danger">{error}</div>;
+  if (error) {
+    return (
+      <div className="gt-activity-loader-wrapper">
+        <div className="gt-activity-error-box">
+          <h4>⚠️ Error</h4>
+          <p>{error}</p>
+          <Link to="/dashboard" className="gt-activity-btn-back">Return to Dashboard</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Container className="my-5">
-      <h2 className="text-center mb-4">Your Activity History</h2>
+    <div className="gt-activity-page-wrapper">
+      <div className="gt-activity-bg-overlay"></div>
+      
+      <div className="gt-activity-container">
+        <div className="gt-activity-header">
+          <span className="gt-activity-badge">Eco Ledger</span>
+          <h1 className="gt-activity-title">ACTIVITY <span className="gt-activity-highlight">HISTORY</span></h1>
+          <p className="gt-activity-subtitle">Track your past emissions and monitor your journey towards sustainability.</p>
+        </div>
 
-      <GraphComponent userId={localStorage.getItem('userId')} />
+        {/* GRAPH SECTION */}
+        <div className="gt-activity-graph-section">
+          <div className="gt-activity-glass-card">
+            <h3 className="gt-activity-card-title">📈 Emission Trends</h3>
+            <GraphComponent userId={localStorage.getItem('userId')} />
+          </div>
+        </div>
 
-      {activities.length > 0 ? (
-        activities.map((activity) => (
-          <Card key={activity._id} className="mb-4 user-activity-card">
-            <Card.Body>
-              <Card.Title className="text-center">Activity Details</Card.Title>
-              <ListGroup variant="flush">
-                <ListGroup.Item><strong>From Date:</strong> {new Date(activity.fromDate).toLocaleDateString()}</ListGroup.Item>
-                <ListGroup.Item><strong>To Date:</strong> {new Date(activity.toDate).toLocaleDateString()}</ListGroup.Item>
-                <ListGroup.Item><strong>Transportation:</strong> {activity.transportation} km</ListGroup.Item>
-                <ListGroup.Item><strong>Diet:</strong> {activity.diet}</ListGroup.Item>
-                <ListGroup.Item><strong>Energy Usage:</strong> {activity.energy} kWh</ListGroup.Item>
-                <ListGroup.Item><strong>Total Emission:</strong> {activity.totalEmission} kg CO₂</ListGroup.Item>
-              </ListGroup>
-            </Card.Body>
-          </Card>
-        ))
-      ) : (
-        <div className="text-center"><p>No activities found.</p></div>
-      )}
+        {/* ACTIVITIES GRID */}
+        <div className="gt-activity-list-section">
+          <h3 className="gt-activity-section-title">Detailed Records</h3>
+          
+          {activities.length > 0 ? (
+            <div className="gt-activity-grid">
+              {activities.map((activity) => (
+                <div key={activity._id} className="gt-activity-glass-card gt-record-card">
+                  <div className="gt-record-header">
+                    <span className="gt-record-date">
+                      {new Date(activity.fromDate).toLocaleDateString()} - {new Date(activity.toDate).toLocaleDateString()}
+                    </span>
+                    <span className="gt-record-total">{activity.totalEmission} <small>kg CO₂</small></span>
+                  </div>
+                  
+                  <div className="gt-record-body">
+                    <div className="gt-record-item">
+                      <div className="gt-record-icon">🚗</div>
+                      <div className="gt-record-info">
+                        <label>Transport</label>
+                        <strong>{activity.transportation} km</strong>
+                      </div>
+                    </div>
 
-      <Row className="justify-content-center mt-4">
-        <Col md={4} className="text-center">
-          <Button variant="primary" href="/dashboard" className="btn">
-            Back to Dashboard
-          </Button>
-        </Col>
-      </Row>
+                    <div className="gt-record-item">
+                      <div className="gt-record-icon">💡</div>
+                      <div className="gt-record-info">
+                        <label>Energy</label>
+                        <strong>{activity.energy} kWh</strong>
+                      </div>
+                    </div>
 
-      {/* Toggle Prediction Panel Button */}
-      <div className="chatbot-toggle-btn" onClick={togglePredictionPanel}>
-        <div className="chatbot-icon">💬</div>
-        <div className="chatbot-text">{showPrediction ? 'Close Prediction' : 'View Prediction'}</div>
-      </div>
-
-      {/* Prediction Panel */}
-      {showPrediction && (
-        <div className="prediction-panel">
-          {predictionLoading ? (
-            <div className="text-center"><Spinner animation="border" variant="primary" /></div>
-          ) : prediction ? (
-            <>
-              <h5>📉 Predicted Carbon Emission for Next 7 Days: <strong>{prediction.totalEmission} kg CO₂</strong></h5>
-              <p>
-                This is a forecast based on your recent activity patterns. Using machine learning, 
-                we analyze your past behavior—such as your transportation habits, energy consumption, 
-                and diet—to estimate your expected emissions for the next week.
-              </p>
-              <ul>
-                <li><strong>🚗 Transport:</strong> {prediction.transportEmission} kg CO₂ — based on {activities[activities.length - 1].transportation} km of travel.</li>
-                <li><strong>💡 Energy:</strong> {prediction.energyEmission} kg CO₂ — from using {activities[activities.length - 1].energy} kWh.</li>
-                <li><strong>🍽 Diet:</strong> {prediction.dietEmission} kg CO₂ — based on a {activities[activities.length - 1].diet} diet.</li>
-              </ul>
-              <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                This is not a real-time calculation but an estimate of what you might emit if your lifestyle continues as is.
-                To reduce this footprint, try using cleaner transport, saving energy, or switching to a plant-based diet.
-              </p>
-              <Button variant="danger" onClick={togglePredictionPanel}>Close</Button>
-            </>
+                    <div className="gt-record-item">
+                      <div className="gt-record-icon">🍽️</div>
+                      <div className="gt-record-info">
+                        <label>Diet</label>
+                        <strong style={{ textTransform: 'capitalize' }}>{activity.diet}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
-            <p className="text-danger">Prediction data not available.</p>
+            <div className="gt-activity-empty-state">
+              <div className="gt-empty-icon">🍃</div>
+              <p>No activities recorded yet. Start tracking to see your history!</p>
+            </div>
           )}
         </div>
-      )}
-    </Container>
+
+        <div className="gt-activity-footer">
+          <Link to="/dashboard" className="gt-activity-btn-back">
+            ← Back to Dashboard
+          </Link>
+        </div>
+
+      </div>
+    </div>
   );
 };
 

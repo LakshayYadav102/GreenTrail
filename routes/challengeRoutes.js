@@ -89,7 +89,7 @@ router.post("/update-progress", async (req, res) => {
   }
 });
 
-// 🔹 Get leaderboard (Ranked by Least CO₂ in the Last 7 Days)
+// 🔹 Get leaderboard (Ranked by Least CO₂ - Excluding 0 from top ranks)
 router.get("/leaderboard/:challengeId", async (req, res) => {
     const { challengeId } = req.params;
   
@@ -107,16 +107,6 @@ router.get("/leaderboard/:challengeId", async (req, res) => {
         participants.map(async (participant) => {
           if (!participant.userId) return null;
   
-          console.log(`Fetching data for user: ${participant.userId.username}`);
-  
-          // Log activity records for debugging
-          const userActivities = await Activity.find({
-            userId: participant.userId._id,
-            fromDate: { $gte: sevenDaysAgo }
-          });
-  
-          console.log(`Activities found for ${participant.userId.username}:`, userActivities);
-  
           const totalFootprint = await Activity.aggregate([
             { 
               $match: { 
@@ -127,28 +117,37 @@ router.get("/leaderboard/:challengeId", async (req, res) => {
             {
               $group: { 
                 _id: null, 
-                totalCO2: { $sum: "$totalEmission" }  // ✅ Ensure correct field name
+                totalCO2: { $sum: "$totalEmission" } 
               }
             }
           ]);
   
-          console.log(`Total CO₂ for ${participant.userId.username}:`, totalFootprint);
+          const co2Value = totalFootprint.length > 0 ? totalFootprint[0].totalCO2 : 0;
   
           return {
             username: participant.userId.username || "Unknown User",
-            totalCO2: totalFootprint.length > 0 ? totalFootprint[0].totalCO2 : 0
+            totalCO2: co2Value,
+            hasData: co2Value > 0 // Flag to identify active participants
           };
         })
       );
   
-      const validFootprints = userFootprints.filter((entry) => entry !== null);
-      validFootprints.sort((a, b) => a.totalCO2 - b.totalCO2);
+      const processedEntries = userFootprints.filter((entry) => entry !== null);
+
+      // 🟢 PREMIUM SORT LOGIC:
+      // 1. Prioritize users with data (hasData: true)
+      // 2. Secondary sort by CO2 (ascending)
+      processedEntries.sort((a, b) => {
+        if (a.hasData && !b.hasData) return -1;
+        if (!a.hasData && b.hasData) return 1;
+        return a.totalCO2 - b.totalCO2;
+      });
   
-      res.json(validFootprints);
+      res.json(processedEntries);
     } catch (err) {
       console.error("Error fetching leaderboard:", err);
       res.status(500).json({ message: "Server error" });
     }
-  });
+});
   module.exports = router;  // ✅ This must be at the end!
 

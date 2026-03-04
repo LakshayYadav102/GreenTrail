@@ -1,5 +1,6 @@
+// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi';
@@ -17,13 +18,18 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, { email, password });
+      const response = await axios.post(`${apiBaseUrl}/api/auth/login`, {
+        email,
+        password,
+      });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', response.data.userId);
       setMessage('Login successful!');
       setError('');
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       console.error('Login Error:', err);
       setError(err.response?.data?.message || 'Invalid credentials');
@@ -40,7 +46,7 @@ const LoginPage = () => {
         <div className="login-form-container">
           <div className="brand-container">
             <div className="brand-logo">🌿</div>
-            <h1 className="brand-text">GreenTrail</h1>
+            <h1 className="brand-text">GreenVerse</h1>
             <p className="brand-tagline">Step into Sustainable Adventures</p>
           </div>
 
@@ -79,7 +85,12 @@ const LoginPage = () => {
               </div>
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="mt-4 w-100 login-button" disabled={isLoading}>
+            <Button
+              variant="primary"
+              type="submit"
+              className="mt-4 w-100 login-button"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <div className="leaf-spinner">
                   <div className="leaf">🌱</div>
@@ -93,7 +104,7 @@ const LoginPage = () => {
             </Button>
 
             <div className="additional-options">
-              <Button variant="link" className="eco-link" onClick={() => navigate("/register")}>
+              <Button variant="link" className="eco-link" onClick={() => navigate('/register')}>
                 Create New Trail
               </Button>
             </div>

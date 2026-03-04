@@ -1,0 +1,221 @@
+.food-profile-page {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* --- LOADING SPINNER --- */
+.profile-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #2e7d32;
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(46, 125, 50, 0.2);
+  border-top-color: #2e7d32;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- PROFILE HEADER --- */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  margin-bottom: 40px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #4caf50;
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+  flex-shrink: 0;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.profile-info h2 {
+  margin: 0 0 5px 0;
+  font-size: 2.2rem;
+  color: #1a1a1a;
+  font-weight: 800;
+}
+
+.user-email {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.eco-badge {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  border: 1px solid #c8e6c9;
+}
+
+/* --- STATS SECTION --- */
+.impact-section-title {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.impact-section-title h3 {
+  font-size: 1.8rem;
+  color: #2e7d32;
+  margin: 0 0 5px 0;
+}
+
+.impact-section-title p {
+  color: #666;
+  margin: 0;
+}
+
+.profile-cards {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.profile-card {
+  flex: 1;
+  min-width: 250px;
+  max-width: 300px;
+  padding: 30px 20px;
+  border-radius: 20px;
+  color: white;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+
+.profile-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+  width: 45px;
+  height: 45px;
+  margin: 0 auto 15px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: white;
+}
+
+.profile-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.profile-card p {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 5px 0;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.profile-card small {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+/* Gradients for cards */
+.profile-card.donate {
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+}
+
+.profile-card.receive {
+  background: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+  box-shadow: 0 10px 20px rgba(66, 165, 245, 0.3);
+}
+
+.profile-card.carbon {
+  background: linear-gradient(135deg, #ab47bc 0%, #6a1b9a 100%);
+  box-shadow: 0 10px 20px rgba(171, 71, 188, 0.3);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 20px;
+  }
+  
+  .profile-info {
+    align-items: center;
+  }
+}

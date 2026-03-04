@@ -11,12 +11,33 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true }, // Password should be hashed
   totalCarbonFootprint: { type: Number, default: 0 }, // Lifetime carbon footprint
+  
+  // 🟢 NEW: GreenCoin Wallet Balance
+  greenCoins: { type: Number, default: 0 }, 
+  
   mobile: { type: String, default: "" },
   dob: { type: Date, default: null },
   address: { type: String, default: "" },
   profilePic: { type: String, default: "" },
-  donations: [donationSchema] // 🌱 Track donation history
+  role: { type: String, enum: ["user", "admin"], default: "user" },
+  donations: [donationSchema], // 🌱 Track donation history
+
+  // Added social graph fields (followers & following)
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
+  ],
+
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
+  ]
+}, {
+  timestamps: true   
 });
 
-// ✅ Prevent model re-compilation in dev
 module.exports = mongoose.models.User || mongoose.model("User", UserSchema);

@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Spinner, Alert, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import GraphComponent from '../components/GraphComponent';
 import Chatbot from '../components/Chatbot';
 import ObjectDetection from '../components/ObjectDetection';
@@ -12,6 +11,15 @@ const CITY = "Gurgaon";
 const LAT = "28.4986";
 const LON = "77.0469";
 
+// Moved outside component to prevent unnecessary re-renders
+const quotes = [
+  "Step Lightly, Thrive Greenly",
+  "Green Today, Thriving Tomorrow",
+  "Sustain the Planet, Sustain Our Future",
+  "Eco Living, Made Simple",
+  "Plant the Seed for a Greener World"
+];
+
 const DashboardPage = () => {
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,52 +27,78 @@ const DashboardPage = () => {
   const [weather, setWeather] = useState(null);
   const [aqi, setAqi] = useState(null);
   const [showGraph, setShowGraph] = useState(false);
-  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  
+  // Robust Typing Animation States
   const [displayedText, setDisplayedText] = useState('');
-
-  const quotes = [
-    "Step Lightly, Thrive Greenly",
-    "Green Today, Thriving Tomorrow",
-    "Sustain the Planet, Sustain Our Future",
-    "Eco Living, Made Simple",
-    "Plant the Seed for a Greener World"
-  ];
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    if (storedUserId) {
-      setUserId(storedUserId);
-    } else {
-      setError('User not logged in');
-    }
-    setLoading(false);
+    const initializeDashboard = async () => {
+      setLoading(true);
+      try {
+        const storedUserId = localStorage.getItem('userId');
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('User not logged in');
+          setLoading(false);
+          return;
+        }
+        if (storedUserId) {
+          setUserId(storedUserId);
+        } else {
+          setError('User ID not found');
+          setLoading(false);
+          return;
+        }
+        await fetchWeatherAndAQI();
+      } catch (error) {
+        setError('Error initializing dashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+    initializeDashboard();
   }, []);
 
+  // GLITCH-FREE TYPING ANIMATION LOGIC
   useEffect(() => {
-    const typeQuote = async () => {
-      const currentQuote = quotes[currentQuoteIndex];
-      
-      // Type out the new quote
-      for (let i = 0; i <= currentQuote.length; i++) {
-        setDisplayedText(currentQuote.slice(0, i));
-        await new Promise(resolve => setTimeout(resolve, 100)); // Typing speed
+    let typingTimer;
+
+    const handleTyping = () => {
+      const fullQuote = quotes[quoteIndex];
+
+      if (!isDeleting) {
+        // Typing forward
+        setDisplayedText(fullQuote.substring(0, displayedText.length + 1));
+
+        // If word is finished, wait 2 seconds, then start deleting
+        if (displayedText === fullQuote) {
+          typingTimer = setTimeout(() => setIsDeleting(true), 2000);
+        } else {
+          // Normal typing speed
+          typingTimer = setTimeout(handleTyping, 80);
+        }
+      } else {
+        // Deleting backward
+        setDisplayedText(fullQuote.substring(0, displayedText.length - 1));
+
+        // If completely deleted, move to next quote and start typing
+        if (displayedText === '') {
+          setIsDeleting(false);
+          setQuoteIndex((prev) => (prev + 1) % quotes.length);
+        } else {
+          // Deleting speed
+          typingTimer = setTimeout(handleTyping, 40);
+        }
       }
-
-      // Wait before starting to erase
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Erase the quote from right to left
-      for (let i = currentQuote.length; i >= 0; i--) {
-        setDisplayedText(currentQuote.slice(0, i));
-        await new Promise(resolve => setTimeout(resolve, 50)); // Erasing speed
-      }
-
-      // Move to the next quote
-      setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
     };
 
-    typeQuote();
-  }, [currentQuoteIndex, quotes.length]);
+    typingTimer = setTimeout(handleTyping, isDeleting ? 40 : 80);
+    
+    // Cleanup function prevents multiple loops from running at the same time
+    return () => clearTimeout(typingTimer);
+  }, [displayedText, isDeleting, quoteIndex]);
 
   const fetchWeatherAndAQI = async () => {
     try {
@@ -81,7 +115,6 @@ const DashboardPage = () => {
       );
       if (!aqiResponse.ok) throw new Error('Failed to fetch AQI');
       const aqiData = await aqiResponse.json();
-
       const apiAqi = aqiData.list[0]?.main?.aqi || 1;
       const mappedAqi = mapAqi(apiAqi);
       setAqi(mappedAqi);
@@ -90,10 +123,6 @@ const DashboardPage = () => {
       setError('Error fetching weather or AQI data');
     }
   };
-
-  useEffect(() => {
-    fetchWeatherAndAQI();
-  }, []);
 
   const mapAqi = (apiAqi) => {
     const aqiRanges = {
@@ -106,9 +135,13 @@ const DashboardPage = () => {
     return aqiRanges[apiAqi] || aqiRanges[1];
   };
 
+  if (!localStorage.getItem('token')) {
+    return <Navigate to="/login" replace />;
+  }
+
   if (loading) {
     return (
-      <Container className="loading-container">
+      <Container className="gt-loading-container">
         <div className="text-center">
           <Spinner animation="border" variant="success" style={{ width: '3rem', height: '3rem' }} />
           <h4 className="mt-3 text-muted">Loading Your Eco Dashboard...</h4>
@@ -119,7 +152,7 @@ const DashboardPage = () => {
 
   if (error) {
     return (
-      <Container className="error-container">
+      <Container className="gt-error-container">
         <Alert variant="danger" className="text-center">
           <h4>⚠️ Error Encountered</h4>
           <p className="mb-0">{error}</p>
@@ -129,120 +162,134 @@ const DashboardPage = () => {
   }
 
   return (
-    <Container fluid className="dashboard-container">
-      <h1 className="dashboard-title">
-        {displayedText}
-        <div className="title-underline"></div>
-      </h1>
+    <div className="gt-dashboard-page">
+      <Container fluid className="gt-dashboard-container">
+        <h1 className="gt-dashboard-title">
+          {displayedText}
+          <div className="gt-title-underline"></div>
+        </h1>
 
-      <Row className="g-4 mb-4">
-        <Col xs={12} sm={6} lg={3}>
-          <Card className="eco-card track-card h-100">
-            <Card.Body className="d-flex flex-column">
-              <div className="card-icon">🌱</div>
-              <Card.Title>Track Your Footprint</Card.Title>
-              <Card.Text className="flex-grow-1">
-                Monitor and analyze your carbon emissions with detailed insights.
-              </Card.Text>
-              <Link to="/track" className="btn btn-eco-primary mt-auto">
-                Start Tracking →
-              </Link>
-            </Card.Body>
-          </Card>
-        </Col>
+        <Row className="g-4 mb-4">
+          <Col xs={12} sm={6} lg={3}>
+            <Card className="gt-eco-card gt-track-card h-100">
+              <Card.Body className="d-flex flex-column">
+                <div className="gt-card-icon">🌱</div>
+                <Card.Title>Track Your Footprint</Card.Title>
+                <Card.Text className="flex-grow-1">
+                  Monitor and analyze your carbon emissions with detailed insights.
+                </Card.Text>
+                <Link to="/track" className="btn gt-btn-eco gt-btn-eco-primary mt-auto">
+                  Start Tracking →
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
 
-        <Col xs={12} sm={6} lg={3}>
-          <Card className="eco-card weather-card h-100">
-            <Card.Body className="d-flex flex-column">
-              <div className="card-icon">⛅</div>
-              <Card.Title>Environment Status</Card.Title>
-              {weather ? (
-                <div className="weather-info flex-grow-1">
-                  <div className="weather-item">
-                    <span>🌡 Temperature</span>
-                    <strong>{weather.main.temp}°C</strong>
-                  </div>
-                  <div className="weather-item">
-                    <span>💧 Humidity</span>
-                    <strong>{weather.main.humidity}%</strong>
-                  </div>
-                  <div className="weather-item">
-                    <span>☁ Condition</span>
-                    <strong>{weather.weather[0].description}</strong>
-                  </div>
-                  {aqi && (
-                    <div className={`aqi-badge bg-${aqi.color}`}>
-                      <span>🏭 AQI</span>
-                      <strong>{aqi.value} ({aqi.text})</strong>
+          <Col xs={12} sm={6} lg={3}>
+            <Card className="gt-eco-card gt-weather-card h-100">
+              <Card.Body className="d-flex flex-column">
+                <div className="gt-card-icon">⛅</div>
+                <Card.Title>Environment Status</Card.Title>
+                {weather ? (
+                  <div className="gt-weather-info flex-grow-1">
+                    <div className="gt-weather-item">
+                      <span>🌡 Temperature</span>
+                      <strong>{weather.main.temp}°C</strong>
                     </div>
-                  )}
-                </div>
-              ) : (
-                <Spinner animation="border" variant="info" />
-              )}
-              <Button onClick={fetchWeatherAndAQI} className="btn btn-eco-secondary mt-auto">
-                Refresh Data ⟳
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
+                    <div className="gt-weather-item">
+                      <span>💧 Humidity</span>
+                      <strong>{weather.main.humidity}%</strong>
+                    </div>
+                    <div className="gt-weather-item">
+                      <span>☁ Condition</span>
+                      <strong style={{ textTransform: 'capitalize' }}>{weather.weather[0].description}</strong>
+                    </div>
+                    {aqi ? (
+                      <div className={`gt-aqi-badge bg-${aqi.color}`}>
+                        <span>🏭 AQI</span>
+                        <strong>{aqi.value} ({aqi.text})</strong>
+                      </div>
+                    ) : (
+                      <div className="gt-weather-item">
+                        <span>🏭 AQI</span>
+                        <strong>Loading...</strong>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="gt-weather-info flex-grow-1">
+                    <Spinner animation="border" variant="light" size="sm" />
+                    <p style={{ color: 'white', marginTop: '10px' }}>Loading weather data...</p>
+                  </div>
+                )}
+                <Button onClick={fetchWeatherAndAQI} className="btn gt-btn-eco gt-btn-eco-secondary mt-auto">
+                  Refresh Data ⟳
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
 
-        <Col xs={12} sm={6} lg={3}>
-          <Card className="eco-card donation-card h-100">
-            <Card.Body className="d-flex flex-column">
-              <div className="card-icon">🌳</div>
-              <Card.Title>Tree Offset</Card.Title>
-              <Card.Text className="flex-grow-1">
-                See how many trees can offset your carbon footprint or donate to plant more.
-              </Card.Text>
-              <Link to="/donation" className="btn btn-eco-success mt-auto">
-                Plant Tree
-              </Link>
-            </Card.Body>
-          </Card>
-        </Col>
+          <Col xs={12} sm={6} lg={3}>
+            <Card className="gt-eco-card gt-donation-card h-100">
+              <Card.Body className="d-flex flex-column">
+                <div className="gt-card-icon">🌳</div>
+                <Card.Title>Tree Offset</Card.Title>
+                <Card.Text className="flex-grow-1">
+                  See how many trees can offset your carbon footprint or donate to plant more.
+                </Card.Text>
+                <Link to="/donation" className="btn gt-btn-eco gt-btn-eco-success mt-auto">
+                  Plant Tree
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
 
-        <Col xs={12} sm={6} lg={3}>
-          <Card className="eco-card activities-card h-100">
-            <Card.Body className="d-flex flex-column">
-              <div className="card-icon">📊</div>
-              <Card.Title>Your Activities</Card.Title>
-              <Card.Text className="flex-grow-1">
-                Review your historical data and sustainability progress.
-              </Card.Text>
-              <Link to="/user-activity" className="btn btn-eco-success mt-auto">
-                View History →
-              </Link>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+          <Col xs={12} sm={6} lg={3}>
+            <Card className="gt-eco-card gt-activities-card h-100">
+              <Card.Body className="d-flex flex-column">
+                <div className="gt-card-icon">📊</div>
+                <Card.Title>Your Activities</Card.Title>
+                <Card.Text className="flex-grow-1">
+                  Review your historical data and sustainability progress.
+                </Card.Text>
+                <Link to="/user-activity" className="btn gt-btn-eco gt-btn-eco-success mt-auto">
+                  View History →
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
 
-      <Row className="justify-content-center g-4">
-        <Col xs={12} md={10} lg={8}>
-          <Card className="eco-card graph-card h-100">
-            <Card.Body className="d-flex flex-column">
-              <div className="card-icon">📈</div>
-              <Card.Title>Emission Analytics</Card.Title>
-              <Card.Text className="flex-grow-1">
-                Visualize your carbon footprint trends over different time periods.
-              </Card.Text>
-              <Button
-                onClick={() => setShowGraph(!showGraph)}
-                className="btn btn-eco-info mt-auto"
-              >
-                {showGraph ? 'Hide Analytics' : 'Show Analytics'}
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+        <Row className="justify-content-center g-4">
+          <Col xs={12} md={10} lg={8}>
+            <Card className="gt-eco-card gt-graph-card h-100">
+              <Card.Body className="d-flex flex-column">
+                <div className="gt-card-icon">📈</div>
+                <Card.Title>Emission Analytics</Card.Title>
+                <Card.Text className="flex-grow-1">
+                  Visualize your carbon footprint trends over different time periods.
+                </Card.Text>
+                <Button
+                  onClick={() => setShowGraph(!showGraph)}
+                  className="btn gt-btn-eco gt-btn-eco-info mt-auto"
+                >
+                  {showGraph ? 'Hide Analytics' : 'Show Analytics'}
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
 
-      {showGraph && <GraphComponent userId={userId} />}
+        {showGraph && (
+          <div className="gt-graph-wrapper">
+             <GraphComponent userId={userId} />
+          </div>
+        )}
 
-      <ObjectDetection />
-      <Chatbot />
-    </Container>
+        <ObjectDetection />
+        <Chatbot />
+      </Container>
+    </div>
   );
 };
 

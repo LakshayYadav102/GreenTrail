@@ -27,44 +27,24 @@ const Navbar = () => {
     fetchProfilePic();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    navigate("/login");
-  };
-
   return (
     <nav className="navbar-container">
-      <button className="nav-brand" onClick={() => navigate("/")}>
+      <button className="nav-brand" onClick={() => navigate("/dashboard")}>
         GreenTrail
       </button>
       
       <div className="nav-buttons">
-        <button 
-          className="nav-button"
-          onClick={() => navigate("/blogs")}
-        >
-          <span className="nav-icon">📝</span>
-          <span className="nav-text">Blogs</span>
-        </button>
-
-        <button 
-          className="nav-button"
-          onClick={() => navigate("/challenges")}
-        >
+        <button className="nav-button" onClick={() => navigate("/challenges")}>
           <span className="nav-icon">🌍</span>
           <span className="nav-text">Challenges</span>
         </button>
         
-        <button 
-          className="nav-button"
-          onClick={() => navigate("/game-loading")}
-        >
+        <button className="nav-button" onClick={() => navigate("/game-loading")}>
           <span className="nav-icon">🎮</span>
           <span className="nav-text">Games</span>
         </button>
 
-        <div className="profile-circle" onClick={() => navigate("/profile")}>
+        <div className="profile-circle" onClick={() => navigate("/profile", { state: { from: 'greentrail' } })}>
           {loading ? (
             <div className="profile-spinner">
               <div className="spinner-border text-light" role="status">
@@ -76,12 +56,9 @@ const Navbar = () => {
           )}
         </div>
 
-        <button 
-          className="nav-button logout-btn"
-          onClick={handleLogout}
-        >
-          <span className="nav-icon">🚪</span>
-          <span className="nav-text">Logout</span>
+        <button className="nav-button" onClick={() => navigate("/")}>
+          <span className="nav-icon">🏠</span>
+          <span className="nav-text">Home</span>
         </button>
       </div>
     </nav>

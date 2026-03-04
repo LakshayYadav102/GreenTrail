@@ -1,67 +1,134 @@
-.blog-detail-container {
-    max-width: 800px;
-    padding: 2rem 1rem;
-  }
-  
-  .article-header {
-    margin-bottom: 3rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .article-header h1 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin-bottom: 1.5rem;
-  }
-  
-  .author-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #7f8c8d;
-  }
-  
-  .article-content {
-    line-height: 1.8;
-    font-size: 1.1rem;
-    color: #34495e;
-  }
-  
-  .article-content img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin: 2rem 0;
-  }
-  
-  .interaction-section {
-    margin: 3rem 0;
-    text-align: center;
-  }
-  
-  .comments-section {
-    padding: 2rem 0;
-    border-top: 1px solid #eee;
-  }
-  
-  .comment-form {
-    margin: 2rem 0;
-  }
-  
-  .comment-list {
-    margin-top: 2rem;
-  }
-  
-  .comment-card {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .comment-header {
-    display: flex;
-    justify-content: space-between;
-    color: #7f8c8d;
-    margin-bottom: 0.5rem;
-  }
+/* PURE CSS RESET TO BLOCK GLOBAL BOOTSTRAP */
+.gt-bd-wrapper {
+  background-color: #ffffff;
+  min-height: 100vh;
+  padding: 60px 20px 100px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.gt-bd-container {
+  max-width: 760px; /* Perfect reading width */
+  margin: 0 auto;
+}
+
+.gt-bd-loader {
+  display: flex; justify-content: center; align-items: center; height: 60vh;
+}
+
+/* Elegant Back Link */
+.gt-bd-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 40px;
+  transition: color 0.2s ease;
+  outline: none;
+}
+.gt-bd-back-link svg { width: 18px; height: 18px; }
+.gt-bd-back-link:hover { color: #2ecc71; }
+
+/* Article Header */
+.gt-bd-header { margin-bottom: 30px; }
+
+.gt-bd-title {
+  font-size: 3.2rem !important;
+  font-weight: 900 !important;
+  color: #0f172a !important;
+  line-height: 1.2 !important;
+  margin-bottom: 30px !important;
+  letter-spacing: -1.5px !important;
+}
+
+.gt-bd-meta-bar {
+  display: flex;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.gt-bd-author-group { display: flex; align-items: center; gap: 15px; }
+.gt-bd-avatar { width: 50px; height: 50px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.gt-bd-details { display: flex; flex-direction: column; }
+.gt-bd-name { font-weight: 700; color: #1e293b; font-size: 1.1rem; }
+.gt-bd-date { color: #64748b; font-size: 0.9rem; margin-top: 2px; }
+
+/* Cover Image */
+.gt-bd-cover-wrapper {
+  width: 100%;
+  margin: 0 0 40px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+.gt-bd-cover-image { width: 100%; height: auto; display: block; max-height: 450px; object-fit: cover;}
+
+/* Typography for Reading */
+.gt-bd-body {
+  font-size: 1.25rem !important;
+  line-height: 1.8 !important;
+  color: #334155 !important;
+  font-family: 'Charter', 'Georgia', serif !important;
+}
+.gt-bd-body p { margin-bottom: 25px !important; }
+.gt-bd-body h1, .gt-bd-body h2 { color: #0f172a !important; font-family: 'Inter', sans-serif !important; font-weight: 800 !important; margin: 50px 0 20px !important; }
+.gt-bd-body blockquote { border-left: 4px solid #2ecc71 !important; padding-left: 20px !important; font-style: italic !important; color: #64748b !important; margin: 35px 0 !important; background: #f8fafc; padding: 20px; border-radius: 0 12px 12px 0;}
+.gt-bd-body img { max-width: 100% !important; border-radius: 12px !important; margin: 40px 0 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+/* The Action Button (Overriding Bootstrap) */
+.gt-bd-footer-actions {
+  display: flex; justify-content: center; margin: 60px 0;
+}
+.gt-bd-huge-like-btn {
+  display: flex; align-items: center; gap: 10px;
+  background: white !important; border: 2px solid #e2e8f0 !important; color: #475569 !important;
+  font-size: 1.1rem !important; font-weight: 700 !important; padding: 12px 30px !important;
+  border-radius: 50px !important; cursor: pointer !important; transition: all 0.3s ease !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important;
+}
+.gt-like-svg { width: 22px; height: 22px; transition: transform 0.3s; }
+.gt-bd-huge-like-btn:hover:not(:disabled) { border-color: #2ecc71 !important; color: #2ecc71 !important; transform: translateY(-2px); }
+.gt-bd-huge-like-btn.liked { background: #ecfdf5 !important; color: #10b981 !important; border-color: #10b981 !important; cursor: default !important; box-shadow: none !important; }
+.gt-bd-huge-like-btn.liked .gt-like-svg { transform: scale(1.1); fill: #10b981; }
+
+.gt-bd-divider { border: none; border-top: 1px solid #e2e8f0; margin: 0 0 50px; }
+
+/* Elegant Comments */
+.gt-bd-comments-title { font-size: 1.5rem !important; font-weight: 800 !important; color: #0f172a !important; margin-bottom: 30px !important; }
+
+.gt-bd-comment-form { margin-bottom: 50px; }
+.gt-bd-comment-input {
+  width: 100% !important; padding: 20px !important; border: 1px solid #cbd5e1 !important; 
+  border-radius: 12px !important; font-family: 'Inter', sans-serif !important; 
+  font-size: 1.05rem !important; resize: vertical !important;
+  color: #1e293b !important; background-color: #ffffff !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+.gt-bd-comment-input:focus { outline: none !important; border-color: #2ecc71 !important; box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.15) !important; }
+
+.gt-bd-comment-submit-row { display: flex; justify-content: flex-end; margin-top: 15px; }
+.gt-bd-comment-btn {
+  background: #0f172a !important; color: white !important; border: none !important; 
+  padding: 12px 30px !important; border-radius: 50px !important; font-weight: 600 !important; 
+  cursor: pointer !important; transition: background 0.3s !important;
+}
+.gt-bd-comment-btn:hover { background: #1e293b !important; }
+
+.gt-bd-comments-list { display: flex; flex-direction: column; gap: 24px; }
+.gt-bd-comment-bubble { background: #ffffff; padding: 25px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+.gt-bd-comment-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+.gt-bd-avatar-small { width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.gt-bd-comment-author { display: block; color: #1e293b; font-weight: 700; font-size: 1rem; }
+.gt-bd-comment-date { color: #64748b; font-size: 0.85rem; }
+.gt-bd-comment-text { color: #475569; margin: 0; line-height: 1.6; font-size: 1.05rem;}
+
+@media (max-width: 768px) {
+  .gt-bd-title { font-size: 2.2rem !important; }
+  .gt-bd-body { font-size: 1.15rem !important; }
+}

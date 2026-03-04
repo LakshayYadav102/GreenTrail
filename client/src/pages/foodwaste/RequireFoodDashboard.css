@@ -1,0 +1,139 @@
+.require-food-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2c1f 0%, #1e3a2f 100%);
+  color: white;
+  padding: 4rem 5%;
+}
+
+.require-header {
+  text-align: center;
+  padding: 4rem 0 3rem;
+}
+
+.require-header h1 {
+  font-size: 3.8rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #60a5fa, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.require-header p {
+  font-size: 1.4rem;
+  opacity: 0.9;
+}
+
+.require-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.require-option-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  transition: all 0.45s ease;
+}
+
+.require-option-card:hover {
+  transform: translateY(-18px) scale(1.02);
+  box-shadow: 0 30px 70px rgba(96, 165, 250, 0.35);
+}
+
+/* ──────────────────────────────────────
+   Card-specific accents
+─────────────────────────────────────── */
+
+.require-option-card.available {
+  border-top: 6px solid #3b82f6;           /* blue accent for available food */
+}
+
+.require-option-card.ngo {
+  border-top: 6px solid #8b5cf6;           /* violet/purple for NGOs */
+  background: rgba(139, 92, 246, 0.06);    /* subtle purple tint */
+}
+
+.require-option-card.history {
+  border-top: 6px solid #ec4899;           /* pink/magenta for history & impact */
+  background: rgba(236, 72, 153, 0.05);    /* very subtle pink tint */
+}
+
+/* ──────────────────────────────────────
+   Button customizations per card
+─────────────────────────────────────── */
+
+.require-btn {
+  padding: 1.2rem 3.5rem;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.35s;
+}
+
+.require-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 40px rgba(96, 165, 250, 0.6);
+}
+
+/* NGO card button */
+.require-option-card.ngo .require-btn {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+.require-option-card.ngo .require-btn:hover {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
+}
+
+/* History card button */
+.require-option-card.history .require-btn {
+  background: linear-gradient(90deg, #ec4899, #f472b6);
+}
+
+.require-option-card.history .require-btn:hover {
+  box-shadow: 0 0 40px rgba(236, 72, 153, 0.6);
+}
+
+/* ──────────────────────────────────────
+   Common elements
+─────────────────────────────────────── */
+
+.option-icon {
+  font-size: 6.5rem;
+  margin-bottom: 1.8rem;
+}
+
+.require-option-card h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.require-option-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 2.5rem;
+  font-size: 1.1rem;
+}
+
+.require-option-card ul li {
+  margin: 0.8rem 0;
+}
+
+.require-info-note {
+  text-align: center;
+  margin-top: 6rem;
+  padding: 2rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+  font-size: 1.2rem;
+  opacity: 0.85;
+}

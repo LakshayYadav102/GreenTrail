@@ -1,85 +1,195 @@
-.top-performer {
-  background-color: rgba(40, 167, 69, 0.05) !important;
+/* PREMIUM LEADERBOARD STYLES */
+.gt-lb-main-container {
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  margin: 40px 0;
+  animation: gtFadeIn 0.8s ease-out;
 }
 
-.top-performer:hover {
-  background-color: rgba(40, 167, 69, 0.1) !important;
+.gt-lb-header-premium {
+  padding: 35px 40px;
+  background: linear-gradient(to right, #f8fafc, #ffffff);
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.progress-green .progress-bar {
-  background-color: #28a745;
-  border-radius: 4px;
+.gt-lb-badge-count {
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+  padding: 5px 12px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  display: inline-block;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.gt-lb-title-group h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 5px;
 }
 
-/* Medal colors */
-.bg-warning {
-  background-color: #ffc107 !important;
+.gt-lb-title-group p {
+  color: #64748b;
+  margin: 0;
+  font-size: 1rem;
 }
 
-.bg-secondary {
-  background-color: #6c757d !important;
+/* TABLE STYLING */
+.gt-lb-table-container {
+  padding: 20px 40px 40px;
 }
 
-.bg-danger {
-  background-color: #dc3545 !important;
+.gt-lb-custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
 }
 
-/* Table row hover effect */
-.table-hover tbody tr:hover {
-  transform: translateY(-2px);
-  transition: transform 0.2s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+.gt-lb-custom-table th {
+  padding: 10px 15px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  border: none;
 }
 
-/* Background image for the eco container with fallback */
-.eco-container {
-  background-image: url('/assets/eco-background.jpg'), /* Local fallback */
-                    url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  padding: 2rem;
+.gt-lb-row-premium {
+  background: #ffffff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gt-lb-row-premium td {
+  padding: 18px 15px;
+  vertical-align: middle;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.gt-lb-row-premium td:first-child { border-left: 1px solid #f1f5f9; border-radius: 16px 0 0 16px; }
+.gt-lb-row-premium td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 16px 16px 0; }
+
+.gt-lb-row-premium:hover {
+  transform: scale(1.015) translateX(5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  background: #fafafa;
+}
+
+/* RANK & MEDALS */
+.gt-lb-rank-col { width: 80px; text-align: center; }
+.gt-lb-medal {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #64748b;
+}
+.medal-1 { font-size: 1.8rem; }
+.medal-2 { font-size: 1.6rem; }
+.medal-3 { font-size: 1.4rem; }
+
+/* USER INFO */
+.gt-lb-user-info { display: flex; align-items: center; gap: 15px; }
+.gt-lb-avatar-circle {
+  width: 40px; height: 40px;
+  background: #e2e8f0;
+  color: #475569;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800;
+}
+.gt-lb-username { font-weight: 700; color: #1e293b; font-size: 1.05rem; }
+
+/* HIGHLIGHT TOP 3 */
+.gt-rank-bg-1 { background: #fffdf5 !important; border-color: #fde68a !important; }
+.gt-rank-bg-1 .gt-lb-avatar-circle { background: #fbbf24; color: #fff; }
+.gt-rank-bg-1 .gt-lb-username { color: #92400e; }
+
+/* PROGRESS BARS */
+.gt-lb-stats-col { width: 40%; }
+.gt-lb-progress-wrapper { display: flex; flex-direction: column; gap: 8px; }
+.gt-lb-progress-text {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #334155;
+  text-align: right;
+}
+
+.gt-lb-progress-track {
+  width: 100%; height: 8px;
+  background: #f1f5f9;
   border-radius: 10px;
-  min-height: 100vh; /* Ensure container takes full height for visibility */
-  position: relative;
-  z-index: 1; /* Ensure it’s above other elements */
+  overflow: hidden;
 }
 
-/* Debugging: Add a pseudo-element to check if container renders */
-.eco-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.1); /* Slight overlay to confirm container */
-  z-index: -1;
+.gt-lb-progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, #2ecc71, #27ae60);
+  border-radius: 10px;
+  transition: width 1s ease-in-out;
 }
 
-/* Ensure cards have a semi-transparent background for readability */
-.eco-card {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(5px); /* Add blur for better contrast */
+.gt-rank-bg-1 .gt-lb-progress-bar { background: #fbbf24; }
+
+/* UTILS */
+.gt-text-right { text-align: right; }
+.gt-lb-status-container { text-align: center; padding: 100px 0; color: #64748b; }
+.gt-lb-error-alert { padding: 20px; background: #fff1f2; color: #e11d48; border-radius: 12px; text-align: center; }
+
+.gt-lb-empty { text-align: center; padding: 60px 0; color: #94a3b8; }
+.gt-lb-empty img { height: 80px; opacity: 0.4; margin-bottom: 20px; }
+
+@keyframes gtFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Styling for form elements to match the eco theme */
-.eco-form-group .form-label {
-  color: #ffffff;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+@media (max-width: 768px) {
+  .gt-lb-header-premium { padding: 20px; }
+  .gt-lb-table-container { padding: 10px 20px; }
+  .gt-lb-stats-col { display: none; } /* Hide bars on mobile for space */
 }
 
-.eco-form-group .eco-input {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid #28a745;
+/* (Include all your previous Premium Leaderboard Styles here) */
+
+.gt-no-data-row {
+    background: rgba(241, 245, 249, 0.4) !important;
+}
+
+.gt-no-data-row td {
+    border-color: #f1f5f9 !important;
+}
+
+.gt-lb-user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.gt-lb-hint {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.medal-none {
+    color: #cbd5e1;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* Graying out avatars for inactive users */
+.gt-no-data-row .gt-lb-avatar-circle {
+    background: #f1f5f9;
+    color: #cbd5e1;
+    border: 1px dashed #cbd5e1;
+}
+
+@keyframes gtFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

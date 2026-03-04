@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Card, Button, Alert, Form } from "react-bootstrap";
+import { Spinner, Alert } from "react-bootstrap";
 import Leaderboard from "./Leaderboard";
+import "./Challenges.css";
+
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Challenges = () => {
   const [challenges, setChallenges] = useState([]);
-  const [message, setMessage] = useState("");
-  const [selectedChallenge, setSelectedChallenge] = useState(null);
-  const [challengeSelection, setChallengeSelection] = useState(""); // For dropdown
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState({ type: "", text: "" });
+  const [selectedChallengeId, setSelectedChallengeId] = useState(null);
 
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchChallenges = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/challenges/");
+        const response = await axios.get(`${apiBaseUrl}/api/challenges/`);
         setChallenges(response.data);
-        console.log("Fetched challenges:", response.data); // Debug log
+        // Automatically select the first challenge if available
+        if (response.data.length > 0) {
+          setSelectedChallengeId(response.data[0]._id);
+        }
       } catch (error) {
         console.error("Error fetching challenges:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchChallenges();
@@ -26,76 +34,96 @@ const Challenges = () => {
 
   const joinChallenge = async (challengeId) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/challenges/join", {
+      const response = await axios.post(`${apiBaseUrl}/api/challenges/join`, {
         userId,
         challengeId,
       });
-      setMessage(response.data.message);
+      setMessage({ type: "success", text: response.data.message });
+      setTimeout(() => setMessage({ type: "", text: "" }), 4000);
     } catch (error) {
-      console.error("Error joining challenge:", error);
-      setMessage("Failed to join challenge. Try again!");
+      const errorMsg = error.response?.data?.message || "Failed to join challenge.";
+      setMessage({ type: "danger", text: errorMsg });
     }
   };
 
-  const handleChallengeSelect = (e) => {
-    setChallengeSelection(e.target.value);
-    setSelectedChallenge(e.target.value || null); // Update selected challenge for leaderboard
-  };
+  if (loading) return (
+    <div className="gt-challenges-loader">
+      <Spinner animation="border" variant="success" />
+      <p>Loading Active Challenges...</p>
+    </div>
+  );
 
   return (
-    <Container className="mt-5 eco-container">
-      <h2 className="text-center mb-4">Community Challenges</h2>
+    <div className="gt-challenges-wrapper">
+      <div className="gt-challenges-header">
+        <span className="gt-badge">Community Spirit</span>
+        <h1>Eco <span className="gt-gradient-text">Challenges</span></h1>
+        <p>Compete with the community to achieve the lowest carbon footprint this week.</p>
+      </div>
 
-      {message && <Alert variant="info">{message}</Alert>}
+      <div className="gt-challenges-container">
+        {message.text && (
+          <Alert variant={message.type} className="gt-alert-float">
+            {message.text}
+          </Alert>
+        )}
 
-      <Form.Group controlId="challengeSelect" className="eco-form-group mb-4">
-        <Form.Label className="form-label">Challenges</Form.Label>
-        <Form.Control
-          as="select"
-          name="challenge"
-          value={challengeSelection}
-          onChange={handleChallengeSelect}
-          className="eco-input"
-        >
-          <option value="">Select a Challenge (Optional)</option>
-          {/* Static options for testing */}
-          <option value="test1">Test Challenge 1</option>
-          <option value="test2">Test Challenge 2</option>
-          {/* Dynamic options */}
-          {challenges.map((challenge) => (
-            <option key={challenge._id} value={challenge._id}>
-              {challenge.title}
-            </option>
-          ))}
-        </Form.Control>
-      </Form.Group>
+        {challenges.length > 0 ? (
+          <div className="gt-challenge-main-card">
+            <div className="gt-challenge-info">
+              <div className="gt-challenge-tag">Active Mission</div>
+              <h2>{challenges[0].title}</h2>
+              <p>{challenges[0].description}</p>
+              
+              <div className="gt-challenge-stats">
+                <div className="gt-stat">
+                  <span className="gt-stat-icon">🎯</span>
+                  <div>
+                    <label>Goal</label>
+                    <strong>{challenges[0].goal} kg CO₂</strong>
+                  </div>
+                </div>
+                <div className="gt-stat">
+                  <span className="gt-stat-icon">⏳</span>
+                  <div>
+                    <label>Duration</label>
+                    <strong>{challenges[0].duration} Days</strong>
+                  </div>
+                </div>
+              </div>
 
-      {challenges.length > 0 ? (
-        challenges.map((challenge) => (
-          <Card key={challenge._id} className="mb-4 eco-card">
-            <Card.Body>
-              <Card.Title>{challenge.title}</Card.Title>
-              <Card.Text>{challenge.description}</Card.Text>
-              <Card.Text><strong>Goal:</strong> Reduce {challenge.goal} kg CO₂</Card.Text>
-              <Card.Text><strong>Duration:</strong> {challenge.duration} days</Card.Text>
-              <Button variant="success" className="me-2" onClick={() => joinChallenge(challenge._id)}>
-                Join Challenge
-              </Button>
-              <Button
-                variant="info"
-                onClick={() => setSelectedChallenge(challenge._id)}
-              >
-                View Leaderboard
-              </Button>
-            </Card.Body>
-          </Card>
-        ))
-      ) : (
-        <p className="text-center">No challenges available.</p>
-      )}
+              <div className="gt-challenge-actions">
+                <button 
+                  className="gt-btn-join" 
+                  onClick={() => joinChallenge(challenges[0]._id)}
+                >
+                  Join Challenge
+                </button>
+              </div>
+            </div>
+            
+            <div className="gt-challenge-illustration">
+               {/* Professional Vector Visual */}
+               <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="100" cy="100" fill="#2ecc71" opacity="0.1" r="90" />
+                  <path d="M100 30L120 70H80L100 30Z" fill="#2ecc71" />
+                  <rect fill="#27ae60" height="60" width="10" x="95" y="70" />
+               </svg>
+            </div>
+          </div>
+        ) : (
+          <div className="gt-no-challenges">
+            <p>No active challenges at the moment. Stay tuned!</p>
+          </div>
+        )}
 
-      {selectedChallenge && <Leaderboard challengeId={selectedChallenge} />}
-    </Container>
+        {selectedChallengeId && (
+          <div className="gt-leaderboard-section">
+            <Leaderboard challengeId={selectedChallengeId} />
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

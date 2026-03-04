@@ -1,0 +1,229 @@
+/* GreenverseNavbar.css */
+.gv-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, rgba(27, 94, 32, 0.9) 0%, rgba(46, 125, 50, 0.8) 100%);
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(105, 240, 174, 0.2);
+  transition: all 0.3s ease;
+}
+
+.gv-navbar.scrolled {
+  background: rgba(27, 94, 32, 0.95);
+  padding: 0.7rem 2rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.gv-navbar-left .gv-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  animation: spinLogo 10s linear infinite;
+}
+
+@keyframes spinLogo {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.logo-text {
+  background: linear-gradient(135deg, #69f0ae 0%, #00bfa5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gv-navbar-center {
+  display: flex;
+  gap: 2rem;
+}
+
+.gv-navbar-center .gv-nav-link,
+.gv-navbar-right .gv-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.gv-navbar-center .gv-nav-link::before,
+.gv-navbar-right .gv-nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(105, 240, 174, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.gv-navbar-center .gv-nav-link:hover::before,
+.gv-navbar-right .gv-nav-link:hover::before {
+  left: 100%;
+}
+
+.gv-navbar-center .gv-nav-link:hover,
+.gv-navbar-right .gv-nav-link:hover {
+  color: #69f0ae;
+  background: rgba(105, 240, 174, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+}
+
+.gv-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gv-register-btn {
+  background: linear-gradient(135deg, #69f0ae 0%, #00c853 100%);
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 25px;
+  color: #1b5e20;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(105, 240, 174, 0.3);
+}
+
+.gv-register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(105, 240, 174, 0.4);
+}
+
+.gv-logout-btn {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.7rem 1.5rem;
+  border-radius: 25px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gv-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .gv-navbar {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .gv-navbar-center {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+  
+  .gv-navbar-center .gv-nav-link,
+  .gv-navbar-right .gv-nav-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .logo-text {
+    font-size: 1.4rem;
+  }
+}
+
+/* ========================================= */
+/* PROFILE CIRCLE STYLES                     */
+/* ========================================= */
+
+.gv-profile-circle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gv-profile-circle-container:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+.gv-profile-image {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #2ecc71;
+  background-color: #fff; /* Fills background in case of transparent pngs */
+}
+
+/* Mini loading spinner for the profile picture */
+.gv-profile-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(46, 204, 113, 0.3);
+  border-top-color: #2ecc71;
+  border-radius: 50%;
+  animation: gv-spin 1s linear infinite;
+}
+
+@keyframes gv-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Adjust mobile layout if necessary */
+@media (max-width: 768px) {
+  .gv-profile-circle-container {
+    margin-right: 10px;
+  }
+  .gv-profile-image, .gv-profile-spinner {
+    width: 36px;
+    height: 36px;
+  }
+}

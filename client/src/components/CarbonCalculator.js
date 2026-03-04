@@ -5,9 +5,11 @@ import TransportForm from './TransportForm';
 import HouseForm from './HouseForm';
 import LifestyleForm from './LifestyleForm';
 import ResultsPage from './ResultsPage';
-import { Button, Container, Card, Form } from 'react-bootstrap';
+import { Button, Container, Form } from 'react-bootstrap';
 import { FaCar, FaHome, FaLeaf, FaTrophy, FaCalculator, FaCalendarAlt } from 'react-icons/fa';
 import './CarbonCalculator.css';
+
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000'
 
 const CarbonCalculator = () => {
   const [fromDate, setFromDate] = useState('');
@@ -25,7 +27,7 @@ const CarbonCalculator = () => {
   useEffect(() => {
     const fetchChallenges = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/challenges/");
+        const response = await axios.get(`${apiBaseUrl}/api/challenges/`);
         setChallenges(response.data);
       } catch (error) {
         console.error("Error fetching challenges:", error);
@@ -40,6 +42,7 @@ const CarbonCalculator = () => {
     try {
       if (transportData.distance < 0 || houseData.electricityUsage < 0 || houseData.lpgUsage < 0) {
         alert("Values cannot be negative. Please enter valid inputs.");
+        setIsLoading(false);
         return;
       }
 
@@ -90,10 +93,10 @@ const CarbonCalculator = () => {
         userId
       };
 
-      await axios.post('http://localhost:5000/api/activities/save', activityData);
+      await axios.post(`${apiBaseUrl}/api/activities/save`, activityData);
 
       if (selectedChallenge) {
-        await axios.post("http://localhost:5000/api/challenges/update-progress", {
+        await axios.post(`${apiBaseUrl}/api/challenges/update-progress`, {
           userId,
           challengeId: selectedChallenge,
           progress: totalFootprint,
@@ -109,79 +112,79 @@ const CarbonCalculator = () => {
   };
 
   return (
-    <div className="carbon-calculator-page">
-      <div className="environmental-overlay"></div>
+    <div className="gt-calc-page-wrapper">
+      <div className="gt-calc-environmental-overlay"></div>
       
-      <Container className="carbon-calculator-container">
-        <div className="calculator-header">
-          <h1 className="calculator-title">
-            <FaCalculator className="title-icon" />
+      <Container className="gt-calc-container">
+        <div className="gt-calc-header">
+          <h1 className="gt-calc-title">
+            <FaCalculator className="gt-calc-title-icon" />
             Carbon Footprint Calculator
           </h1>
-          <p className="calculator-subtitle">Measure your environmental impact and discover ways to reduce it</p>
+          <p className="gt-calc-subtitle">Measure your environmental impact and discover ways to reduce it.</p>
         </div>
 
-        <div className="calculator-grid">
+        <div className="gt-calc-grid">
           {/* Date Selection */}
-          <Card className="calculator-card date-card">
-            <Card.Header className="card-header">
-              <FaCalendarAlt className="card-icon" />
+          <div className="gt-calc-card gt-border-accent-date">
+            <div className="gt-calc-card-header">
+              <FaCalendarAlt className="gt-calc-card-icon" />
               <h3>Date Range</h3>
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div className="gt-calc-card-body">
               <DatePicker 
                 fromDate={fromDate} 
                 toDate={toDate} 
                 onFromDateChange={setFromDate} 
                 onToDateChange={setToDate} 
               />
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Transportation */}
-          <Card className="calculator-card transport-card">
-            <Card.Header className="card-header">
-              <FaCar className="card-icon" />
+          <div className="gt-calc-card gt-border-accent-transport">
+            <div className="gt-calc-card-header">
+              <FaCar className="gt-calc-card-icon" />
               <h3>Transportation</h3>
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div className="gt-calc-card-body">
               <TransportForm transportData={transportData} setTransportData={setTransportData} />
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Household */}
-          <Card className="calculator-card household-card">
-            <Card.Header className="card-header">
-              <FaHome className="card-icon" />
+          <div className="gt-calc-card gt-border-accent-house">
+            <div className="gt-calc-card-header">
+              <FaHome className="gt-calc-card-icon" />
               <h3>Household</h3>
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div className="gt-calc-card-body">
               <HouseForm houseData={houseData} setHouseData={setHouseData} />
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Lifestyle */}
-          <Card className="calculator-card lifestyle-card">
-            <Card.Header className="card-header">
-              <FaLeaf className="card-icon" />
+          <div className="gt-calc-card gt-border-accent-lifestyle">
+            <div className="gt-calc-card-header">
+              <FaLeaf className="gt-calc-card-icon" />
               <h3>Lifestyle</h3>
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div className="gt-calc-card-body">
               <LifestyleForm lifestyleData={lifestyleData} setLifestyleData={setLifestyleData} />
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Challenges */}
-          <Card className="calculator-card challenges-card">
-            <Card.Header className="card-header">
-              <FaTrophy className="card-icon" />
+          <div className="gt-calc-card gt-border-accent-challenge">
+            <div className="gt-calc-card-header">
+              <FaTrophy className="gt-calc-card-icon" />
               <h3>Challenges</h3>
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div className="gt-calc-card-body">
               <Form.Select 
                 value={selectedChallenge} 
                 onChange={(e) => setSelectedChallenge(e.target.value)}
-                className="challenge-select"
+                className="gt-calc-challenge-select"
               >
                 <option value="">Select a Challenge (Optional)</option>
                 {challenges.map((challenge) => (
@@ -190,37 +193,36 @@ const CarbonCalculator = () => {
                   </option>
                 ))}
               </Form.Select>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Calculate Button */}
-          <div className="calculate-button-container">
-            <Button 
-              variant="primary" 
-              className="calculate-button"
+          <div className="gt-calc-button-container">
+            <button 
+              className="gt-calc-submit-btn"
               onClick={calculateCarbonFootprint}
               disabled={isLoading}
             >
               {isLoading ? (
-                <div className="leaf-spinner">
-                  <div className="leaf">🌱</div>
+                <div className="gt-calc-spinner">
+                  <div className="gt-calc-leaf">🌱</div>
                 </div>
               ) : (
                 'Calculate My Footprint'
               )}
-            </Button>
+            </button>
           </div>
 
           {/* Results */}
           {carbonFootprint !== null && (
-            <Card className="calculator-card results-card">
-              <Card.Header className="card-header">
+            <div className="gt-calc-card gt-calc-results-card gt-border-accent-results">
+              <div className="gt-calc-card-header">
                 <h3>Your Results</h3>
-              </Card.Header>
-              <Card.Body>
+              </div>
+              <div className="gt-calc-card-body">
                 <ResultsPage carbonFootprint={carbonFootprint} />
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       </Container>

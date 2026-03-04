@@ -1,9 +1,12 @@
+// src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiUser, FiMail, FiLock } from 'react-icons/fi';
 import './RegisterPage.css';
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +25,9 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
+      const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+await axios.post(`${apiBaseUrl}/api/auth/register`, formData);
+
       setMessage('Registration successful! Redirecting to login...');
       setError('');
       setTimeout(() => navigate('/login'), 2000);
@@ -46,7 +51,7 @@ const RegisterPage = () => {
         <div className="register-form-container">
           <div className="brand-container">
             <div className="brand-logo">🌿</div>
-            <h1 className="brand-text">GreenTrail</h1>
+            <h1 className="brand-text">GreenVerse</h1>
             <p className="brand-tagline">Begin Your Sustainable Journey</p>
           </div>
 

@@ -1,0 +1,65 @@
+.my-donations-page {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.my-donations-page h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: #f0f9f4;
+  border-left: 6px solid #2e7d32;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.summary-card h2 {
+  margin-bottom: 10px;
+}
+
+.donation-list {
+  display: grid;
+  gap: 20px;
+}
+
+.donation-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.donation-card:hover {
+  transform: translateY(-3px);
+}
+
+.donation-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: white;
+}
+
+.status.available {
+  background-color: #2e7d32;
+}
+
+.status.accepted {
+  background-color: #1565c0;
+}
+
+.status.expired {
+  background-color: #c62828;
+}

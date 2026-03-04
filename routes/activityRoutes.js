@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Activity = require('../models/activity'); // Import the Activity model
-const mongoose = require('mongoose'); // Import mongoose for ObjectId
+const Activity = require('../models/activity'); 
+const User = require('../models/user'); // 🟢 Required to update GreenCoins
+const mongoose = require('mongoose'); 
 
 // POST route to save activity data
 router.post('/save', async (req, res) => {
@@ -29,15 +30,24 @@ router.post('/save', async (req, res) => {
       userId: validUserId,
       fromDate,
       toDate,
-      transportation: transportData.distance || 0, // ✅ Allow 0 values
-      diet: lifestyleData.diet || "vegetarian", // ✅ Default value if empty
-      energy: houseData.electricityUsage || 0, // ✅ Allow 0 values
-      totalEmission: carbonFootprint || 0, // ✅ Allow 0 values
+      transportation: transportData.distance || 0,
+      diet: lifestyleData.diet || "vegetarian", 
+      energy: houseData.electricityUsage || 0, 
+      totalEmission: carbonFootprint || 0, 
     });
 
     console.log("Saving activity to database:", newActivity);
     await newActivity.save();
-    res.status(201).json({ message: 'Activity saved successfully!' });
+
+    // 🟢 Gamification: Reward 1 GreenCoin for tracking carbon footprint
+    try {
+      await User.findByIdAndUpdate(validUserId, { $inc: { greenCoins: 1 } });
+      console.log(`🎉 Awarded 1 GreenCoin to user ${userId} for tracking carbon footprint!`);
+    } catch (rewardError) {
+      console.error("Failed to award coin for logging activity:", rewardError);
+    }
+
+    res.status(201).json({ message: 'Activity saved successfully! You earned 1 GreenCoin.' });
   } catch (err) {
     console.error('Error saving activity:', err);
     res.status(500).json({ message: 'Error saving activity', error: err.message });

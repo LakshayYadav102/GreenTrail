@@ -1,0 +1,103 @@
+.household-donation-form-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2c1f, #1e3a2f);
+  color: white;
+  padding: 4rem 5% 6rem;
+}
+
+.household-donation-form-container h1 {
+  text-align: center;
+  font-size: 3.4rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #4ade80, #86efac);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.household-donation-form-container p {
+  text-align: center;
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-bottom: 3rem;
+}
+
+.household-donation-form {
+  max-width: 720px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 28px;
+  padding: 3.5rem;
+}
+
+label {
+  display: block;
+  margin: 1.8rem 0 0.7rem;
+  font-weight: 500;
+  font-size: 1.15rem;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 1.1rem 1.4rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 14px;
+  color: white;
+  font-size: 1.1rem;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.25);
+}
+
+.quantity-row {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.quantity-row input, .quantity-row select {
+  flex: 1;
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.submit-btn {
+  margin-top: 3rem;
+  width: 100%;
+  padding: 1.4rem;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  color: white;
+  border: none;
+  border-radius: 18px;
+  font-size: 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: scale(1.03);
+  box-shadow: 0 0 40px rgba(74, 222, 128, 0.6);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+  padding: 1.2rem;
+  border-radius: 14px;
+  margin-bottom: 2rem;
+  text-align: center;
+}

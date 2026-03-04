@@ -1,0 +1,44 @@
+.my-received-page {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.my-received-page h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: #e3f2fd;
+  border-left: 6px solid #1565c0;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.received-list {
+  display: grid;
+  gap: 20px;
+}
+
+.received-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.request-again-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.request-again-btn:hover {
+  background-color: #1b5e20;
+}

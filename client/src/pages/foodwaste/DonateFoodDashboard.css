@@ -1,0 +1,182 @@
+.donate-food-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2c1f 0%, #1e3a2f 100%);
+  color: white;
+  padding: 4rem 5%;
+  font-family: 'Inter', sans-serif;
+}
+
+.donate-header {
+  text-align: center;
+  padding: 3rem 0 4rem;
+}
+
+.donate-header h1 {
+  font-size: 3.8rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #4ade80, #86efac);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.donate-header p {
+  font-size: 1.4rem;
+  opacity: 0.9;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.donate-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* reduced min-width for better mobile fit */
+  gap: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.donate-option-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  transition: all 0.45s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+
+.donate-option-card:hover {
+  transform: translateY(-18px) scale(1.02);
+  box-shadow: 0 30px 70px rgba(74, 222, 128, 0.35);
+}
+
+/* ──────────────────────────────────────
+   Specific card variants
+─────────────────────────────────────── */
+
+.donate-option-card.household {
+  border-top: 6px solid #22c55e;           /* green */
+}
+
+.donate-option-card.event {
+  border-top: 6px solid #eab308;           /* yellow/gold for events */
+}
+
+.donate-option-card.status {
+  border-top: 6px solid #a78bfa;           /* purple/indigo for analytics */
+}
+
+.donate-option-card.ngo {
+  border-top: 6px solid #6366f1;           /* indigo for location/NGO */
+  background: rgba(99, 102, 241, 0.08);    /* subtle indigo tint */
+}
+
+/* ────────────────────────────────────── */
+
+.option-icon {
+  font-size: 6.5rem;
+  margin-bottom: 1.8rem;
+  line-height: 1;
+}
+
+.donate-option-card h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.donate-option-card p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 1.8rem;
+}
+
+.donate-option-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 2.5rem;
+  font-size: 1.1rem;
+}
+
+.donate-option-card ul li {
+  margin: 0.8rem 0;
+}
+
+.donate-btn {
+  padding: 1.2rem 3.5rem;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.35s;
+}
+
+.donate-option-card.ngo .donate-btn {
+  background: linear-gradient(90deg, #6366f1, #818cf8); /* indigo gradient for NGO card */
+}
+
+.donate-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 40px rgba(74, 222, 128, 0.6);
+}
+
+.donate-option-card.ngo .donate-btn:hover {
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); /* matching indigo glow */
+}
+
+.donate-info-note {
+  text-align: center;
+  margin-top: 6rem;
+  padding: 2rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+  font-size: 1.2rem;
+  opacity: 0.85;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ──────────────────────────────────────
+   Responsive adjustments
+─────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .donate-options {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  .donate-option-card {
+    padding: 3rem 2rem;
+  }
+
+  .option-icon {
+    font-size: 5.5rem;
+  }
+
+  .donate-option-card h2 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .donate-food-dashboard {
+    padding: 2rem 6%;
+  }
+
+  .donate-header h1 {
+    font-size: 2.8rem;
+  }
+
+  .donate-header p {
+    font-size: 1.2rem;
+  }
+
+  .donate-btn {
+    padding: 1rem 2.8rem;
+    font-size: 1.15rem;
+  }
+}

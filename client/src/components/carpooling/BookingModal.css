@@ -1,0 +1,67 @@
+.booking-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.booking-modal .modal-content {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.booking-modal h3 {
+  color: #2a7f62;
+  margin-bottom: 1rem;
+}
+
+.booking-modal input {
+  width: 60px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.booking-modal .modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.booking-modal button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.booking-modal button:first-child {
+  background-color: #2a7f62;
+  color: white;
+}
+
+.booking-modal button:first-child:hover {
+  background-color: #1e5b43;
+}
+
+.booking-modal button:last-child {
+  background-color: #ccc;
+}
+
+.booking-modal button:last-child:hover {
+  background-color: #aaa;
+}

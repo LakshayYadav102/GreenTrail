@@ -1,41 +1,72 @@
-.game-loading-screen {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #121212;
-    color: #fff;
-    text-align: center;
-    font-family: "Arial", sans-serif;
-  }
-  
-  h2 {
-    font-size: 28px;
-    color: #4caf50;
-    margin-bottom: 10px;
-  }
-  
-  p {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  
-  .game-spinner {
-    width: 60px;
-    height: 60px;
-    border: 6px solid rgba(255, 255, 255, 0.3);
-    border-top: 6px solid #4caf50;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
+.gt-loading-wrapper {
+  height: 100vh;
+  background: #050a0e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #00ff88;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+.gt-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  transform: perspective(500px) rotateX(60deg);
+  animation: gridMove 2s linear infinite;
+}
+
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to { background-position: 0 50px; }
+}
+
+.gt-loading-content {
+  z-index: 10;
+  text-align: center;
+  width: 400px;
+}
+
+.gt-logo-glitch {
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: 5px;
+  position: relative;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.gt-arcade-title {
+  font-size: 0.8rem;
+  letter-spacing: 10px;
+  color: #fff;
+  margin-bottom: 40px;
+  opacity: 0.7;
+}
+
+.gt-progress-container {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.gt-progress-bar {
+  height: 100%;
+  background: #00ff88;
+  border-radius: 10px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 15px #00ff88;
+}
+
+.gt-status-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #fff;
+  font-family: monospace;
+}

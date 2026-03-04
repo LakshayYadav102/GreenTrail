@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Howl } from "howler";
+import { useNavigate } from "react-router-dom";
 import "./EcoRunner.css";
 
 const sounds = {
-  collect: new Howl({ src: ["/sounds/collect.mp3"] }),
-  hit: new Howl({ src: ["/sounds/hit.mp3"] }),
+  collect: new Howl({ src: ["/sounds/collect.mp3"], html5: true }),
+  hit: new Howl({ src: ["/sounds/hit.mp3"], html5: true }),
   bgm: new Howl({
     src: ["/sounds/background.mp3"],
     loop: true,
     volume: 0.3,
+    html5: true
   }),
 };
 
@@ -19,6 +21,7 @@ const EcoRunner = () => {
   const [gameOver, setGameOver] = useState(false);
   const [particles, setParticles] = useState([]);
   const gameAreaRef = useRef(null);
+  const navigate = useNavigate();
 
   // Game constants
   const PLAYER_HEIGHT = 60;
@@ -31,11 +34,11 @@ const EcoRunner = () => {
 
   // Keyboard controls
   const moveLeft = useCallback(() => {
-    if (!gameOver) setPlayerPos((prev) => Math.max(0, prev - 3));
+    if (!gameOver) setPlayerPos((prev) => Math.max(0, prev - 5));
   }, [gameOver]);
 
   const moveRight = useCallback(() => {
-    if (!gameOver) setPlayerPos((prev) => Math.min(97, prev + 3));
+    if (!gameOver) setPlayerPos((prev) => Math.min(95, prev + 5));
   }, [gameOver]);
 
   useEffect(() => {
@@ -54,7 +57,7 @@ const EcoRunner = () => {
     
     const playerLeft = (gameRect.width * playerPos) / 100;
     const playerRight = playerLeft + PLAYER_HEIGHT;
-    const playerBottom = gameRect.height - 100;
+    const playerBottom = gameRect.height - 80;
     const playerTop = playerBottom - PLAYER_HEIGHT;
 
     const itemLeft = (gameRect.width * item.left) / 100;
@@ -91,7 +94,7 @@ const EcoRunner = () => {
           },
         ]);
       }
-    }, 1500);
+    }, 1200);
 
     return () => clearInterval(gameInterval);
   }, [gameOver]);
@@ -102,7 +105,7 @@ const EcoRunner = () => {
       if (!gameOver) {
         setItems((prev) => 
           prev.filter(item => item.top < 100)
-            .map(item => ({ ...item, top: item.top + 1 }))
+            .map(item => ({ ...item, top: item.top + 1.5 }))
         );
 
         items.forEach((item) => {
@@ -115,86 +118,101 @@ const EcoRunner = () => {
 
             if (item.type.score > 0) {
               sounds.collect.play();
-              createParticles(item.left, item.top, "#2ecc71");
+              createParticles(item.left, item.top, "#00ff88");
             } else {
               sounds.hit.play();
-              createParticles(item.left, item.top, "#e74c3c");
+              createParticles(item.left, item.top, "#ff0055");
             }
 
             setItems((prev) => prev.filter((i) => i.id !== item.id));
           }
         });
       }
-    }, 50);
+    }, 40);
 
     return () => clearInterval(gameLoop);
-  }, [items, gameOver]);
+  }, [items, gameOver, playerPos]);
 
-  // Particle effects
+  // Particle cleanup
+  useEffect(() => {
+    if (particles.length > 0) {
+      const timer = setTimeout(() => setParticles([]), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [particles]);
+
   const createParticles = (x, y, color) => {
-    const newParticles = Array.from({ length: 15 }, (_, i) => ({
+    const newParticles = Array.from({ length: 12 }, (_, i) => ({
       id: Date.now() + i,
       x,
       y,
       color,
-      tx: (Math.random() - 0.5) * 50,
-      ty: (Math.random() - 0.5) * 50,
+      tx: (Math.random() - 0.5) * 100,
+      ty: (Math.random() - 0.5) * 100,
     }));
     setParticles((prev) => [...prev, ...newParticles]);
   };
 
   return (
-    <div className="eco-runner">
-      <div className="score-board">
-        <div className="score-text">🌍 Carbon Score: {score}kg</div>
-        <div className="progress-container">
-          <div className="progress-bar">
+    <div className="gt-er-wrapper">
+      <div className="gt-er-hud">
+        <div className="gt-er-score-group">
+          <span className="gt-er-label">CARBON SYNC</span>
+          <div className="gt-er-score">{score}kg</div>
+        </div>
+        <div className="gt-er-life-container">
+          <span className="gt-er-label">ATMOSPHERE STATUS</span>
+          <div className="gt-er-life-bar">
             <div 
-              className="progress-fill" 
-              style={{ width: `${Math.min(score, 100)}%` }}
+              className="gt-er-life-fill" 
+              style={{ 
+                width: `${Math.min(score, 100)}%`,
+                backgroundColor: score < 40 ? "#ff0055" : "#00ff88"
+              }}
             ></div>
-          </div>
-          <div className="progress-label">
-            {score >= 100 ? "🌱 Sustainable!" : "⚠️ Keep Going!"}
           </div>
         </div>
       </div>
 
       {gameOver ? (
-        <div className="game-over">
-          <h2>Carbon Footprint Alert! ⚠️</h2>
-          <button onClick={() => window.location.reload()}>
-            Try Again
-          </button>
+        <div className="gt-er-overlay">
+          <div className="gt-er-modal">
+            <div className="gt-er-badge-alert">CRITICAL ERROR</div>
+            <h1>EMISSIONS OVERLOAD</h1>
+            <p>The local ecosystem has reached its saturation limit.</p>
+            <div className="gt-er-final-stats">FINAL SCORE: {score}kg</div>
+            <div className="gt-er-btn-group">
+                <button className="gt-er-btn primary" onClick={() => window.location.reload()}>REINITIATE</button>
+                <button className="gt-er-btn secondary" onClick={() => navigate("/games")}>EXIT HUB</button>
+            </div>
+          </div>
         </div>
       ) : (
-        <>
-          <div className="game-area" ref={gameAreaRef}>
-            <div className="ground"></div>
-            <div 
-              className="player"
-              style={{ left: `${playerPos}%` }}
-            >
-              🚶♂️
+        <div className="gt-er-game-container">
+          <div className="gt-er-world" ref={gameAreaRef}>
+            <div className="gt-er-sky-gradient"></div>
+            <div className="gt-er-grid-lines"></div>
+            <div className="gt-er-ground"></div>
+            
+            <div className="gt-er-player" style={{ left: `${playerPos}%` }}>
+              <div className="player-sprite">🚶‍♂️</div>
+              <div className="player-glow"></div>
             </div>
 
             {items.map((item) => (
               <div
                 key={item.id}
-                className={`game-item ${item.type.type}`}
-                style={{
-                  left: `${item.left}%`,
-                  top: `${item.top}%`,
-                }}
+                className={`gt-er-item ${item.type.type}`}
+                style={{ left: `${item.left}%`, top: `${item.top}%` }}
               >
-                {item.type.icon}
+                <span className="item-icon">{item.type.icon}</span>
               </div>
             ))}
 
             {particles.map((p) => (
               <div
                 key={p.id}
-                className="particle"
+                className="gt-er-particle"
                 style={{
                   left: `${p.x}%`,
                   top: `${p.y}%`,
@@ -206,15 +224,15 @@ const EcoRunner = () => {
             ))}
           </div>
 
-          <div className="controls">
-            <button className="control-btn" onMouseDown={moveLeft}>
-              ◀️ Left
+          <div className="gt-er-controls">
+            <button className="gt-er-ctrl-btn" onMouseDown={moveLeft} onTouchStart={moveLeft}>
+              <span className="ctrl-icon">◀</span> MOVE LEFT
             </button>
-            <button className="control-btn" onMouseDown={moveRight}>
-              Right ▶️
+            <button className="gt-er-ctrl-btn" onMouseDown={moveRight} onTouchStart={moveRight}>
+              MOVE RIGHT <span className="ctrl-icon">▶</span>
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

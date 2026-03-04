@@ -1,0 +1,91 @@
+/* FLOATING PILL BOTTOM NAVIGATION */
+.eco-bottom-nav {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 450px;
+  height: 65px;
+  background: rgba(15, 15, 25, 0.85) !important;
+  backdrop-filter: blur(20px);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px solid rgba(0, 255, 128, 0.4);
+  border-radius: 40px;
+  z-index: 1000;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 255, 128, 0.1);
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.eco-nav-btn {
+  background: transparent !important;
+  background-color: transparent !important; /* Aggressive block against Bootstrap */
+  border: none !important;
+  color: #888;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  gap: 4px;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  box-shadow: none !important;
+  outline: none !important;
+  height: auto !important;
+}
+
+.eco-nav-btn .eco-icon svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  transition: all 0.3s;
+}
+
+/* FIX: Ensure active state doesn't pull down Bootstrap's green block */
+.eco-nav-btn.eco-active {
+  color: #00ff80 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.eco-nav-btn.eco-active .eco-icon svg {
+  filter: drop-shadow(0 0 8px #00ff80);
+}
+
+.eco-nav-btn:hover:not(.eco-upload-btn) {
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.eco-upload-btn {
+  width: 55px !important;
+  height: 55px !important;
+  background: linear-gradient(135deg, #00ff80, #00cc66) !important;
+  background-color: transparent !important;
+  border-radius: 50% !important;
+  margin-top: -35px !important;
+  box-shadow: 0 5px 20px rgba(0, 255, 128, 0.5) !important;
+  color: #000 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 !important;
+}
+
+.eco-upload-btn .eco-icon svg {
+  width: 30px;
+  height: 30px;
+  stroke: #000;
+}
+
+.eco-upload-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 30px #00ff80 !important;
+}

@@ -1,0 +1,7 @@
+.leaflet-container {
+  height: 500px !important;
+  width: 100% !important;
+  min-height: 500px;
+  border: 1px solid #ccc; /* Debug border */
+  background: #f0f0f0; /* Light background */
+}

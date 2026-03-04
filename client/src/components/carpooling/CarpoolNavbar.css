@@ -1,0 +1,156 @@
+/* src/components/CarpoolNavbar.css (New File) */
+/* You can customize this CSS as needed. Here's a basic style similar to GreenverseNavbar */
+
+.cp-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height, 60px);
+  background: linear-gradient(135deg, #4fc3f7 0%, #4dd0e1 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.cp-navbar.scrolled {
+  background: rgba(79, 195, 247, 0.9);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cp-logo {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.cp-logo .logo-icon {
+  margin-right: 0.5rem;
+}
+
+.cp-navbar-center, .cp-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cp-nav-link {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.cp-nav-link:hover {
+  opacity: 0.8;
+}
+
+.cp-logout-btn, .cp-register-btn {
+  background: white;
+  color: #4fc3f7;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cp-logout-btn:hover, .cp-register-btn:hover {
+  transform: scale(1.05);
+}
+
+.cp-register-btn {
+  background: #4dd0e1;
+  color: white;
+}
+
+/* ========================================= */
+/* PROFILE CIRCLE STYLES                     */
+/* ========================================= */
+
+.cp-profile-circle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cp-profile-circle-container:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+.cp-profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #2ecc71;
+  background-color: #fff;
+}
+
+.cp-profile-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(46, 204, 113, 0.3);
+  border-top-color: #2ecc71;
+  border-radius: 50%;
+  animation: cp-spin 1s linear infinite;
+}
+
+@keyframes cp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================= */
+/* HOME BUTTON STYLES                        */
+/* ========================================= */
+
+.cp-home-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid #2ecc71;
+  color: #2ecc71;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cp-home-btn:hover {
+  background: #2ecc71;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Mobile Layout Adjustments */
+@media (max-width: 768px) {
+  .cp-profile-circle-container {
+    margin-right: 10px;
+  }
+  .cp-profile-image, .cp-profile-spinner {
+    width: 36px;
+    height: 36px;
+  }
+  .cp-home-btn {
+    padding: 6px 12px;
+  }
+}

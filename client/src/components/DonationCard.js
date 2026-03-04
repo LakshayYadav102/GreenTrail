@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Container, Card, Button, Form, Spinner, ListGroup, Row, Col, Alert, ProgressBar } from 'react-bootstrap';
+import { Row, Col, Form, Spinner, Alert } from 'react-bootstrap';
 import { QRCodeCanvas } from 'qrcode.react';
 import './DonationCard.css';
 import MapWithNGOs from './MapWithNGOs';
 
 // Conditional imports for optional dependencies
-let motion, AnimatePresence, FontAwesomeIcon, faLeaf, faTree, faMapMarkerAlt, faDonate, faHistory, faTimes;
+let motion, AnimatePresence, FontAwesomeIcon, faLeaf, faTree, faMapMarkerAlt, faDonate, faHistory, faTimes, faCalculator;
 
 try {
   motion = require('framer-motion').motion;
@@ -18,11 +18,13 @@ try {
 }
 try {
   FontAwesomeIcon = require('@fortawesome/react-fontawesome').FontAwesomeIcon;
-  ({ faLeaf, faTree, faMapMarkerAlt, faDonate, faHistory, faTimes } = require('@fortawesome/free-solid-svg-icons'));
+  ({ faLeaf, faTree, faMapMarkerAlt, faDonate, faHistory, faTimes, faCalculator } = require('@fortawesome/free-solid-svg-icons'));
 } catch (e) {
   console.warn('Font Awesome not installed. Icons disabled.');
   FontAwesomeIcon = ({ icon, ...props }) => <span {...props}>{icon?.iconName || ''}</span>;
 }
+
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const DonationCard = () => {
   const [lifetimeCarbon, setLifetimeCarbon] = useState(0);
@@ -48,12 +50,13 @@ const DonationCard = () => {
     const fetchData = async () => {
       try {
         const [carbonRes, treesRes, historyRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/donations/lifetime-carbon/${userId}`),
-          axios.get(`http://localhost:5000/api/donations/trees-needed/${userId}`),
-          axios.get(`http://localhost:5000/api/donations/history/${userId}`)
+          axios.get(`${apiBaseUrl}/api/donations/lifetime-carbon/${userId}`),
+          axios.get(`${apiBaseUrl}/api/donations/trees-needed/${userId}`),
+          axios.get(`${apiBaseUrl}/api/donations/history/${userId}`)
         ]);
 
-        setLifetimeCarbon(carbonRes.data.lifetimeCarbon || 0);
+        // Fixes the ugly 749.22499999 issue by rounding to 2 decimal places
+        setLifetimeCarbon(carbonRes.data.lifetimeCarbon ? parseFloat(carbonRes.data.lifetimeCarbon).toFixed(2) : 0);
         setTreesNeeded(treesRes.data.treesNeeded || 0);
 
         const donations = Array.isArray(historyRes.data.donations) ? historyRes.data.donations : [];
@@ -79,7 +82,7 @@ const DonationCard = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/donations/submit-transaction', {
+      const response = await axios.post(`${apiBaseUrl}/api/donations/submit-transaction`, {
         userId,
         amount: parseFloat(amount),
         transactionId
@@ -88,7 +91,7 @@ const DonationCard = () => {
       setAmount('');
       setTransactionId('');
 
-      const historyRes = await axios.get(`http://localhost:5000/api/donations/history/${userId}`);
+      const historyRes = await axios.get(`${apiBaseUrl}/api/donations/history/${userId}`);
       const donations = Array.isArray(historyRes.data.donations) ? historyRes.data.donations : [];
       setDonationHistory(donations);
       const calculatedTrees = donations.reduce((sum, d) => sum + (d.treesSponsored || 0), 0);
@@ -103,71 +106,83 @@ const DonationCard = () => {
 
   if (loading) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center my-5">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Loading your eco journey...</p>
-      </motion.div>
+      <div className="gt-don-loader-wrapper">
+        <Spinner animation="border" variant="success" className="gt-don-spinner" />
+        <p>Loading your eco journey...</p>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <div className="gt-don-loader-wrapper">
         <Alert variant="danger" className="text-center">{error}</Alert>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <div className="donation-container">
-      <Container fluid className="position-relative">
+    <div className="gt-don-page-wrapper">
+      <div className="gt-don-bg-overlay"></div>
+      
+      {/* SWAPPED Bootstrap Container with raw DIV to enforce CSS Max-Width perfectly */}
+      <div className="gt-don-container">
+        
+        <div className="gt-don-header">
+            <span className="gt-don-badge">Restoration Hub</span>
+            <h1 className="gt-don-title">CARBON <span className="gt-don-highlight">OFFSET</span></h1>
+            <p className="gt-don-subtitle">Neutralize your footprint by planting trees where they are needed most.</p>
+        </div>
+
         <Row>
-          <Col md={3} className="sidebar">
+          {/* SIDEBAR */}
+          <Col lg={3} md={4}>
             <motion.div
-              initial={{ x: -100, opacity: 0 }}
+              initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="sidebar-content"
+              className="gt-don-sidebar"
             >
-              <h4 className="sidebar-title">
-                <FontAwesomeIcon icon={faLeaf} /> Eco Dashboard
+              <h4 className="gt-don-sidebar-title">
+                <FontAwesomeIcon icon={faLeaf} /> Navigation
               </h4>
-              <Button
-                variant={activeSection === 'overview' ? 'success' : 'outline-success'}
-                className="w-100 mb-2"
+              
+              <button
+                className={`gt-don-nav-btn ${activeSection === 'overview' ? 'active' : ''}`}
                 onClick={() => setActiveSection('overview')}
               >
-                <FontAwesomeIcon icon={faLeaf} /> Overview
-              </Button>
-              <Button
-                variant={activeSection === 'donate' ? 'success' : 'outline-success'}
-                className="w-100 mb-2"
+                <FontAwesomeIcon icon={faLeaf} className="me-2"/> Overview
+              </button>
+              
+              <button
+                className={`gt-don-nav-btn ${activeSection === 'donate' ? 'active' : ''}`}
                 onClick={() => {
                   setActiveSection('donate');
                   setShowDonationPanel(true);
                 }}
               >
-                <FontAwesomeIcon icon={faDonate} /> Donate
-              </Button>
-              <Button
-                variant={activeSection === 'history' ? 'success' : 'outline-success'}
-                className="w-100 mb-2"
+                <FontAwesomeIcon icon={faDonate} className="me-2"/> Donate
+              </button>
+              
+              <button
+                className={`gt-don-nav-btn ${activeSection === 'history' ? 'active' : ''}`}
                 onClick={() => setActiveSection('history')}
               >
-                <FontAwesomeIcon icon={faHistory} /> History
-              </Button>
-              <Button
-                variant={activeSection === 'map' ? 'success' : 'outline-success'}
-                className="w-100 mb-2"
+                <FontAwesomeIcon icon={faHistory} className="me-2"/> History
+              </button>
+              
+              <button
+                className={`gt-don-nav-btn ${activeSection === 'map' ? 'active' : ''}`}
                 onClick={() => setActiveSection('map')}
               >
-                <FontAwesomeIcon icon={faMapMarkerAlt} /> NGO Map
-              </Button>
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2"/> NGO Map
+              </button>
             </motion.div>
           </Col>
 
-          <Col md={9} className="main-content">
-            <AnimatePresence>
+          {/* MAIN CONTENT AREA */}
+          <Col lg={9} md={8}>
+            <AnimatePresence mode="wait">
               {activeSection === 'overview' && (
                 <motion.div
                   key="overview"
@@ -176,32 +191,53 @@ const DonationCard = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="eco-card text-center mb-4">
-                    <Card.Body>
-                      <Card.Title>
-                        <FontAwesomeIcon icon={faLeaf} /> Offset Your Carbon Footprint
-                      </Card.Title>
-                      <Card.Text>
-                        <strong>Lifetime Carbon Footprint:</strong> {lifetimeCarbon} kg CO₂<br />
-                        <strong>Trees Needed to Offset:</strong> {treesNeeded}
-                      </Card.Text>
-                      <ProgressBar
-                        now={treesNeeded > 0 ? (treesPlanted / treesNeeded) * 100 : 0}
-                        label={`${treesNeeded > 0 ? Math.round((treesPlanted / treesNeeded) * 100) : 0}% Offset`}
-                        variant="success"
-                        className="mb-3"
-                      />
-                      <Button
-                        variant="success"
-                        onClick={() => {
-                          setShowDonationPanel(true);
-                          setActiveSection('donate');
-                        }}
-                      >
-                        Make a Donation
-                      </Button>
-                    </Card.Body>
-                  </Card>
+                  <div className="gt-don-card mb-4">
+                    <div className="gt-don-card-body">
+                      <h3 className="gt-don-card-title">
+                        <FontAwesomeIcon icon={faLeaf} /> Your Offset Progress
+                      </h3>
+                      
+                      <div className="gt-don-stats-grid">
+                        <div className="gt-don-stat-box">
+                          <span className="gt-don-stat-label">Lifetime Footprint</span>
+                          <span className="gt-don-stat-value text-danger">{lifetimeCarbon} <small>kg CO₂</small></span>
+                        </div>
+                        <div className="gt-don-stat-box">
+                          <span className="gt-don-stat-label">Trees Required</span>
+                          <span className="gt-don-stat-value text-warning">{treesNeeded} <small>Trees</small></span>
+                        </div>
+                        <div className="gt-don-stat-box">
+                          <span className="gt-don-stat-label">Trees Sponsored</span>
+                          <span className="gt-don-stat-value text-success">{treesPlanted} <small>Trees</small></span>
+                        </div>
+                      </div>
+
+                      <div className="gt-don-progress-section">
+                        <div className="gt-don-progress-label">
+                           <span>Restoration Goal</span>
+                           <span>{treesNeeded > 0 ? Math.round((treesPlanted / treesNeeded) * 100) : 0}% Offset</span>
+                        </div>
+                        <div className="gt-don-progress-track">
+                            <div 
+                                className="gt-don-progress-fill" 
+                                style={{ width: `${treesNeeded > 0 ? Math.min((treesPlanted / treesNeeded) * 100, 100) : 0}%` }}
+                            ></div>
+                        </div>
+                      </div>
+
+                      <div className="text-center mt-5">
+                          <button
+                            className="gt-don-action-btn primary"
+                            onClick={() => {
+                              setShowDonationPanel(true);
+                              setActiveSection('donate');
+                            }}
+                          >
+                            FUND RESTORATION
+                          </button>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 
@@ -213,79 +249,83 @@ const DonationCard = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="eco-card mb-4">
-                    <Card.Body>
-                      <h5>
-                        <FontAwesomeIcon icon={faDonate} /> Donate to Offset
-                        <Button
-                          variant="link"
-                          className="float-end"
-                          onClick={() => setShowDonationPanel(false)}
-                        >
-                          <FontAwesomeIcon icon={faTimes} />
-                        </Button>
-                      </h5>
-                      <Form.Group controlId="donationAmount">
-                        <Form.Label>Donation Amount (₹)</Form.Label>
+                  <div className="gt-don-card mb-4">
+                    <div className="gt-don-card-body">
+                      <div className="d-flex justify-content-between align-items-center mb-4">
+                          <h3 className="gt-don-card-title m-0">
+                            <FontAwesomeIcon icon={faDonate} className="me-2"/> Plant a Tree
+                          </h3>
+                          <button
+                            className="gt-don-close-btn"
+                            onClick={() => setActiveSection('overview')}
+                          >
+                            <FontAwesomeIcon icon={faTimes} />
+                          </button>
+                      </div>
+
+                      <Form.Group controlId="donationAmount" className="gt-don-form-group">
+                        <Form.Label className="gt-don-label">Donation Amount (₹)</Form.Label>
                         <Form.Control
                           type="number"
-                          placeholder="Enter amount (minimum ₹100)"
+                          placeholder="Enter amount (Minimum ₹100)"
                           value={amount}
                           onChange={(e) => setAmount(e.target.value)}
                           min="100"
-                          className="mb-3"
+                          className="gt-don-input"
                         />
                       </Form.Group>
+
                       {amount && parseFloat(amount) >= 100 && (
-                        <div className="text-center mb-3">
-                          <h6>Scan to Pay</h6>
-                          <QRCodeCanvas
-                            value={`upi://pay?pa=lakshay9718@okhdfcbank&pn=Lakshay&am=${amount}&cu=INR`}
-                            size={200}
-                          />
-                          <p className="mt-2">UPI ID: lakshay9718@okhdfcbank</p>
+                        <div className="gt-don-qr-section">
+                          <h6>Scan to Fund</h6>
+                          <div className="gt-don-qr-box">
+                              <QRCodeCanvas
+                                value={`upi://pay?pa=lakshay9718@okhdfcbank&pn=Lakshay&am=${amount}&cu=INR`}
+                                size={180}
+                              />
+                          </div>
+                          <p className="gt-don-upi-text">UPI: lakshay9718@okhdfcbank</p>
                         </div>
                       )}
-                      <Form.Group controlId="transactionId">
-                        <Form.Label>Transaction ID</Form.Label>
+
+                      <Form.Group controlId="transactionId" className="gt-don-form-group">
+                        <Form.Label className="gt-don-label">Transaction ID / UTR</Form.Label>
                         <Form.Control
                           type="text"
-                          placeholder="Enter transaction ID"
+                          placeholder="Enter 12-digit transaction ID"
                           value={transactionId}
                           onChange={(e) => setTransactionId(e.target.value)}
-                          className="mb-3"
+                          className="gt-don-input"
                         />
                       </Form.Group>
-                      <p className="impact-calculator">
-                        Your ₹{amount || 0} donation will plant approximately{' '}
-                        <strong>{calculateTreesFromAmount()}</strong> trees!
-                      </p>
-                      <Button
-                        variant="primary"
+
+                      <div className="gt-don-impact-preview">
+                        <span className="gt-don-impact-icon">🌱</span>
+                        Your ₹{amount || 0} will sponsor approximately <strong>{calculateTreesFromAmount()}</strong> trees.
+                      </div>
+
+                      <button
+                        className="gt-don-action-btn primary w-100 mt-3"
                         onClick={handleSubmitTransaction}
                         disabled={!amount || parseFloat(amount) < 100 || !transactionId}
                       >
-                        Submit Transaction
-                      </Button>
-                      {message && <p className="mt-3 text-info">{message}</p>}
-                    </Card.Body>
-                  </Card>
+                        VERIFY TRANSACTION
+                      </button>
+                      
+                      {message && <div className="gt-don-alert mt-3">{message}</div>}
+                    </div>
+                  </div>
 
-                  <Card className="eco-card mb-4">
-                    <Card.Body>
-                      <h5><FontAwesomeIcon icon={faDonate} /> Why Donate?</h5>
-                      <div>
-                        <p>
-                          Your donations fund initiatives to combat climate change and promote sustainability:
-                        </p>
-                        <ul>
-                          <li><strong>Tree Planting (70%):</strong> Funds planting in deforested areas and urban spaces.</li>
-                          <li><strong>Reforestation (20%):</strong> Restores ecosystems with verified NGOs.</li>
-                          <li><strong>Operational Costs (10%):</strong> Ensures transparency and monitoring.</li>
-                        </ul>
-                      </div>
-                    </Card.Body>
-                  </Card>
+                  <div className="gt-don-card mb-4 secondary">
+                    <div className="gt-don-card-body">
+                      <h4 className="gt-don-card-title mb-3">Where does your money go?</h4>
+                      <ul className="gt-don-info-list">
+                        <li><span className="bullet"></span><strong>70% Tree Planting:</strong> Direct funding for saplings and local farmers.</li>
+                        <li><span className="bullet"></span><strong>20% Maintenance:</strong> Watering and care for the first 3 crucial years.</li>
+                        <li><span className="bullet"></span><strong>10% Operations:</strong> Monitoring, tech infrastructure, and transparency reporting.</li>
+                      </ul>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 
@@ -297,23 +337,35 @@ const DonationCard = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="eco-card mb-4">
-                    <Card.Body>
-                      <h5><FontAwesomeIcon icon={faHistory} /> Your Donation History</h5>
+                  <div className="gt-don-card mb-4">
+                    <div className="gt-don-card-body">
+                      <h3 className="gt-don-card-title mb-4">
+                        <FontAwesomeIcon icon={faHistory} className="me-2"/> Transaction History
+                      </h3>
+                      
                       {donationHistory.length > 0 ? (
-                        <ListGroup>
+                        <div className="gt-don-history-list">
                           {donationHistory.map((donation, index) => (
-                            <ListGroup.Item key={index} className="history-item">
-                              <FontAwesomeIcon icon={faDonate} className="me-2" />
-                              ₹{donation.amount} on {new Date(donation.date).toLocaleDateString()} (Transaction ID: {donation.transactionId || 'N/A'})
-                            </ListGroup.Item>
+                            <div key={index} className="gt-don-history-item">
+                               <div className="gt-don-history-icon"><FontAwesomeIcon icon={faTree} /></div>
+                               <div className="gt-don-history-details">
+                                  <strong>Sponsored {donation.treesSponsored || Math.floor(donation.amount/100)} Trees</strong>
+                                  <span>₹{donation.amount} • {new Date(donation.date).toLocaleDateString()}</span>
+                               </div>
+                               <div className="gt-don-history-txn">
+                                  Txn: {donation.transactionId || 'N/A'}
+                               </div>
+                            </div>
                           ))}
-                        </ListGroup>
+                        </div>
                       ) : (
-                        <p>No donations yet. Start your eco journey today!</p>
+                        <div className="gt-don-empty-state">
+                           <div className="empty-icon">🍃</div>
+                           <p>No records found. Start your restoration journey today.</p>
+                        </div>
                       )}
-                    </Card.Body>
-                  </Card>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 
@@ -325,46 +377,40 @@ const DonationCard = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="eco-card mb-4">
-                    <Card.Body>
-                      <h5><FontAwesomeIcon icon={faMapMarkerAlt} /> Explore Our NGO Partners</h5>
-                      <div>
-                        <p>
-                          The map showcases our network of NGOs dedicated to tree planting and reforestation. Click markers to learn about each project.
-                        </p>
-                        <ul>
-                          <li><strong>NGO Locations:</strong> Global and local partners.</li>
-                          <li><strong>Project Sites:</strong> Active planting areas.</li>
-                          <li><strong>Impact Areas:</strong> Regions benefiting from your donations.</li>
-                        </ul>
+                  <div className="gt-don-card mb-4">
+                    <div className="gt-don-card-body">
+                      <h3 className="gt-don-card-title mb-3">
+                        <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2"/> Global NGO Network
+                      </h3>
+                      <p className="gt-don-text mb-4">
+                        Discover where our verified partners are actively restoring ecosystems.
+                      </p>
+                      <div className="gt-don-map-wrapper">
+                        <MapWithNGOs />
                       </div>
-                    </Card.Body>
-                  </Card>
-                  <Card className="eco-card">
-                    <Card.Body>
-                      <MapWithNGOs />
-                    </Card.Body>
-                  </Card>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <Card className="eco-card mb-4">
-              <Card.Body>
-                <h5><FontAwesomeIcon icon={faTree} /> How We Calculate Trees Needed</h5>
-                <div>
-                  <p>
-                    Your <strong>Lifetime Carbon Footprint</strong> ({lifetimeCarbon} kg CO₂) is based on your tracked activities.
-                  </p>
-                  <p>
-                    We estimate trees needed using: Trees = Carbon Footprint ÷ 21 kg CO₂/tree. For you: {lifetimeCarbon} kg ÷ 21 ≈ {treesNeeded} trees.
-                  </p>
-                </div>
-              </Card.Body>
-            </Card>
+            {/* Informational Footer Card */}
+            <div className="gt-don-card secondary mb-4 mt-4">
+              <div className="gt-don-card-body">
+                <h4 className="gt-don-card-title mb-3">
+                    <FontAwesomeIcon icon={faCalculator} className="me-2"/> The Math Behind The Offset
+                </h4>
+                <p className="gt-don-text mb-2">
+                  Your <strong>Lifetime Carbon Footprint</strong> is currently calculated at <strong className="text-danger">{lifetimeCarbon} kg CO₂</strong>.
+                </p>
+                <p className="gt-don-text m-0">
+                  On average, a mature tree absorbs roughly <strong>21 kg of CO₂ per year</strong>. We calculate your required offset by dividing your total footprint by this absorption rate.
+                </p>
+              </div>
+            </div>
           </Col>
         </Row>
-      </Container>
+      </div>
     </div>
   );
 };

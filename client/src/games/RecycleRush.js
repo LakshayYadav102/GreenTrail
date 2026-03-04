@@ -1,15 +1,25 @@
 import React, { useState } from "react";
 import "./RecycleRush.css";
 
+// Assuming your assets are in the correct path
+import plasticBottle from '../assets/plastic-bottle.png';
+import bananaPeel from '../assets/banana-peel.png';
+import glassBottle from '../assets/glass-bottle.png';
+import tinCan from '../assets/tin-can.png';
+import newspaper from '../assets/newspaper.png';
+import foodWaste from '../assets/food-waste.png';
+import plasticBag from '../assets/plastic-bag.png';
+import styrofoamCup from '../assets/styrofoam-cup.png';
+
 const trashItems = [
-  { id: 1, name: "Plastic Bottle", type: "recycle", img: "/images/plastic-bottle.png" },
-  { id: 2, name: "Banana Peel", type: "compost", img: "/images/banana-peel.png" },
-  { id: 3, name: "Glass Bottle", type: "recycle", img: "/images/glass-bottle.png" },
-  { id: 4, name: "Tin Can", type: "recycle", img: "/images/tin-can.png" },
-  { id: 5, name: "Newspaper", type: "recycle", img: "/images/newspaper.png" },
-  { id: 6, name: "Food Waste", type: "compost", img: "/images/food-waste.png" },
-  { id: 7, name: "Plastic Bag", type: "waste", img: "/images/plastic-bag.png" },
-  { id: 8, name: "Styrofoam Cup", type: "waste", img: "/images/styrofoam-cup.png" }
+  { id: 1, name: "Plastic Bottle", type: "recycle", img: plasticBottle },
+  { id: 2, name: "Banana Peel", type: "compost", img: bananaPeel },
+  { id: 3, name: "Glass Bottle", type: "recycle", img: glassBottle },
+  { id: 4, name: "Tin Can", type: "recycle", img: tinCan },
+  { id: 5, name: "Newspaper", type: "recycle", img: newspaper },
+  { id: 6, name: "Food Waste", type: "compost", img: foodWaste },
+  { id: 7, name: "Plastic Bag", type: "waste", img: plasticBag },
+  { id: 8, name: "Styrofoam Cup", type: "waste", img: styrofoamCup }
 ];
 
 const RecycleRush = () => {
@@ -28,73 +38,75 @@ const RecycleRush = () => {
     if (!draggedItem) return;
 
     if (draggedItem.type === binType) {
-      setScore(score + 10);
+      setScore(score + 15);
     } else {
       setAttempts(attempts + 1);
+      if (attempts + 1 >= maxAttempts) setGameOver(true);
     }
-
-    // Check if game over
-    if (attempts + 1 >= maxAttempts) {
-      setGameOver(true);
-    }
-
     setDraggedItem(null);
   };
 
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const restartGame = () => {
-    setScore(0);
-    setAttempts(0);
-    setGameOver(false);
-  };
-
   return (
-    <div className="recycle-rush">
-      <h2>♻️ Recycle Rush - Sort the Waste!</h2>
-      <p>Drag and drop the items into the correct bins.</p>
+    <div className="gt-rr-wrapper">
+      <div className="gt-rr-header">
+        <div className="gt-rr-badge">FACILITY ID: #ECO-99</div>
+        <h1>RECYCLE <span className="gt-rr-highlight">RUSH</span></h1>
+      </div>
 
-      <div className="game-container">
-        {/* Trash Items */}
-        <div className="trash-container">
-          {trashItems.map((item) => (
-            <img
-              key={item.id}
-              src={item.img}
-              alt={item.name}
-              draggable
-              onDragStart={(event) => handleDragStart(event, item)}
-              className="trash-item"
-            />
-          ))}
+      <div className="gt-rr-stats-bar">
+        <div className="gt-rr-stat">
+          <label>EFFICIENCY</label>
+          <div className="gt-rr-value">{score}</div>
         </div>
-
-        {/* Bins */}
-        <div className="bins">
-          <div className="bin recycle" onDragOver={handleDragOver} onDrop={(event) => handleDrop(event, "recycle")}>
-            ♻️ Recyclable
-          </div>
-          <div className="bin compost" onDragOver={handleDragOver} onDrop={(event) => handleDrop(event, "compost")}>
-            🌱 Compost
-          </div>
-          <div className="bin waste" onDragOver={handleDragOver} onDrop={(event) => handleDrop(event, "waste")}>
-            🗑️ Waste
+        <div className="gt-rr-stat">
+          <label>INTEGRITY</label>
+          <div className="gt-rr-attempts">
+            {[...Array(maxAttempts)].map((_, i) => (
+              <div key={i} className={`gt-rr-heart ${i < maxAttempts - attempts ? 'active' : ''}`}></div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="scoreboard">
-        <p>Score: {score}</p>
-        <p>Attempts Left: {maxAttempts - attempts}</p>
+      <div className="gt-rr-conveyor">
+        <div className="gt-rr-item-belt">
+          {trashItems.map((item) => (
+            <div 
+              key={item.id} 
+              className="gt-rr-item-box"
+              onDragStart={(e) => handleDragStart(e, item)}
+              draggable
+            >
+              <img src={item.img} alt={item.name} />
+              <span className="gt-rr-item-label">{item.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="gt-rr-bins">
+        <div className="gt-rr-bin recycle" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, "recycle")}>
+          <div className="bin-icon">♻️</div>
+          <div className="bin-label">RECYCLABLES</div>
+        </div>
+        <div className="gt-rr-bin compost" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, "compost")}>
+          <div className="bin-icon">🌱</div>
+          <div className="bin-label">COMPOST</div>
+        </div>
+        <div className="gt-rr-bin waste" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, "waste")}>
+          <div className="bin-icon">🗑️</div>
+          <div className="bin-label">GENERAL WASTE</div>
+        </div>
       </div>
 
       {gameOver && (
-        <div className="game-over">
-          <h3>Game Over!</h3>
-          <p>Your Final Score: {score}</p>
-          <button onClick={restartGame}>Play Again</button>
+        <div className="gt-rr-overlay">
+          <div className="gt-rr-modal">
+            <h2>FACILITY SHUTDOWN</h2>
+            <p>Critical sorting errors detected.</p>
+            <div className="gt-rr-final-score">SCORE: {score}</div>
+            <button onClick={() => window.location.reload()} className="gt-rr-btn">REBOOT SYSTEM</button>
+          </div>
         </div>
       )}
     </div>

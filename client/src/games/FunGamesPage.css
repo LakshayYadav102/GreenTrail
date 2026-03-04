@@ -1,36 +1,101 @@
-.games-page {
-    text-align: center;
-    padding: 20px;
-    background-color: #e3f2d4;
-    min-height: 100vh;
-  }
-  
-  h2 {
-    color: #2c6e49;
-  }
-  
-  .games-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .game-card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  
-  .game-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .game-card h3 {
-    color: #2c6e49;
-  }
-  
+.gt-hub-wrapper {
+  min-height: 100vh;
+  background: #0a0f14;
+  padding: 80px 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.gt-hub-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gt-hub-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.gt-hub-badge {
+  display: inline-block;
+  background: #00ff88;
+  color: #000;
+  padding: 4px 12px;
+  font-weight: 900;
+  font-size: 0.7rem;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.gt-hub-header h1 {
+  color: #fff;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.gt-highlight { color: #00ff88; }
+
+.gt-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.gt-game-card-premium {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.gt-card-inner {
+  padding: 40px 30px;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.gt-game-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 10px var(--game-color));
+}
+
+.gt-game-card-premium h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.gt-game-card-premium p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  margin-bottom: 25px;
+}
+
+.gt-play-btn {
+  background: transparent;
+  border: 1px solid var(--game-color);
+  color: var(--game-color);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: all 0.3s;
+}
+
+.gt-game-card-premium:hover {
+  transform: translateY(-10px);
+  border-color: var(--game-color);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.gt-game-card-premium:hover .gt-play-btn {
+  background: var(--game-color);
+  color: #000;
+}
+
+.gt-game-card-premium.disabled { opacity: 0.4; cursor: not-allowed; }

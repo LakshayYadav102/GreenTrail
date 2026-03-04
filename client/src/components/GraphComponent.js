@@ -6,6 +6,8 @@ import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, L
 // Register necessary chart components
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement);
 
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const GraphComponent = ({ userId }) => {
   const [graphData, setGraphData] = useState({
     labels: [],
@@ -17,7 +19,7 @@ const GraphComponent = ({ userId }) => {
   useEffect(() => {
     const fetchGraphData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/activities/footprint/${userId}`);
+        const response = await axios.get(`${apiBaseUrl}/api/activities/footprint/${userId}`);
         const { labels, values } = response.data;
         setGraphData({ labels, values });
         setLoading(false);

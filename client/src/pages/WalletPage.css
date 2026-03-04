@@ -1,0 +1,118 @@
+.wallet-container {
+  padding: 40px 20px;
+  max-width: 1000px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.wallet-hero {
+  text-align: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  padding: 50px 20px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.wallet-hero h1 {
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.coin-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 15px 40px;
+  border-radius: 50px;
+  display: inline-flex;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
+}
+
+.coin-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+}
+
+.coin-balance {
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffeb3b;
+}
+
+.breakdown-title {
+  text-align: center;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.wallet-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.wallet-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.wallet-card.greentrail { border-top: 5px solid #4caf50; background: #f1f8e9; }
+.wallet-card.carpool { border-top: 5px solid #2196f3; background: #e3f2fd; }
+.wallet-card.foodwaste { border-top: 5px solid #ff9800; background: #fffde7; }
+.wallet-card.ecolearn { border-top: 5px solid #9c27b0; background: #f3e5f5; }
+
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 15px;
+}
+
+.card-header-flex h4 {
+  margin: 0;
+  font-weight: 700;
+  color: #333;
+}
+
+.earned-badge {
+  background: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #2e7d32;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reward-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reward-list li {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  font-size: 1.05rem;
+  color: #444;
+}
+
+.math-text {
+  font-size: 0.85rem;
+  color: #777;
+  font-style: italic;
+  margin-top: 2px;
+}

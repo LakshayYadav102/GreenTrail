@@ -1,127 +1,148 @@
-.user-activity-card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: none;
+/* ISOLATED NAMESPACE FOR USER ACTIVITY PAGE */
+.gt-activity-page-wrapper, .gt-activity-page-wrapper * {
+  box-sizing: border-box !important;
 }
 
-.user-activity-card .card-body {
-  padding: 20px;
+.gt-activity-page-wrapper {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw !important;
+  max-width: 100% !important;
+  margin: 0 auto;
+  left: 0;
+  background: #0f172a; 
+  font-family: 'Inter', sans-serif;
+  color: #f8fafc;
+  padding: 100px 0 60px;
+  overflow-x: hidden;
 }
 
-h2 {
-  font-weight: 600;
-  color: #333;
+.gt-activity-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(52, 152, 219, 0.15) 0%, transparent 40%),
+              radial-gradient(circle at bottom left, rgba(46, 204, 113, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #444;
+.gt-activity-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.list-group-item {
-  font-size: 1rem;
-  color: #555;
+/* LOADER & ERRORS */
+.gt-activity-loader-wrapper {
+  min-height: 100vh; width: 100vw;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  background: #0f172a; color: #3498db;
+}
+.gt-activity-spinner {
+  width: 50px; height: 50px; border-radius: 50%;
+  border: 4px solid rgba(52, 152, 219, 0.2);
+  border-top-color: #3498db; animation: gt-spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+@keyframes gt-spin { to { transform: rotate(360deg); } }
+
+.gt-activity-error-box {
+  background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3);
+  padding: 30px; border-radius: 16px; text-align: center; color: #ff4757;
 }
 
-.list-group-item strong {
-  color: #333;
+/* HEADER */
+.gt-activity-header { text-align: center; margin-bottom: 50px; }
+.gt-activity-badge {
+  display: inline-block; background: rgba(52, 152, 219, 0.1);
+  color: #3498db; padding: 6px 16px; border-radius: 30px;
+  font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 2px; margin-bottom: 15px;
+}
+.gt-activity-title { font-size: 3.5rem; font-weight: 900; color: #fff; margin: 0 0 10px; letter-spacing: -1px; }
+.gt-activity-highlight { color: #3498db; }
+.gt-activity-subtitle { color: #94a3b8; font-size: 1.1rem; }
+
+/* GLASS CARDS */
+.gt-activity-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
-.btn {
-  font-size: 1rem;
-  padding: 12px 30px;
-  border-radius: 8px;
-  font-weight: 500;
-  text-transform: uppercase;
+/* GRAPH SECTION */
+.gt-activity-graph-section { margin-bottom: 50px; }
+.gt-activity-card-title {
+  color: #fff; font-size: 1.5rem; font-weight: 800; margin: 0 0 20px 0;
 }
 
-.text-center {
-  text-align: center;
+/* LIST SECTION */
+.gt-activity-section-title {
+  color: #fff; font-size: 1.8rem; font-weight: 800; margin-bottom: 30px;
+  padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.text-danger {
-  color: red;
+.gt-activity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
 }
 
-/* Chatbot-like button at the bottom-right */
-.chatbot-toggle-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #00aaff;
-  color: white;
-  border-radius: 50%;
-  padding: 15px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.gt-record-card {
+  padding: 0; overflow: hidden; transition: transform 0.3s;
+}
+.gt-record-card:hover {
+  transform: translateY(-5px); border-color: rgba(52, 152, 219, 0.3);
 }
 
-.chatbot-icon {
-  margin-right: 5px;
+.gt-record-header {
+  background: rgba(0, 0, 0, 0.2); padding: 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.gt-record-date { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
+.gt-record-total { font-size: 1.5rem; font-weight: 900; color: #ff4757; }
+.gt-record-total small { font-size: 0.8rem; opacity: 0.8; }
+
+.gt-record-body {
+  padding: 20px; display: flex; flex-direction: column; gap: 15px;
 }
 
-.chatbot-text {
-  font-size: 14px;
+.gt-record-item {
+  display: flex; align-items: center; gap: 15px;
+  background: rgba(255,255,255,0.02); padding: 12px 15px;
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);
 }
-
-.chatbot-toggle-btn:hover {
-  background-color: #0088cc;
-}
-
-/* Prediction Panel */
-.prediction-panel {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background-color: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  width: 320px; /* Slightly adjusted width for better fitting */
-  max-height: 400px;
-  overflow-y: auto; /* Allows scrolling if content exceeds the panel height */
-  z-index: 9999;
-  font-size: 14px;
-}
-
-.prediction-panel h3 {
+.gt-record-icon {
+  width: 40px; height: 40px; background: rgba(255,255,255,0.05);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
   font-size: 1.2rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
 }
+.gt-record-info { display: flex; flex-direction: column; }
+.gt-record-info label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+.gt-record-info strong { color: #fff; font-size: 1.1rem; }
 
-.prediction-panel p {
-  color: #555;
-  line-height: 1.5;
+/* UTILS */
+.gt-activity-empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
+.gt-empty-icon { font-size: 4rem; opacity: 0.3; margin-bottom: 15px; }
+
+.gt-activity-footer { text-align: center; margin-top: 50px; }
+.gt-activity-btn-back {
+  display: inline-block; background: transparent; color: #cbd5e1;
+  border: 1px solid rgba(255,255,255,0.2); padding: 12px 30px;
+  border-radius: 50px; font-weight: 600; text-decoration: none; transition: 0.3s;
 }
+.gt-activity-btn-back:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: #fff; }
 
-.prediction-panel ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.prediction-panel li {
-  margin-bottom: 10px;
-}
-
-.prediction-panel button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #ff4747;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.prediction-panel button:hover {
-  background-color: #e03e3e;
+@media (max-width: 768px) {
+  .gt-activity-grid { grid-template-columns: 1fr; }
+  .gt-activity-title { font-size: 2.5rem; }
 }

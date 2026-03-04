@@ -3,30 +3,43 @@ import { useNavigate } from "react-router-dom";
 import "./GameLoadingScreen.css"; 
 
 const GameLoadingScreen = () => {
-  const [dots, setDots] = useState("");
+  const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const dotInterval = setInterval(() => {
-      setDots((prev) => (prev.length < 3 ? prev + "." : ""));
-    }, 500);
-
-    // Redirect to the Fun Games page after 3 seconds
-    const timer = setTimeout(() => {
-      navigate("/games");
-    }, 3000);
-
-    return () => {
-      clearTimeout(timer);
-      clearInterval(dotInterval);
-    };
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          setTimeout(() => navigate("/games"), 500);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 50);
+    return () => clearInterval(timer);
   }, [navigate]);
 
   return (
-    <div className="game-loading-screen">
-      <h2>🎮 GreenTrail Fun Hub</h2>
-      <p>Loading games{dots}</p>
-      <div className="game-spinner"></div>
+    <div className="gt-loading-wrapper">
+      <div className="gt-scanner"></div>
+      <div className="gt-loading-content">
+        <div className="gt-logo-glitch" data-text="GREENTRAIL">GREENTRAIL</div>
+        <div className="gt-arcade-title">ARCADE SUBSYSTEM</div>
+        
+        <div className="gt-progress-container">
+          <div className="gt-progress-bar" style={{ width: `${progress}%` }}></div>
+          <div className="gt-progress-glow" style={{ width: `${progress}%` }}></div>
+        </div>
+        
+        <div className="gt-status-text">
+          {progress < 40 ? "CONNECTING TO ECO-SERVER..." : 
+           progress < 80 ? "INITIALIZING SUSTAINABILITY ENGINE..." : "SYNCING PLAYER DATA..."}
+          <span className="gt-percent">{progress}%</span>
+        </div>
+      </div>
+      
+      <div className="gt-grid-bg"></div>
     </div>
   );
 };
