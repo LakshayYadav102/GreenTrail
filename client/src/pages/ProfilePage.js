@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../services/api"; 
 import { Container, Form, Button, Card, Spinner, Alert, Row, Col } from "react-bootstrap";
 import "./ProfilePage.css";
-
-const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -25,10 +23,7 @@ const ProfilePage = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${apiBaseUrl}/api/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get("/profile");
 
       setUser(response.data);
       setUpdatedUser({
@@ -54,11 +49,7 @@ const ProfilePage = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      await axios.put(`${apiBaseUrl}/api/profile`, updatedUser, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await api.put("/profile", updatedUser);
       setSuccessMessage("Profile updated successfully!");
       fetchUserProfile();
     } catch (error) {
@@ -75,19 +66,18 @@ const ProfilePage = () => {
 
     const formData = new FormData();
     formData.append("profilePic", file);
-    formData.append("userId", localStorage.getItem("userId"));
 
     try {
       setUploading(true);
-      const token = localStorage.getItem("token");
-      const response = await axios.post(`${apiBaseUrl}/api/profile/upload`, formData, {
-        headers: { 
-          Authorization: `Bearer ${token}`, 
-          "Content-Type": "multipart/form-data" 
-        },
-      });
+      
+      // 🟢 FIX: Removed the manual headers so Axios can set the boundary automatically!
+      const response = await api.post("/profile/upload", formData);
+      
       setProfilePic(response.data.profilePic);
       setSuccessMessage("Profile picture updated!");
+      
+      window.dispatchEvent(new Event('storage'));
+      
       fetchUserProfile();
     } catch (error) {
       setError("Failed to upload profile picture.");
@@ -108,7 +98,6 @@ const ProfilePage = () => {
           {successMessage && <Alert variant="success" className="alert-pop">{successMessage}</Alert>}
         </div>
 
-        {/* GreenCoins Wallet Card */}
         <Card className="gv-profile-card glassmorphism mb-4 text-center border-success w-100">
           <Card.Body>
             <h4 className="gv-greencoin-title">
@@ -121,14 +110,12 @@ const ProfilePage = () => {
           </Card.Body>
         </Card>
 
-        {/* Main Profile Card */}
         <Card className="gv-profile-card glassmorphism w-100">
           <Card.Body className="p-4 p-md-5 w-100">
-            {/* Avatar Section */}
             <div className="gv-avatar-section">
               <div className="gv-avatar-wrapper">
                 <img
-                  src={profilePic ? `${apiBaseUrl}${profilePic}` : "/default-avatar.png"}
+                  src={profilePic || "/default-avatar.png"}
                   alt="Profile"
                   className="gv-profile-pic"
                 />
@@ -153,7 +140,6 @@ const ProfilePage = () => {
               <p className="gv-avatar-instruction mt-3">Click image to update photo</p>
             </div>
 
-            {/* Form Section forced to 100% width */}
             <Form onSubmit={handleUpdateProfile} className="w-100">
               <Row className="w-100 m-0">
                 <Col xs={12} md={6} className="px-md-3 px-0 mb-3">

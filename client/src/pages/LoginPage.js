@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api'; // <-- Changed to centralized API
 import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi';
 import './LoginPage.css';
 
@@ -18,15 +18,19 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
     try {
-      const response = await axios.post(`${apiBaseUrl}/api/auth/login`, {
+      // CLEANED FOR HOSTING: Using api service
+      const response = await api.post('/auth/login', {
         email,
         password,
       });
+      
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', response.data.userId);
+      
+      // Tell App.js to update the navigation bar immediately
+      window.dispatchEvent(new Event('storage'));
+      
       setMessage('Login successful!');
       setError('');
       navigate('/');
@@ -111,13 +115,13 @@ const LoginPage = () => {
           </Form>
 
           {message && (
-            <Alert variant="success" className="eco-alert">
+            <Alert variant="success" className="eco-alert mt-3">
               <span className="alert-icon">🌱</span>
               {message}
             </Alert>
           )}
           {error && (
-            <Alert variant="danger" className="eco-alert">
+            <Alert variant="danger" className="eco-alert mt-3">
               <span className="alert-icon">⚠️</span>
               {error}
             </Alert>

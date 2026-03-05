@@ -1,12 +1,10 @@
 // src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api'; // <-- Changed to centralized API
 import { FiUser, FiMail, FiLock } from 'react-icons/fi';
 import './RegisterPage.css';
-const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -25,8 +23,8 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-await axios.post(`${apiBaseUrl}/api/auth/register`, formData);
+      // CLEANED FOR HOSTING: Using api service
+      await api.post('/auth/register', formData);
 
       setMessage('Registration successful! Redirecting to login...');
       setError('');
@@ -138,13 +136,13 @@ await axios.post(`${apiBaseUrl}/api/auth/register`, formData);
           </Form>
 
           {message && (
-            <Alert variant="success" className="eco-alert">
+            <Alert variant="success" className="eco-alert mt-3">
               <span className="alert-icon">🌱</span>
               {message}
             </Alert>
           )}
           {error && (
-            <Alert variant="danger" className="eco-alert">
+            <Alert variant="danger" className="eco-alert mt-3">
               <span className="alert-icon">⚠️</span>
               {error}
             </Alert>

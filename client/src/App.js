@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "./services/api"; // <-- CHANGED THIS to use your centralized API
 
 // Navbars
 import GreenverseNavbar from "./components/GreenverseNavbar";
@@ -57,9 +57,8 @@ const AppContent = () => {
 
       if (token) {
         try {
-          await axios.get('http://localhost:5000/api/profile', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          // <-- CLEANED FOR HOSTING: No more localhost, uses live Render URL!
+          await api.get('/profile'); 
           setIsLoggedIn(true);
         } catch (error) {
           console.error('Token validation failed:', error);

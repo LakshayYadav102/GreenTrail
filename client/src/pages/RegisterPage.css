@@ -71,8 +71,11 @@
 
 .input-decoration {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
+/* 🔥 FIX 1: Restrict the icon wrapper */
 .input-icon {
   position: absolute;
   left: 15px;
@@ -80,6 +83,22 @@
   transform: translateY(-50%);
   z-index: 2;
   color: #c8e6c9;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔥 FIX 2: Force exact sizing on the SVG to prevent global CSS collisions */
+.input-icon svg,
+.input-icon .icon {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  font-size: 20px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .eco-input {
@@ -89,12 +108,23 @@
   color: #e8f5e9;
   padding: 14px 20px 14px 45px;
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .eco-input:focus {
   background: rgba(255, 255, 255, 0.1);
   border-color: #4caf50;
   box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+}
+
+/* 🔥 FIX 3: Prevent Chrome/Edge Autofill from turning inputs ugly white */
+.eco-input:-webkit-autofill,
+.eco-input:-webkit-autofill:hover, 
+.eco-input:-webkit-autofill:focus, 
+.eco-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #163824 inset !important;
+  -webkit-text-fill-color: #e8f5e9 !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .input-highlight {

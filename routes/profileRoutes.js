@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const path = require("path");
+const { CloudinaryStorage } = require("multer-storage-cloudinary"); // 🟢 Added
+const cloudinary = require("../config/cloudinary"); // 🟢 Added (Make sure this path points to your cloudinary.js file!)
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
@@ -14,12 +15,12 @@ const EcoVideo = require("../models/EcoVideo");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${req.userId}_${Date.now()}${path.extname(file.originalname)}`);
+// 🟢 NEW: Cloudinary Storage Setup for Profile Pictures
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "greenverse_profiles",
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
   },
 });
 
@@ -56,7 +57,7 @@ router.get("/wallet", async (req, res) => {
   }
 });
 
-// 🟢 Fetch Detailed Wallet Breakdown & SYNC PAST DATA
+// Fetch Detailed Wallet Breakdown & SYNC PAST DATA
 router.get("/wallet-details", async (req, res) => {
   try {
     const userId = verifyToken(req);
@@ -98,11 +99,8 @@ router.get("/wallet-details", async (req, res) => {
       videoCoins += Math.floor((v.views || 0) / 50);
     });
 
-    // 🧮 Calculate the TRUE Historical Total
     const calculatedTotal = greenTrailTotal + carpoolTotal + foodCoins + videoCoins;
 
-    // 🔄 RETROACTIVE SYNC: If the calculated past total is higher than the current DB balance, 
-    // we update the database so the Navbar and Wallet match perfectly.
     let finalCoins = user.greenCoins || 0;
     if (calculatedTotal > finalCoins) {
       await User.findByIdAndUpdate(userId, { greenCoins: calculatedTotal });
@@ -111,7 +109,7 @@ router.get("/wallet-details", async (req, res) => {
     }
 
     res.json({
-      totalCoins: finalCoins, // Send the perfectly summed total
+      totalCoins: finalCoins, 
       breakdown: {
         greenTrail: { activitiesCount, activityCoins, treesPlanted, treeCoins, total: greenTrailTotal },
         carpool: { ridesOffered, rideOfferCoins, bookings, bookingCoins, total: carpoolTotal },
@@ -152,11 +150,18 @@ router.post("/upload", upload.single("profilePic"), async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.profilePic = `/uploads/${req.file.filename}`;
+    // 🟢 NEW: Cloudinary returns the full absolute URL in req.file.path
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+
+    user.profilePic = req.file.path; // Save Cloudinary URL to DB
     await user.save();
+    
     res.json({ message: "Profile picture updated", profilePic: user.profilePic });
   } catch (error) {
-    res.status(401).json({ message: error.message });
+    console.error("Profile Pic Upload Error:", error);
+    res.status(500).json({ message: "Failed to upload image" });
   }
 });
 
