@@ -25,7 +25,9 @@ function CarpoolNavbar() {
       api.get(`/profile`)
       .then(res => {
         if (res.data.profilePic) {
-          setProfilePic(`${apiBaseUrl}${res.data.profilePic}`);
+          // 🟢 FIX: Check if it's already a full Cloudinary URL
+          const picUrl = res.data.profilePic;
+          setProfilePic(picUrl.startsWith('http') ? picUrl : `${apiBaseUrl}${picUrl}`);
         } else {
           const name = res.data.username || "Eco";
           setProfilePic(`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2ecc71&color=fff&bold=true&rounded=true`);

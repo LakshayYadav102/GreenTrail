@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Navbar.css";
 
+// 🟢 FIX: Added dynamic API base URL so it doesn't break in production
+const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Navbar = () => {
   const navigate = useNavigate();
   const [profilePic, setProfilePic] = useState("/default-avatar.png");
@@ -12,11 +15,13 @@ const Navbar = () => {
     const fetchProfilePic = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/profile", {
+        const response = await axios.get(`${apiBaseUrl}/api/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data.profilePic) {
-          setProfilePic(`http://localhost:5000${response.data.profilePic}`);
+          // 🟢 FIX: Check if it's already a full Cloudinary URL
+          const picUrl = response.data.profilePic;
+          setProfilePic(picUrl.startsWith('http') ? picUrl : `${apiBaseUrl}${picUrl}`);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);

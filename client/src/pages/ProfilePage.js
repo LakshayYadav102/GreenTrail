@@ -70,8 +70,12 @@ const ProfilePage = () => {
     try {
       setUploading(true);
       
-      // 🟢 FIX: Removed the manual headers so Axios can set the boundary automatically!
-      const response = await api.post("/profile/upload", formData);
+      // 🟢 CRITICAL FIX: You MUST include headers for FormData so Axios doesn't use JSON.
+      const response = await api.post("/profile/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
       
       setProfilePic(response.data.profilePic);
       setSuccessMessage("Profile picture updated!");

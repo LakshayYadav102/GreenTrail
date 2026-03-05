@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api"; // Changed to centralized API
+import api from "../../services/api"; 
 import GreenverseNavbar from "../../components/GreenverseNavbar";
 import "./EcoStoreOrders.css";
 
@@ -18,7 +18,6 @@ function EcoStoreOrders() {
 
     const fetchOrders = async () => {
       try {
-        // CLEANED FOR HOSTING: Removed apiBaseUrl and manual headers
         const res = await api.get(`/store/orders`);
         setOrders(res.data);
       } catch (err) {
