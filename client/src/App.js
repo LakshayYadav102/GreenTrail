@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import api from "./services/api"; // <-- CHANGED THIS to use your centralized API
+import api from "./services/api"; 
 
 // Navbars
 import GreenverseNavbar from "./components/GreenverseNavbar";
@@ -41,6 +41,9 @@ import FoodWasteRoutes from "./pages/foodwaste/FoodWasteRoutes";
 import WalletPage from "./pages/WalletPage";
 import EcoStoreOrders from "./pages/store/EcoStoreOrders";
 
+// Global Components
+import Chatbot from "./components/Chatbot"; // <-- IMPORTED CHATBOT HERE
+
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,7 +60,6 @@ const AppContent = () => {
 
       if (token) {
         try {
-          // <-- CLEANED FOR HOSTING: No more localhost, uses live Render URL!
           await api.get('/profile'); 
           setIsLoggedIn(true);
         } catch (error) {
@@ -100,7 +102,6 @@ const AppContent = () => {
   let NavbarComponent = null;
 
   if (!hideNavbarPages.includes(location.pathname) && !isEcoLearnPath && !isFoodWastePath) {
-    // 🟢 DYNAMIC LOGIC FOR SHARED PAGES (PROFILE)
     if (location.pathname === '/profile') {
       const source = location.state?.from || sessionStorage.getItem('lastContext');
       if (source === 'carpool') {
@@ -111,7 +112,6 @@ const AppContent = () => {
         NavbarComponent = GreenverseNavbar;
       }
     } else {
-      // Logic for all other pages & save context
       if (carpoolPaths.some(path => location.pathname.startsWith(path))) {
         NavbarComponent = CarpoolNavbar;
         sessionStorage.setItem('lastContext', 'carpool');
@@ -174,6 +174,9 @@ const AppContent = () => {
           </>
         )}
       </Routes>
+      
+      {/* GLOBAL CHATBOT - Rendered on every page */}
+      <Chatbot />
     </>
   );
 };

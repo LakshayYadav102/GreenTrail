@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GreenverseNavbar from "../../components/GreenverseNavbar";
-import api from "../../services/api"; // Using centralized API instance
+import api from "../../services/api"; 
 import "./RideRequest.css";
 
 function RideRequest() {
@@ -44,9 +43,7 @@ function RideRequest() {
     }
 
     try {
-      // CLEANED FOR HOSTING: Removed manual headers, api interceptor handles token
       await api.post("/rides/request", form);
-      
       alert("Ride request posted successfully!");
       navigate("/ride/find"); 
     } catch (err) {
@@ -59,8 +56,6 @@ function RideRequest() {
 
   return (
     <>
-      <GreenverseNavbar />
-      
       {/* Animated Background */}
       <div className="ride-request-background">
         <div className="floating-request">🙋</div>
@@ -80,21 +75,27 @@ function RideRequest() {
           {/* Stats */}
           <div className="request-stats">
             <div className="stat-card">
-              <div className="stat-icon">🚗</div>
+              <div className="stat-icon">
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
               <div className="stat-content">
                 <h3>15 min</h3>
                 <p>Avg. Response Time</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">👍</div>
+              <div className="stat-icon">
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25" /></svg>
+              </div>
               <div className="stat-content">
                 <h3>95%</h3>
                 <p>Request Success Rate</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">🌱</div>
+              <div className="stat-icon">
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C7.387 11.812 11.543 9.262 14.46 5.751C14.46 5.751 14.46 5.751 14.46 5.751C14.46 11.512 18.062 16.524 21 19.393M14.46 5.751C11.543 9.262 14.46 16.524 14.46 16.524M14.46 5.751C14.46 5.751 14.46 5.751 14.46 5.751ZM3 19.5h18" /></svg>
+              </div>
               <div className="stat-content">
                 <h3>2.1kg</h3>
                 <p>Avg. CO2 Saved</p>
@@ -237,17 +238,23 @@ function RideRequest() {
             <h3>💡 Tips for Better Matches</h3>
             <div className="tips-grid">
               <div className="tip-card">
-                <div className="tip-icon">📍</div>
+                <div className="tip-icon">
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+                </div>
                 <h4>Be Specific</h4>
                 <p>Include exact locations and landmarks for better matching</p>
               </div>
               <div className="tip-card">
-                <div className="tip-icon">⏰</div>
+                <div className="tip-icon">
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
                 <h4>Flexible Timing</h4>
                 <p>Consider flexible departure times for more options</p>
               </div>
               <div className="tip-card">
-                <div className="tip-icon">💬</div>
+                <div className="tip-icon">
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                </div>
                 <h4>Clear Requirements</h4>
                 <p>Mention any special needs in the notes section</p>
               </div>

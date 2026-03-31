@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Spinner, Alert, Button } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import GraphComponent from '../components/GraphComponent';
-import Chatbot from '../components/Chatbot';
 import ObjectDetection from '../components/ObjectDetection';
 import './DashboardPage.css';
 
@@ -11,7 +10,6 @@ const CITY = "Gurgaon";
 const LAT = "28.4986";
 const LON = "77.0469";
 
-// Moved outside component to prevent unnecessary re-renders
 const quotes = [
   "Step Lightly, Thrive Greenly",
   "Green Today, Thriving Tomorrow",
@@ -28,7 +26,6 @@ const DashboardPage = () => {
   const [aqi, setAqi] = useState(null);
   const [showGraph, setShowGraph] = useState(false);
   
-  // Robust Typing Animation States
   const [displayedText, setDisplayedText] = useState('');
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -61,7 +58,6 @@ const DashboardPage = () => {
     initializeDashboard();
   }, []);
 
-  // GLITCH-FREE TYPING ANIMATION LOGIC
   useEffect(() => {
     let typingTimer;
 
@@ -69,26 +65,20 @@ const DashboardPage = () => {
       const fullQuote = quotes[quoteIndex];
 
       if (!isDeleting) {
-        // Typing forward
         setDisplayedText(fullQuote.substring(0, displayedText.length + 1));
 
-        // If word is finished, wait 2 seconds, then start deleting
         if (displayedText === fullQuote) {
           typingTimer = setTimeout(() => setIsDeleting(true), 2000);
         } else {
-          // Normal typing speed
           typingTimer = setTimeout(handleTyping, 80);
         }
       } else {
-        // Deleting backward
         setDisplayedText(fullQuote.substring(0, displayedText.length - 1));
 
-        // If completely deleted, move to next quote and start typing
         if (displayedText === '') {
           setIsDeleting(false);
           setQuoteIndex((prev) => (prev + 1) % quotes.length);
         } else {
-          // Deleting speed
           typingTimer = setTimeout(handleTyping, 40);
         }
       }
@@ -96,7 +86,6 @@ const DashboardPage = () => {
 
     typingTimer = setTimeout(handleTyping, isDeleting ? 40 : 80);
     
-    // Cleanup function prevents multiple loops from running at the same time
     return () => clearTimeout(typingTimer);
   }, [displayedText, isDeleting, quoteIndex]);
 
@@ -287,7 +276,7 @@ const DashboardPage = () => {
         )}
 
         <ObjectDetection />
-        <Chatbot />
+        {/* Chatbot was removed from here to prevent double rendering */}
       </Container>
     </div>
   );

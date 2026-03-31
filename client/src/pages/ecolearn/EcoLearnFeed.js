@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api"; // Centralized API instance
+import api from "../../services/api"; 
 import "./EcoLearnFeed.css";
 import CommentModal from "./CommentModal";
 
 function EcoLearnFeed() {
   const videoRefs = useRef([]);
+  const progressRefs = useRef({});
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
   const [likingVideos, setLikingVideos] = useState(new Set());
@@ -15,8 +16,12 @@ function EcoLearnFeed() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [selectedVideo, setSelectedVideo] = useState(null);
+  
+  // Track playback progress
+  const [videoProgress, setVideoProgress] = useState({});
+  // Toggle Fullscreen mode
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Decode Token to get current logged-in user ID
   let currentUserId = null;
   if (token) {
     try {
@@ -30,7 +35,6 @@ function EcoLearnFeed() {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        // CLEANED FOR HOSTING: Replaced native fetch with api instance
         const res = await api.get("/ecolearn/feed");
         setVideos(res.data || []);
         setError(null);
@@ -40,8 +44,9 @@ function EcoLearnFeed() {
       }
     };
     fetchVideos();
-  }, []); // Removed token dependency as it's handled globally by interceptor
+  }, []);
 
+  // Auto-play via Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -51,12 +56,12 @@ function EcoLearnFeed() {
             video.play().catch(() => {});
             setTimeout(() => {
               if (!video.paused && !video.ended) {
-                // CLEANED FOR HOSTING: Track views via api service
                 api.post(`/ecolearn/view/${video.dataset.id}`).catch(() => {});
               }
             }, 3500);
           } else {
             video.pause();
+            video.currentTime = 0; 
           }
         });
       },
@@ -77,6 +82,27 @@ function EcoLearnFeed() {
     });
   };
 
+  const handleTimeUpdate = (videoId, e) => {
+    const video = e.target;
+    const progress = (video.currentTime / video.duration) * 100;
+    setVideoProgress(prev => ({ ...prev, [videoId]: progress }));
+  };
+
+  const handleProgressClick = (videoId, e) => {
+    e.stopPropagation();
+    const progressBar = progressRefs.current[videoId];
+    if (!progressBar) return;
+
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    
+    const videoElement = videoRefs.current.find(v => v && v.dataset.id === videoId);
+    if (videoElement) {
+      videoElement.currentTime = percentage * videoElement.duration;
+    }
+  };
+
   const handleLike = async (videoId) => {
     if (!token) return alert("Please login to like videos");
     if (likingVideos.has(videoId)) return;
@@ -84,7 +110,6 @@ function EcoLearnFeed() {
     setLikingVideos((prev) => new Set([...prev, videoId]));
     const previousVideos = [...videos];
 
-    // Optimistic UI Update
     setVideos((prev) =>
       prev.map((v) =>
         v._id === videoId
@@ -98,10 +123,8 @@ function EcoLearnFeed() {
     );
 
     try {
-      // CLEANED FOR HOSTING
       const res = await api.post(`/ecolearn/like/${videoId}`);
       const data = res.data;
-
       setVideos((prev) =>
         prev.map((v) =>
           v._id === videoId
@@ -110,8 +133,7 @@ function EcoLearnFeed() {
         )
       );
     } catch (err) {
-      console.error("Like error:", err);
-      setVideos(previousVideos); // Revert on failure
+      setVideos(previousVideos);
       alert("Failed to update like");
     } finally {
       setLikingVideos((prev) => {
@@ -124,13 +146,12 @@ function EcoLearnFeed() {
 
   const handleFollow = async (userId) => {
     if (!token) return alert("Please login to follow users");
-    if (!userId) return alert("Cannot follow - missing user ID");
+    if (!userId) return;
     if (followingUsers.has(userId)) return;
 
     setFollowingUsers((prev) => new Set([...prev, userId]));
     const previousVideos = [...videos];
 
-    // Optimistic UI Update
     setVideos((prev) =>
       prev.map((video) =>
         video.user?._id === userId
@@ -149,10 +170,8 @@ function EcoLearnFeed() {
     );
 
     try {
-      // CLEANED FOR HOSTING
       const res = await api.post(`/ecolearn/follow/${userId}`);
       const data = res.data;
-
       setVideos((prev) =>
         prev.map((video) =>
           video.user?._id === userId
@@ -165,8 +184,7 @@ function EcoLearnFeed() {
         )
       );
     } catch (err) {
-      console.error("[Follow] Error:", err);
-      setVideos(previousVideos); // Revert on failure
+      setVideos(previousVideos);
       alert("Failed to follow/unfollow");
     } finally {
       setFollowingUsers((prev) => {
@@ -179,108 +197,164 @@ function EcoLearnFeed() {
 
   return (
     <div className="ecolearn-app">
-      <header className="ecolearn-top-header">
-        <h2>EcoLearn</h2>
-      </header>
+      
+      {/* GLOBAL GREENVERSE HOME BUTTON */}
+      <button className="el-global-home-btn" onClick={() => navigate("/")}>
+        <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        GreenVerse
+      </button>
 
-      <main className="video-feed">
-        {error && <div className="error-message">{error}</div>}
+      <main className="el-video-feed">
+        {error && <div className="el-error-message">{error}</div>}
 
         {videos.length === 0 && !error && (
-          <div className="empty-state">
+          <div className="el-empty-state">
             <h2>No eco videos yet 🌱</h2>
             <p>Be the first to share!</p>
           </div>
         )}
 
-        {videos.map((video) => (
-          <div key={video._id} className="video-container">
-            <video
-              ref={(el) => el && videoRefs.current.push(el)}
-              data-id={video._id}
-              src={video.videoUrl}
-              className="fullscreen-video"
-              loop
-              muted={muted}
-              playsInline
-              onClick={handleVideoClick}
-            />
-
-            {showFeedback && (
-              <div className="video-feedback">
-                {showFeedback === "muted" ? "🔇 Muted" : "🔊 Sound On"}
-              </div>
-            )}
-
-            <div className="video-overlay">
-              <div className="caption-area">
-                <h3>{video.caption}</h3>
-                <p className="tags">#{video.category}</p>
-              </div>
-
-              <div className="right-side-actions">
-                <button
-                  className={`action-btn ${likingVideos.has(video._id) ? "liking" : ""}`}
-                  onClick={() => handleLike(video._id)}
-                  disabled={likingVideos.has(video._id)}
-                >
-                  <span className="icon">{video.userLiked ? "❤️" : "🤍"}</span>
-                  <span className="count">{video.likesCount ?? 0}</span>
-                </button>
-
-                <button
-                  className="action-btn"
-                  onClick={() => setSelectedVideo(video._id)}
-                >
-                  <span className="icon">💬</span>
-                  <span className="count">{video.comments?.length || 0}</span>
-                </button>
-              </div>
-
-              <div className="bottom-user-info">
-                <span
-                  className="username clickable"
-                  onClick={() => {
-                    if (video.user?._id) {
-                      navigate(`/ecolearn/creator/${video.user._id}`);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      if (video.user?._id) {
-                        navigate(`/ecolearn/creator/${video.user._id}`);
-                      }
-                    }
-                  }}
+        {videos.map((video, index) => (
+          <div key={video._id} className="el-video-container">
+            
+            {/* BOTTOM LEFT EXTERNAL INFO (Desktop Shorts Style) */}
+            <div className={`el-desktop-bottom-left ${isFullscreen ? 'hidden' : ''}`}>
+              <div className="el-user-row">
+                <img 
+                  className="el-avatar" 
+                  src={video.user?.profilePic || "https://ui-avatars.com/api/?name=" + (video.user?.username || "Eco")} 
+                  alt="Creator"
+                  onClick={() => video.user?._id && navigate(`/ecolearn/creator/${video.user._id}`)}
+                />
+                <span 
+                  className="el-username"
+                  onClick={() => video.user?._id && navigate(`/ecolearn/creator/${video.user._id}`)}
                 >
                   @{video.user?.username || "user"}
                 </span>
 
-                {/* HIDE FOLLOW BUTTON IF VIDEO BELONGS TO CURRENT LOGGED IN USER */}
                 {video.user?._id && String(video.user._id) !== String(currentUserId) && (
                   <button
-                    className={`follow-btn ${
-                      followingUsers.has(video.user._id)
-                        ? "following"
-                        : video.isFollowing
-                        ? "followed"
-                        : ""
-                    }`}
-                    onClick={() => handleFollow(video.user._id)}
+                    className={`el-subscribe-btn ${video.isFollowing ? "followed" : ""}`}
+                    onClick={(e) => { e.stopPropagation(); handleFollow(video.user._id); }}
                     disabled={followingUsers.has(video.user._id)}
                   >
                     {followingUsers.has(video.user._id)
-                      ? "Processing..."
+                      ? "..."
                       : video.isFollowing
                       ? "Following"
-                      : "Follow"}
+                      : "Subscribe"}
                   </button>
                 )}
               </div>
+              <p className="el-caption">
+                {video.caption} <span className="el-tags">#{video.category}</span>
+              </p>
             </div>
+
+            {/* CENTER PLAYER WRAPPER */}
+            <div className={`el-center-layout ${isFullscreen ? 'fullscreen-mode' : 'constrained-mode'}`}>
+              
+              {/* THE VIDEO BOX */}
+              <div className="el-player-box">
+                <video
+                  ref={(el) => (videoRefs.current[index] = el)}
+                  data-id={video._id}
+                  src={video.videoUrl}
+                  className="el-video-element"
+                  loop
+                  muted={muted}
+                  playsInline
+                  onClick={handleVideoClick}
+                  onTimeUpdate={(e) => handleTimeUpdate(video._id, e)}
+                />
+
+                {showFeedback && (
+                  <div className="el-video-feedback">
+                    {showFeedback === "muted" ? "🔇 Muted" : "🔊 Sound On"}
+                  </div>
+                )}
+
+                {/* FULLSCREEN TOGGLE */}
+                <button 
+                  className="el-toggle-screen-btn" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsFullscreen(!isFullscreen);
+                  }}
+                >
+                  {isFullscreen ? (
+                    <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+                    </svg>
+                  ) : (
+                    <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                    </svg>
+                  )}
+                </button>
+
+                {/* PROGRESS BAR */}
+                <div 
+                  className="el-progress-bar-container"
+                  ref={el => progressRefs.current[video._id] = el}
+                  onClick={(e) => handleProgressClick(video._id, e)}
+                >
+                  <div 
+                    className="el-progress-bar-fill" 
+                    style={{ width: `${videoProgress[video._id] || 0}%` }}
+                  ></div>
+                </div>
+
+                {/* Mobile overlay info (only visible on small screens) */}
+                <div className="el-mobile-overlay-info">
+                  <div className="el-user-row">
+                    <img src={video.user?.profilePic || "https://ui-avatars.com/api/?name=Eco"} alt="Creator" />
+                    <span className="el-username">@{video.user?.username || "user"}</span>
+                  </div>
+                  <p className="el-caption">{video.caption}</p>
+                </div>
+              </div>
+
+              {/* RIGHT SIDEBAR (Outside video box on desktop) */}
+              <div className="el-right-sidebar">
+                
+                <button
+                  className={`el-sidebar-btn ${video.userLiked ? "liked" : ""}`}
+                  onClick={() => handleLike(video._id)}
+                  disabled={likingVideos.has(video._id)}
+                >
+                  <div className="el-sidebar-icon-circle">
+                    <svg 
+                      fill={video.userLiked ? "#ff0050" : "rgba(255, 255, 255, 0.1)"} 
+                      stroke={video.userLiked ? "#ff0050" : "currentColor"} 
+                      viewBox="0 0 24 24" 
+                      strokeWidth={1.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                  </div>
+                  <span className="el-sidebar-count">{video.likesCount ?? 0}</span>
+                </button>
+
+                <button
+                  className="el-sidebar-btn"
+                  onClick={() => setSelectedVideo(video._id)}
+                >
+                  <div className="el-sidebar-icon-circle">
+                    <svg fill="rgba(255, 255, 255, 0.1)" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.36 5.47.22.215.344.51.344.814v2.793c0 .59.652.95 1.146.611l3.24-2.222A8.961 8.961 0 0012 20.25z" />
+                    </svg>
+                  </div>
+                  <span className="el-sidebar-count">{video.comments?.length || 0}</span>
+                </button>
+
+              </div>
+
+            </div>
+
           </div>
         ))}
       </main>

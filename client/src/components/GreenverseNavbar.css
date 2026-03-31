@@ -1,138 +1,248 @@
 /* GreenverseNavbar.css */
+
 .gv-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, rgba(27, 94, 32, 0.9) 0%, rgba(46, 125, 50, 0.8) 100%);
+  /* Shrunk padding for a sleeker profile */
+  padding: 0.8rem 2.5rem;
+  /* Premium Dark Glassmorphism */
+  background: rgba(15, 32, 39, 0.65);
   color: white;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(105, 240, 174, 0.2);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
 
 .gv-navbar.scrolled {
-  background: rgba(27, 94, 32, 0.95);
-  padding: 0.7rem 2rem;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(10, 20, 25, 0.95);
+  padding: 0.6rem 2.5rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  border-bottom-color: rgba(105, 240, 174, 0.2);
 }
 
-.gv-navbar-left .gv-logo {
+/* --- DROPDOWN ADDITIONS --- */
+.gv-logo-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  height: 100%;
+  padding: 10px 0; 
+}
+
+/* --- LOGO STRUCURE FIX --- */
+.gv-navbar-left .gv-logo {
+  display: flex;
+  align-items: center; /* Vertically centers the icon and text */
+  gap: 10px;           /* Precise spacing between icon and name */
   text-decoration: none;
-  font-size: 1.7rem;
-  font-weight: bold;
-  color: white;
   transition: all 0.3s ease;
+  height: 100%;        /* Ensure it takes full height of the wrapper */
 }
 
-.logo-icon {
-  font-size: 2rem;
-  animation: spinLogo 10s linear infinite;
+.gv-logo-icon {
+  width: 32px;         /* Slightly larger for better visibility */
+  height: 32px;
+  color: #69f0ae;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;      /* Prevents icon from shrinking if text is long */
 }
 
-@keyframes spinLogo {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.gv-logo-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;      /* Removes extra whitespace below SVG */
 }
 
-.logo-text {
+.gv-logo-text {
+  font-size: 1.7rem;   /* Restored font size */
+  font-weight: 800;
   background: linear-gradient(135deg, #69f0ae 0%, #00bfa5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: -0.5px;
+  line-height: 1;      /* CRITICAL: Resets line height to prevent text offset */
+  padding-top: 2px;    /* Fine-tuning for optical alignment */
 }
 
+/* Ensure the wrapper doesn't add awkward padding */
+.gv-logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.gv-modules-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(15, 32, 39, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  min-width: 240px;
+  padding: 0.6rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  z-index: 1001;
+}
+
+.gv-logo-wrapper:hover .gv-modules-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.gv-dropdown-item {
+  color: #e0e0e0;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.gv-dropdown-item:hover {
+  background: rgba(105, 240, 174, 0.1);
+  color: #69f0ae;
+  transform: translateX(6px);
+}
+
+/* --- PROFESSIONAL SVG ICON STYLING & ANIMATION --- */
+.gv-dropdown-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #a0aec0; 
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.gv-dropdown-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gv-dropdown-item:hover .gv-dropdown-icon {
+  color: #69f0ae; 
+  transform: scale(1.2) translateY(-2px); 
+}
+
+/* CENTER NAV ITEMS */
 .gv-navbar-center {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
-.gv-navbar-center .gv-nav-link,
-.gv-navbar-right .gv-nav-link {
+.gv-nav-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: white;
+  color: #e2e8f0;
   font-weight: 500;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 8px;
   position: relative;
   overflow: hidden;
 }
 
-.gv-navbar-center .gv-nav-link::before,
-.gv-navbar-right .gv-nav-link::before {
+.gv-nav-link::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(105, 240, 174, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   transition: left 0.5s ease;
 }
 
-.gv-navbar-center .gv-nav-link:hover::before,
-.gv-navbar-right .gv-nav-link:hover::before {
+.gv-nav-link:hover::before {
   left: 100%;
 }
 
-.gv-navbar-center .gv-nav-link:hover,
-.gv-navbar-right .gv-nav-link:hover {
+.gv-nav-link:hover {
   color: #69f0ae;
-  background: rgba(105, 240, 174, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   transform: translateY(-2px);
 }
 
-.nav-icon {
-  font-size: 1.2rem;
+.gv-wallet-link {
+  color: #69f0ae !important;
+  font-weight: 700 !important;
 }
 
+.gv-nav-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gv-nav-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* RIGHT CONTROLS */
 .gv-navbar-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .gv-register-btn {
-  background: linear-gradient(135deg, #69f0ae 0%, #00c853 100%);
+  background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
   border: none;
-  padding: 0.7rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   border-radius: 25px;
-  color: #1b5e20;
+  color: white;
   font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   text-decoration: none;
-  box-shadow: 0 5px 15px rgba(105, 240, 174, 0.3);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
 }
 
 .gv-register-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(105, 240, 174, 0.4);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+  background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
 }
 
 .gv-logout-btn {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 0.7rem 1.5rem;
-  border-radius: 25px;
-  color: white;
-  font-weight: 500;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  color: #fca5a5;
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -141,49 +251,25 @@
 }
 
 .gv-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
   transform: translateY(-2px);
 }
 
-.btn-icon {
-  font-size: 1.1rem;
+.gv-btn-icon {
+  width: 16px;
+  height: 16px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .gv-navbar {
-    padding: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .gv-navbar-center {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    margin-top: 1rem;
-    gap: 1rem;
-  }
-  
-  .gv-navbar-center .gv-nav-link,
-  .gv-navbar-right .gv-nav-link {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-  }
-  
-  .logo-text {
-    font-size: 1.4rem;
-  }
+.gv-btn-icon svg {
+  width: 100%;
+  height: 100%;
 }
-
-/* ========================================= */
-/* PROFILE CIRCLE STYLES                     */
-/* ========================================= */
 
 .gv-profile-circle-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 15px;
   cursor: pointer;
   border-radius: 50%;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -191,24 +277,23 @@
 
 .gv-profile-circle-container:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+  box-shadow: 0 0 15px rgba(105, 240, 174, 0.4);
 }
 
 .gv-profile-image {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #2ecc71;
-  background-color: #fff; /* Fills background in case of transparent pngs */
+  border: 2px solid #69f0ae;
+  background-color: #fff;
 }
 
-/* Mini loading spinner for the profile picture */
 .gv-profile-spinner {
-  width: 42px;
-  height: 42px;
-  border: 3px solid rgba(46, 204, 113, 0.3);
-  border-top-color: #2ecc71;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(105, 240, 174, 0.3);
+  border-top-color: #69f0ae;
   border-radius: 50%;
   animation: gv-spin 1s linear infinite;
 }
@@ -217,13 +302,30 @@
   to { transform: rotate(360deg); }
 }
 
-/* Adjust mobile layout if necessary */
-@media (max-width: 768px) {
-  .gv-profile-circle-container {
-    margin-right: 10px;
+@media (max-width: 900px) {
+  .gv-navbar {
+    padding: 1rem 1.5rem;
+    flex-wrap: wrap;
   }
-  .gv-profile-image, .gv-profile-spinner {
-    width: 36px;
-    height: 36px;
+  
+  .gv-navbar-center {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+    gap: 0.8rem;
+  }
+  
+  .gv-navbar-center .gv-nav-link {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  .gv-logo-text {
+    font-size: 1.4rem;
+  }
+
+  .gv-modules-dropdown {
+    min-width: 180px;
   }
 }

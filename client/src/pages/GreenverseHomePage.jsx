@@ -9,7 +9,6 @@ function GreenverseHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   
-  // Refactored Typing Effect State
   const [quoteText, setQuoteText] = useState("");
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -25,7 +24,6 @@ function GreenverseHomePage() {
     "Building a greener world together"
   ];
   
-  // UPDATED DESCRIPTIONS TO MATCH ACTUAL APP CAPABILITIES
   const features = [
     { 
       name: "GreenTrail", 
@@ -90,7 +88,6 @@ function GreenverseHomePage() {
     },
   ];
 
-  // FIXED TYPING ANIMATION
   useEffect(() => {
     setIsLoaded(true);
   }, []);
@@ -102,26 +99,20 @@ function GreenverseHomePage() {
       const fullQuote = quotes[quoteIndex];
 
       if (!isDeleting) {
-        // Typing forward
         setQuoteText(fullQuote.substring(0, quoteText.length + 1));
         
-        // If word is finished, wait 2 seconds, then start deleting
         if (quoteText === fullQuote) {
           typingTimer = setTimeout(() => setIsDeleting(true), 2000);
         } else {
-          // Normal typing speed
           typingTimer = setTimeout(handleTyping, 80);
         }
       } else {
-        // Deleting backward
         setQuoteText(fullQuote.substring(0, quoteText.length - 1));
         
-        // If completely deleted, move to next quote and start typing
         if (quoteText === '') {
           setIsDeleting(false);
           setQuoteIndex((prev) => (prev + 1) % quotes.length);
         } else {
-          // Deleting speed
           typingTimer = setTimeout(handleTyping, 40);
         }
       }
@@ -131,12 +122,10 @@ function GreenverseHomePage() {
     return () => clearTimeout(typingTimer);
   }, [quoteText, isDeleting, quoteIndex, quotes]);
 
-
-  // Carousel Auto-scroll
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % features.length);
-    }, 4000); // Slower carousel so it's easier to read
+    }, 4000);
     return () => clearInterval(interval);
   }, [features.length]);
 
@@ -155,6 +144,7 @@ function GreenverseHomePage() {
   const scrollToFeatures = () => {
     featuresSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+  
 
   return (
     <>
@@ -170,7 +160,6 @@ function GreenverseHomePage() {
 
       <div className={`gv-home-main ${isLoaded ? 'loaded' : ''}`}>
         
-        {/* Hero Section */}
         <section className="gv-home-hero-section">
           <div className="gv-home-hero-container">
             <div className="gv-home-hero-left">
@@ -233,7 +222,6 @@ function GreenverseHomePage() {
           </div>
         </section>
 
-        {/* GLITCH-FREE MODULE WHEEL */}
         <section className="gv-home-features-section" ref={featuresSectionRef}>
           <div className="gv-home-section-header">
             <h2 className="gv-home-section-title">The GreenVerse Ecosystem</h2>
@@ -243,7 +231,6 @@ function GreenverseHomePage() {
           <div className="gv-home-wheel-wrapper">
             <div className="gv-home-module-wheel">
               
-              {/* Central Display Orb */}
               <div 
                 className="gv-home-center-orb"
                 style={{ 
@@ -280,7 +267,6 @@ function GreenverseHomePage() {
                 )}
               </div>
 
-              {/* Satellite Orbs */}
               {features.map((feature, index) => {
                 const angle = (index * 72) - 90; 
                 return (
@@ -289,11 +275,15 @@ function GreenverseHomePage() {
                     className="gv-home-sat-position-wrapper"
                     style={{ transform: `rotate(${angle}deg) translate(var(--wheel-radius)) rotate(${-angle}deg)` }}
                   >
+                    {/* UPDATED: Injected a dynamic radial gradient to "fill" the bubbles! */}
                     <div
                       className={`gv-home-satellite ${hoveredModule === index ? 'active' : ''}`}
                       style={{
                         borderColor: feature.color,
-                        boxShadow: hoveredModule === index ? `0 0 25px ${feature.color}` : 'none'
+                        boxShadow: hoveredModule === index ? `0 0 30px ${feature.color}` : `0 0 10px ${feature.color}40`,
+                        background: hoveredModule === index 
+                          ? `radial-gradient(circle, ${feature.color}55 0%, rgba(0,0,0,0.6) 100%)` 
+                          : `radial-gradient(circle, ${feature.color}15 0%, rgba(255,255,255,0.05) 100%)`
                       }}
                       onMouseEnter={() => setHoveredModule(index)}
                       onMouseLeave={() => setHoveredModule(null)}
@@ -309,7 +299,6 @@ function GreenverseHomePage() {
               })}
             </div>
 
-            {/* Mobile Fallback */}
             <div className="gv-home-mobile-modules">
               {features.map((feature, index) => (
                 <div 
@@ -338,7 +327,6 @@ function GreenverseHomePage() {
           </div>
         </section>
 
-        {/* CTA Section */}
         <section className="gv-home-cta-section">
           <div className="gv-home-cta-content">
             <h2 className="gv-home-cta-title">Ready to Make a Difference?</h2>
@@ -356,7 +344,6 @@ function GreenverseHomePage() {
                   </button>
                 </>
               ) : (
-                // FIXED: Now routes to the global Wallet/Profile instead of GreenTrail Dashboard
                 <button className="gv-home-cta-btn primary" onClick={() => navigate("/profile")}>
                   Go to My Hub
                 </button>

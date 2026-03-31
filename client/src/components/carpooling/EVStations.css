@@ -1,0 +1,98 @@
+/* EVStations.css */
+
+.ev-stations-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: url('https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat fixed;
+}
+
+.ev-stations-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(15, 32, 39, 0.9) 0%, rgba(20, 40, 40, 0.7) 100%);
+}
+
+.ev-floating-orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46, 204, 113, 0.2) 0%, transparent 70%);
+  animation: ev-pulse 8s infinite alternate;
+}
+
+.ev-orb-1 { width: 400px; height: 400px; top: 10%; left: -100px; }
+.ev-orb-2 { width: 500px; height: 500px; bottom: -100px; right: -100px; animation-delay: 4s;}
+
+@keyframes ev-pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.ev-stations-container {
+  min-height: 100vh;
+  padding: 8rem 2rem 4rem; /* Accounts for navbar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease;
+}
+
+.ev-stations-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ev-glass-card {
+  width: 100%;
+  max-width: 1000px;
+  background: rgba(20, 30, 25, 0.85); /* Deep dark green tint */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.ev-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.ev-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ev-icon {
+  color: #2ecc71;
+}
+
+.ev-subtitle {
+  color: #a0aec0;
+  font-size: 1.1rem;
+}
+
+.ev-map-wrapper {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .ev-stations-container { padding: 6rem 1rem 2rem; }
+  .ev-glass-card { padding: 1.5rem; }
+  .ev-title { font-size: 1.8rem; }
+}

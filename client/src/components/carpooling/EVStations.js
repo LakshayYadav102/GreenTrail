@@ -1,18 +1,41 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Map from './Map';
+import './EVStations.css'; // We will create this
 
 function EVStations() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   useEffect(() => {
+    setIsLoaded(true);
     console.log('EVStations component rendered');
     return () => console.log('EVStations component unmounted');
   }, []);
 
   return (
-    <div className="container mx-auto p-4" style={{ minHeight: '100vh' }}>
-      <h1 className="text-2xl font-bold mb-4">EV Charging Stations</h1>
-      <Map key="ev-stations-map" />
-      <p className="text-center mt-4 text-gray-600">Showing nearby EV charging stations. Zoom or pan to explore.</p>
-    </div>
+    <>
+      {/* Animated Background matching the Carpool Hub */}
+      <div className="ev-stations-background">
+        <div className="ev-floating-orb ev-orb-1"></div>
+        <div className="ev-floating-orb ev-orb-2"></div>
+      </div>
+
+      <div className={`ev-stations-container ${isLoaded ? 'loaded' : ''}`}>
+        <div className="ev-glass-card">
+          <div className="ev-header">
+            <h1 className="ev-title">
+              <span className="ev-icon">⚡</span> 
+              EV Charging Stations
+            </h1>
+            <p className="ev-subtitle">Locate nearby fast and standard charging points for your electric vehicle.</p>
+          </div>
+          
+          {/* The Map Component */}
+          <div className="ev-map-wrapper">
+            <Map key="ev-stations-map" />
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 

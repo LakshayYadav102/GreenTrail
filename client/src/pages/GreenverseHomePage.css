@@ -5,10 +5,11 @@
   --gv-secondary: #27ae60;
   --gv-dark: #0f2027;
   --gv-light: #ffffff;
-  --wheel-radius: 280px; /* Distance of icons from center */
+  /* INCREASED RADIUS to fit the bigger orbs! */
+  --wheel-radius: 310px; 
 }
 
-/* Deep, rich premium background */
+/* Deep, rich premium background WITH IMAGE */
 .gv-home-earth-background {
   position: fixed;
   top: 0;
@@ -16,7 +17,8 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  background: linear-gradient(135deg, #091512 0%, #112d26 50%, #0c1c18 100%);
+  /* Beautiful dark green forest/nature background from Unsplash */
+  background: url('https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat fixed;
   overflow: hidden;
 }
 
@@ -26,9 +28,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(rgba(46, 204, 113, 0.1) 1px, transparent 1px);
-  background-size: 30px 30px;
-  opacity: 0.3;
+  /* Added a dark gradient overlay so text remains perfectly readable over the image */
+  background: linear-gradient(135deg, rgba(9, 21, 18, 0.85) 0%, rgba(17, 45, 38, 0.75) 50%, rgba(12, 28, 24, 0.9) 100%);
 }
 
 .gv-home-floating-leaf {
@@ -146,7 +147,7 @@
   border: none;
   padding: 1rem 2.5rem;
   border-radius: 50px;
-  color: #000; /* Dark text on bright backgrounds */
+  color: #000; 
   font-size: 1.1rem;
   font-weight: 800;
   cursor: pointer;
@@ -335,17 +336,16 @@
 
 .gv-home-center-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-/* FIXED: The Positioning Wrapper (Stays completely still) */
+/* The Positioning Wrapper */
 .gv-home-sat-position-wrapper {
   position: absolute;
   z-index: 5;
 }
 
-/* FIXED: The Visual Bubble (Scales smoothly on hover inside the wrapper) */
+/* ENLARGED The Visual Bubble */
 .gv-home-satellite {
-  width: 90px;
-  height: 90px;
-  background: rgba(255, 255, 255, 0.05);
+  width: 130px; /* UPGRADED FROM 90px */
+  height: 130px; /* UPGRADED FROM 90px */
   backdrop-filter: blur(10px);
   border: 2px solid;
   border-radius: 50%;
@@ -355,30 +355,28 @@
   align-items: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative; /* important for label positioning */
+  position: relative;
 }
 
-/* Hover scales the visual bubble, NOT the positioning wrapper */
 .gv-home-satellite:hover, .gv-home-satellite.active {
-  transform: scale(1.2);
-  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.15); /* Slightly lower scale since it's naturally bigger */
   z-index: 20;
 }
 
-.gv-home-sat-icon { width: 34px; height: 34px; transition: transform 0.3s ease; }
+.gv-home-sat-icon { width: 48px; height: 48px; transition: transform 0.3s ease; } /* BIGGER ICONS */
 .gv-home-sat-icon svg { width: 100%; height: 100%; }
 
 .gv-home-sat-label {
   position: absolute;
-  bottom: -35px;
+  bottom: -45px; /* Pushed down a little more */
   white-space: nowrap;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.05rem; /* Larger Text */
+  font-weight: 700;
   color: #fff;
   opacity: 0;
   transition: opacity 0.3s ease;
-  background: rgba(0,0,0,0.5);
-  padding: 4px 12px;
+  background: rgba(0,0,0,0.6);
+  padding: 6px 14px;
   border-radius: 20px;
   pointer-events: none;
 }
@@ -412,9 +410,10 @@
 
 /* RESPONSIVE QUERIES */
 @media (max-width: 1024px) {
-  :root { --wheel-radius: 230px; }
+  :root { --wheel-radius: 260px; } /* Adjusted for larger orbs */
   .gv-home-hero-container { grid-template-columns: 1fr; gap: 3rem; }
   .gv-home-center-orb { width: 280px; height: 280px; }
+  .gv-home-satellite { width: 110px; height: 110px; } /* Scale down slightly for tablets */
 }
 
 @media (max-width: 768px) {

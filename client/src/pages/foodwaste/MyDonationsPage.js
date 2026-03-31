@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GreenverseNavbar from "../../components/foodwaste/FoodWasteNavbar";
-import api from "../../services/api"; // Centralized API
+import FoodWasteNavbar from "../../components/foodwaste/FoodWasteNavbar"; // Correct Navbar
+import api from "../../services/api"; 
 import "./MyDonationsPage.css";
 
 function MyDonationsPage() {
@@ -9,6 +9,7 @@ function MyDonationsPage() {
   const [donations, setDonations] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const calculateCarbon = (quantity, unit) => {
     let kg = quantity;
@@ -22,10 +23,8 @@ function MyDonationsPage() {
     if (!token) return navigate("/login");
 
     try {
-      // CLEANED FOR HOSTING: Removed manual headers
       const res = await api.get("/food-donations/my");
 
-      // Apply fallback for display
       const fixedDonations = (res.data.donations || []).map(d => ({
         ...d,
         displayCarbon: d.carbonSaved && d.carbonSaved > 0 
@@ -37,70 +36,137 @@ function MyDonationsPage() {
       setSummary(res.data.summary);
     } catch (error) {
       console.error(error);
-      alert("Failed to load donations");
+      // Removed alert for better UX, could set an error state here instead
     } finally {
       setLoading(false);
+      setIsLoaded(true);
     }
   };
 
   useEffect(() => {
     fetchMyDonations();
+    // eslint-disable-next-line
   }, []);
 
   const getStatusClass = (status) => {
-    if (status === "AVAILABLE") return "status available";
-    if (status === "ACCEPTED") return "status accepted";
-    if (status === "EXPIRED") return "status expired";
-    return "status";
+    if (status === "AVAILABLE") return "fw-status-badge available";
+    if (status === "ACCEPTED") return "fw-status-badge accepted";
+    if (status === "EXPIRED") return "fw-status-badge expired";
+    return "fw-status-badge";
+  };
+
+  const getCategoryIcon = (category) => {
+    if (category === "cooked") return "🍲";
+    if (category === "raw") return "🥬";
+    if (category === "packaged") return "🥫";
+    return "🍽️";
   };
 
   return (
-    <>
-      <GreenverseNavbar />
-      <div className="my-donations-page">
-        <h1>My Donations</h1>
+    <div className="fw-donations-page-wrapper">
+      <FoodWasteNavbar />
+      
+      {/* Background matches the Food Rescue Homepage */}
+      <div className="fw-donations-background"></div>
+
+      <div className={`fw-donations-container ${isLoaded ? 'loaded' : ''}`}>
+        
+        <div className="fw-donations-header">
+          <div className="fw-hero-badge">Your Contribution</div>
+          <h1>My <span className="fw-gradient-text">Donations</span></h1>
+          <p className="fw-subtitle">Track your past donations and measure your direct environmental impact.</p>
+        </div>
 
         {loading ? (
-          <p>Loading...</p>
+          <div className="fw-loading-state">
+            <div className="fw-spinner"></div>
+            <p>Loading your impact...</p>
+          </div>
         ) : (
           <>
             {summary && (
-              <div className="summary-card">
-                <h2>Impact Summary</h2>
-                <p>Total Donations: <strong>{summary.totalDonations}</strong></p>
-                <p>Total Food Donated: <strong>{summary.totalFoodDonatedKg} kg</strong></p>
-                <p>Carbon Saved: <strong>{summary.totalCarbonSaved} kg CO₂</strong></p>
+              <div className="fw-summary-grid">
+                <div className="fw-summary-card">
+                  <div className="fw-summary-icon">📦</div>
+                  <h3>{summary.totalDonations}</h3>
+                  <p>Total Donations</p>
+                </div>
+                <div className="fw-summary-card">
+                  <div className="fw-summary-icon">⚖️</div>
+                  <h3>{summary.totalFoodDonatedKg} <span className="fw-unit">kg</span></h3>
+                  <p>Total Food Donated</p>
+                </div>
+                <div className="fw-summary-card eco">
+                  <div className="fw-summary-icon">🌱</div>
+                  <h3>{summary.totalCarbonSaved} <span className="fw-unit">kg CO₂</span></h3>
+                  <p>Total Carbon Saved</p>
+                </div>
               </div>
             )}
 
-            <div className="donation-list">
+            <div className="fw-donation-list">
               {donations.length === 0 ? (
-                <p>No donations yet.</p>
+                <div className="fw-empty-state">
+                  <div className="fw-empty-icon">🍲</div>
+                  <h2>No Donations Yet</h2>
+                  <p>You haven't made any food donations yet. Start sharing surplus food to see your impact here.</p>
+                  <button 
+                    className="fw-btn fw-primary-btn"
+                    onClick={() => navigate("/food-waste/donate")}
+                  >
+                    Make a Donation →
+                  </button>
+                </div>
               ) : (
-                donations.map((donation) => (
-                  <div key={donation._id} className="donation-card">
-                    <div className="donation-header">
-                      <span>{donation.foodCategory.toUpperCase()}</span>
+                donations.map((donation, index) => (
+                  <div 
+                    key={donation._id} 
+                    className="fw-donation-card"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="fw-card-header">
+                      <div className="fw-category-badge">
+                        <span className="fw-cat-icon">{getCategoryIcon(donation.foodCategory)}</span>
+                        {donation.foodCategory.toUpperCase()}
+                      </div>
                       <span className={getStatusClass(donation.status)}>
                         {donation.status}
                       </span>
                     </div>
 
-                    <p><strong>{donation.quantity} {donation.unit}</strong> | {donation.foodType}</p>
-                    <p>Expires: {new Date(donation.expiryTime).toLocaleString()}</p>
-                    <p>Carbon Saved: <strong>{donation.displayCarbon} kg CO₂</strong></p>
+                    <div className="fw-card-body">
+                      <div className="fw-detail-row main">
+                        <span className="fw-quantity">{donation.quantity} {donation.unit}</span>
+                        <span className="fw-type">• {donation.foodType}</span>
+                      </div>
+                      
+                      <div className="fw-detail-row">
+                        <span className="fw-label">Expires:</span>
+                        <span className="fw-value">{new Date(donation.expiryTime).toLocaleString()}</span>
+                      </div>
 
-                    {donation.status === "EXPIRED" && donation.expiredHandling && (
-                      <p>Redirected To: {donation.expiredHandling}</p>
-                    )}
+                      <div className="fw-detail-row eco">
+                        <span className="fw-label">Carbon Saved:</span>
+                        <span className="fw-value highlight">{donation.displayCarbon} kg CO₂</span>
+                      </div>
+
+                      {donation.status === "EXPIRED" && donation.expiredHandling && (
+                        <div className="fw-detail-row expired-note">
+                          <span className="fw-label">Redirected To:</span>
+                          <span className="fw-value">{donation.expiredHandling}</span>
+                        </div>
+                      )}
+                    </div>
 
                     {donation.status === "ACCEPTED" && donation.acceptedBy && (
-                      <button
-                        className="message-btn"
-                        onClick={() => navigate(`/food-waste/chat/${donation._id}`)}
-                      >
-                        Message Receiver
-                      </button>
+                      <div className="fw-card-footer">
+                        <button
+                          className="fw-btn fw-message-btn"
+                          onClick={() => navigate(`/food-waste/chat/${donation._id}`)}
+                        >
+                          <span className="fw-btn-icon">💬</span> Message Receiver
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))
@@ -109,7 +175,7 @@ function MyDonationsPage() {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,91 +1,96 @@
-/* FLOATING PILL BOTTOM NAVIGATION */
+/* EcoLearnBottomNav.css */
+
 .eco-bottom-nav {
   position: fixed;
-  bottom: 20px;
+  bottom: 20px; /* Docked firmly near the bottom */
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
-  max-width: 450px;
-  height: 65px;
-  background: rgba(15, 15, 25, 0.85) !important;
-  backdrop-filter: blur(20px);
+  max-width: 400px;
+  height: 60px;
+  background: rgba(20, 20, 20, 0.95); /* More solid, less transparent */
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border: 1px solid rgba(0, 255, 128, 0.4);
-  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.15); 
+  border-radius: 30px; 
   z-index: 1000;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 255, 128, 0.1);
-  padding: 0 !important;
-  margin: 0 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); /* Stronger shadow to pop from background */
+  padding: 0 10px;
 }
 
 .eco-nav-btn {
-  background: transparent !important;
-  background-color: transparent !important; /* Aggressive block against Bootstrap */
-  border: none !important;
-  color: #888;
+  background: transparent;
+  border: none;
+  color: #888; /* Dimmed unselected state */
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 0.75rem;
+  justify-content: center;
+  font-size: 0.7rem; 
   font-weight: 600;
   gap: 4px;
-  padding: 5px 15px;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-family: 'Inter', sans-serif;
-  box-shadow: none !important;
-  outline: none !important;
-  height: auto !important;
+  height: 100%;
 }
 
 .eco-nav-btn .eco-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 22px; 
+  height: 22px;
   stroke: currentColor;
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 
-/* FIX: Ensure active state doesn't pull down Bootstrap's green block */
+/* Active State */
 .eco-nav-btn.eco-active {
-  color: #00ff80 !important;
-  background: transparent !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
+  color: white; 
 }
 
 .eco-nav-btn.eco-active .eco-icon svg {
-  filter: drop-shadow(0 0 8px #00ff80);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
-.eco-nav-btn:hover:not(.eco-upload-btn) {
-  color: #fff;
-  transform: translateY(-2px);
+.eco-nav-btn:hover:not(.eco-active) {
+  color: #ccc;
 }
 
+/* Upload Button Wrapper to manage positioning */
+.eco-nav-upload-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 10px;
+}
+
+/* The Upload Button itself */
 .eco-upload-btn {
-  width: 55px !important;
-  height: 55px !important;
-  background: linear-gradient(135deg, #00ff80, #00cc66) !important;
-  background-color: transparent !important;
-  border-radius: 50% !important;
-  margin-top: -35px !important;
-  box-shadow: 0 5px 20px rgba(0, 255, 128, 0.5) !important;
-  color: #000 !important;
+  width: 45px; 
+  height: 45px;
+  background: #2ecc71; /* Bright GreenVerse Green */
+  border: none;
+  border-radius: 50%;
+  color: #000; 
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
 }
 
 .eco-upload-btn .eco-icon svg {
-  width: 30px;
-  height: 30px;
-  stroke: #000;
+  width: 24px;
+  height: 24px;
+  stroke: #000; /* Black icon inside green button */
 }
 
 .eco-upload-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 10px 30px #00ff80 !important;
+  transform: scale(1.1);
+  background: #00ff80; /* Brighter on hover */
+  box-shadow: 0 6px 20px rgba(0, 255, 128, 0.6);
 }

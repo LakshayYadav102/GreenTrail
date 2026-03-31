@@ -1,65 +1,386 @@
-.my-donations-page {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
+/* MyDonationsPage.css */
+
+.fw-donations-page-wrapper {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
 }
 
-.my-donations-page h1 {
+.fw-donations-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  /* Matching the Food Rescue Homepage Background */
+  background: url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat fixed;
+}
+
+.fw-donations-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(9, 21, 15, 0.95) 0%, rgba(13, 31, 23, 0.85) 100%);
+  backdrop-filter: blur(2px);
+}
+
+.fw-donations-container {
+  position: relative; 
+  z-index: 1;
+  padding: 8rem 2rem 4rem; 
+  max-width: 1200px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.fw-donations-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Header Section */
+.fw-donations-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 3rem;
 }
 
-.summary-card {
-  background: #f0f9f4;
-  border-left: 6px solid #2e7d32;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
+.fw-hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
 }
 
-.summary-card h2 {
-  margin-bottom: 10px;
+.fw-donations-header h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
 }
 
-.donation-list {
+.fw-gradient-text {
+  background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.fw-subtitle {
+  font-size: 1.2rem;
+  color: #a0aec0;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Summary Grid */
+.fw-summary-grid {
   display: grid;
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 4rem;
 }
 
-.donation-card {
-  background: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease;
+.fw-summary-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.donation-card:hover {
-  transform: translateY(-3px);
+.fw-summary-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.donation-header {
+.fw-summary-card.eco {
+  border-bottom: 4px solid #2ecc71;
+  background: rgba(46, 204, 113, 0.05);
+}
+
+.fw-summary-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.fw-summary-card h3 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.fw-summary-card.eco h3 {
+  color: #4ade80;
+}
+
+.fw-unit {
+  font-size: 1.2rem;
+  color: #a0aec0;
+  font-weight: 600;
+}
+
+.fw-summary-card p {
+  color: #a0aec0;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Donation List */
+.fw-donation-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.fw-donation-card {
+  background: rgba(20, 30, 25, 0.85);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  animation: fw-slideUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fw-slideUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fw-donation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.fw-card-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
-  font-weight: bold;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.status {
-  padding: 4px 10px;
+.fw-category-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.fw-cat-icon {
+  font-size: 1.2rem;
+}
+
+.fw-status-badge {
+  padding: 0.4rem 1rem;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fw-status-badge.available {
+  background: rgba(46, 204, 113, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.fw-status-badge.accepted {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.fw-status-badge.expired {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.fw-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-grow: 1;
+}
+
+.fw-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.fw-detail-row.main {
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 0.5rem;
+}
+
+.fw-quantity {
+  font-size: 1.5rem;
+  font-weight: 800;
   color: white;
 }
 
-.status.available {
-  background-color: #2e7d32;
+.fw-type {
+  color: #a0aec0;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
-.status.accepted {
-  background-color: #1565c0;
+.fw-label {
+  color: #a0aec0;
 }
 
-.status.expired {
-  background-color: #c62828;
+.fw-value {
+  color: white;
+  font-weight: 500;
+}
+
+.fw-detail-row.eco {
+  background: rgba(46, 204, 113, 0.05);
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(46, 204, 113, 0.1);
+  margin-top: 0.5rem;
+}
+
+.fw-value.highlight {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.expired-note {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.fw-card-footer {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Buttons */
+.fw-btn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.fw-primary-btn {
+  background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
+  color: #0d1f17;
+}
+
+.fw-primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(74, 222, 128, 0.3);
+}
+
+.fw-message-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.fw-message-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Loading & Empty States */
+.fw-loading-state, .fw-empty-state {
+  text-align: center;
+  padding: 5rem 2rem;
+  background: rgba(20, 30, 25, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.fw-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(46, 204, 113, 0.2);
+  border-top-color: #4ade80;
+  border-radius: 50%;
+  animation: fw-spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes fw-spin {
+  to { transform: rotate(360deg); }
+}
+
+.fw-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+}
+
+.fw-empty-state h2 {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.fw-empty-state p {
+  color: #a0aec0;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fw-empty-state .fw-primary-btn {
+  max-width: 250px;
+  margin: 0 auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fw-donations-container { padding: 6rem 1.5rem 2rem; }
+  .fw-donations-header h1 { font-size: 3rem; }
+  .fw-summary-grid { grid-template-columns: 1fr; }
+  .fw-donation-list { grid-template-columns: 1fr; }
 }

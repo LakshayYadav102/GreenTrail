@@ -1,7 +1,180 @@
-.leaflet-container {
-  height: 500px !important;
-  width: 100% !important;
-  min-height: 500px;
-  border: 1px solid #ccc; /* Debug border */
-  background: #f0f0f0; /* Light background */
+/* Map.css */
+
+.ev-map-inner-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Custom UI Controls */
+.ev-map-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ev-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  max-width: 300px;
+}
+
+.ev-control-group label {
+  color: #a0aec0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.ev-select-wrapper {
+  position: relative;
+}
+
+.ev-select {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ev-select:focus {
+  outline: none;
+  border-color: #2ecc71;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.ev-select option {
+  background: #122b24; /* Dark background for options so text is readable */
+  color: white;
+  padding: 10px;
+}
+
+.ev-btn {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  font-size: 1rem;
+}
+
+.ev-btn.primary {
+  background: #2ecc71;
+  color: white;
+}
+
+.ev-btn.primary:hover {
+  background: #27ae60;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.ev-btn.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  height: 48px; /* Matches select height */
+}
+
+.ev-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Status Bar */
+.ev-status-bar {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.status.loading { color: #f39c12; }
+.status.success { color: #2ecc71; }
+.status.warning { color: #e74c3c; margin-left: 10px; }
+
+/* The Map Wrapper */
+.ev-leaflet-wrapper {
+  border-radius: 16px;
+  overflow: hidden; /* Clips the map corners to match the border radius */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(46, 204, 113, 0.3); /* Thin green accent border */
+  position: relative;
+  z-index: 1;
+}
+
+.ev-leaflet-map {
+  height: 500px;
+  width: 100%;
+  background: #0f2027; /* Shows before tiles load */
+}
+
+/* Popups inside the map */
+.ev-popup strong {
+  color: #2ecc71;
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.ev-popup p {
+  margin: 0;
+  color: #4a5568;
+}
+
+/* Loading & Error States */
+.ev-loading-state, .ev-error-state {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #a0aec0;
+  text-align: center;
+  padding: 2rem;
+}
+
+.ev-error-state p {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.ev-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(46, 204, 113, 0.2);
+  border-top-color: #2ecc71;
+  border-radius: 50%;
+  animation: ev-spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes ev-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .ev-map-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ev-control-group { max-width: 100%; }
 }

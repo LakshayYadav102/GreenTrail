@@ -1,139 +1,301 @@
-.require-food-dashboard {
+/* RequireFoodDashboard.css */
+
+.fw-req-page-wrapper {
+  position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f2c1f 0%, #1e3a2f 100%);
-  color: white;
-  padding: 4rem 5%;
+  width: 100%;
 }
 
-.require-header {
+.fw-req-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  /* Matching the Food Rescue Homepage Background */
+  background: url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat fixed;
+}
+
+.fw-req-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(9, 21, 15, 0.95) 0%, rgba(13, 31, 23, 0.85) 100%);
+  backdrop-filter: blur(2px);
+}
+
+.fw-req-container {
+  position: relative; 
+  z-index: 1;
+  padding: 8rem 2rem 4rem; 
+  max-width: 1300px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.fw-req-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Header Section */
+.fw-req-header {
   text-align: center;
-  padding: 4rem 0 3rem;
+  margin-bottom: 4rem;
 }
 
-.require-header h1 {
-  font-size: 3.8rem;
+.fw-hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.fw-req-header h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  color: white;
   margin-bottom: 1rem;
-  background: linear-gradient(90deg, #60a5fa, #93c5fd);
+  letter-spacing: -1px;
+}
+
+/* Blue gradient for Require section */
+.fw-gradient-text-blue {
+  background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.require-header p {
-  font-size: 1.4rem;
-  opacity: 0.9;
+.fw-animated-quote-container {
+  min-height: 40px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.require-options {
+.fw-animated-quote {
+  font-size: 1.3rem;
+  color: #a0aec0;
+  margin: 0;
+  font-weight: 400;
+}
+
+.fw-typing-cursor-blue {
+  color: #60a5fa;
+  font-weight: bold;
+  animation: fw-blink 1s infinite;
+  margin-left: 2px;
+}
+
+@keyframes fw-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Cards Grid */
+.fw-req-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2.5rem;
-  max-width: 1400px;
+  margin-bottom: 5rem;
+}
+
+.fw-req-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Unique Theme Colors matching original requirements */
+.fw-req-card.available { border-top: 4px solid #3b82f6; }
+.fw-req-card.ngo { border-top: 4px solid #8b5cf6; }
+.fw-req-card.history { border-top: 4px solid #ec4899; }
+
+.fw-card-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.6s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.available-glow { background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%); }
+.ngo-glow { background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%); }
+.history-glow { background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 60%); }
+
+.fw-req-card:hover .fw-card-glow {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.fw-req-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.fw-req-card.available:hover { border-color: rgba(59, 130, 246, 0.4); }
+.fw-req-card.ngo:hover { border-color: rgba(139, 92, 246, 0.4); }
+.fw-req-card.history:hover { border-color: rgba(236, 72, 153, 0.4); }
+
+.fw-card-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1; /* Pushes button to the bottom */
+  width: 100%;
+}
+
+.fw-card-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.fw-req-card.available .fw-card-icon-wrapper { color: #60a5fa; }
+.fw-req-card.ngo .fw-card-icon-wrapper { color: #a78bfa; }
+.fw-req-card.history .fw-card-icon-wrapper { color: #f472b6; }
+
+.fw-svg-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.fw-req-card:hover .fw-card-icon-wrapper {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.fw-req-card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.fw-req-card p {
+  color: #a0aec0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.fw-req-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  text-align: left;
+  width: 100%;
+  flex-grow: 1; 
+}
+
+.fw-req-list li {
+  color: #cbd5e0;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.list-bullet { font-weight: bold; }
+.fw-req-card.available .list-bullet { color: #60a5fa; }
+.fw-req-card.ngo .list-bullet { color: #a78bfa; }
+.fw-req-card.history .list-bullet { color: #f472b6; }
+
+/* Buttons */
+.fw-btn {
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  color: white;
+  box-sizing: border-box;
+  margin-top: auto; 
+}
+
+.available-btn { background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); color: #0f172a; }
+.ngo-btn { background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); color: #1e1b4b; }
+.history-btn { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: #4a044e; }
+
+.fw-btn:hover { transform: translateY(-2px); }
+.available-btn:hover { box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+.ngo-btn:hover { box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4); }
+.history-btn:hover { box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4); }
+
+
+/* Footer Info Box */
+.fw-eco-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2.5rem;
+  background: rgba(13, 31, 23, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.15); /* Blue subtle border */
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-.require-option-card {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 28px;
-  padding: 3.5rem 2.5rem;
-  text-align: center;
-  transition: all 0.45s ease;
-}
-
-.require-option-card:hover {
-  transform: translateY(-18px) scale(1.02);
-  box-shadow: 0 30px 70px rgba(96, 165, 250, 0.35);
-}
-
-/* ──────────────────────────────────────
-   Card-specific accents
-─────────────────────────────────────── */
-
-.require-option-card.available {
-  border-top: 6px solid #3b82f6;           /* blue accent for available food */
-}
-
-.require-option-card.ngo {
-  border-top: 6px solid #8b5cf6;           /* violet/purple for NGOs */
-  background: rgba(139, 92, 246, 0.06);    /* subtle purple tint */
-}
-
-.require-option-card.history {
-  border-top: 6px solid #ec4899;           /* pink/magenta for history & impact */
-  background: rgba(236, 72, 153, 0.05);    /* very subtle pink tint */
-}
-
-/* ──────────────────────────────────────
-   Button customizations per card
-─────────────────────────────────────── */
-
-.require-btn {
-  padding: 1.2rem 3.5rem;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  font-size: 1.25rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.35s;
-}
-
-.require-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 40px rgba(96, 165, 250, 0.6);
-}
-
-/* NGO card button */
-.require-option-card.ngo .require-btn {
-  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
-}
-
-.require-option-card.ngo .require-btn:hover {
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
-}
-
-/* History card button */
-.require-option-card.history .require-btn {
-  background: linear-gradient(90deg, #ec4899, #f472b6);
-}
-
-.require-option-card.history .require-btn:hover {
-  box-shadow: 0 0 40px rgba(236, 72, 153, 0.6);
-}
-
-/* ──────────────────────────────────────
-   Common elements
-─────────────────────────────────────── */
-
-.option-icon {
-  font-size: 6.5rem;
-  margin-bottom: 1.8rem;
-}
-
-.require-option-card h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1.2rem;
-}
-
-.require-option-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 1.5rem 0 2.5rem;
-  font-size: 1.1rem;
-}
-
-.require-option-card ul li {
-  margin: 0.8rem 0;
-}
-
-.require-info-note {
-  text-align: center;
-  margin-top: 6rem;
-  padding: 2rem;
-  background: rgba(255,255,255,0.05);
-  border-radius: 20px;
+.fw-footer-icon { font-size: 3rem; }
+.fw-footer-text { text-align: left; }
+.fw-footer-text h4 {
+  color: #60a5fa;
   font-size: 1.2rem;
-  opacity: 0.85;
+  margin-bottom: 0.5rem;
+}
+.fw-footer-text p {
+  color: #a0aec0;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fw-req-container { padding: 6rem 1.5rem 2rem; }
+  .fw-req-header h1 { font-size: 3rem; }
+  .fw-animated-quote { font-size: 1.1rem; }
+  .fw-req-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .fw-req-card { padding: 2.5rem 1.5rem; }
+  .fw-eco-footer { flex-direction: column; text-align: center; }
+  .fw-footer-text { text-align: center; }
 }
