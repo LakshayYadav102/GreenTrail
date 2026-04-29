@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import api from "./services/api"; 
+import api from "./services/api";
 
 // Navbars
 import GreenverseNavbar from "./components/GreenverseNavbar";
@@ -33,16 +33,17 @@ import RideDetails from "./pages/carpooling/RideDetails";
 import MyTrips from "./pages/carpooling/MyTrips";
 import EVStations from "./components/carpooling/EVStations";
 import RideRequest from "./pages/carpooling/RideRequest";
-import EcoStoreHomePage from "./pages/store/EcoStoreHomePage"; 
-import FoodWasteHomePage from "./pages/foodwaste/FoodWasteHomePage"; 
-import EcoLearnHomePage from "./pages/ecolearn/EcoLearnHomePage"; 
+import EcoStoreHomePage from "./pages/store/EcoStoreHomePage";
+import FoodWasteHomePage from "./pages/foodwaste/FoodWasteHomePage";
+import EcoLearnHomePage from "./pages/ecolearn/EcoLearnHomePage";
 import EcoLearnRoutes from "./pages/ecolearn/EcoLearnRoutes";
 import FoodWasteRoutes from "./pages/foodwaste/FoodWasteRoutes";
 import WalletPage from "./pages/WalletPage";
 import EcoStoreOrders from "./pages/store/EcoStoreOrders";
+import CorporateDashboard from './pages/CorporateDashboard';
 
 // Global Components
-import Chatbot from "./components/Chatbot"; // <-- IMPORTED CHATBOT HERE
+import Chatbot from "./components/Chatbot";
 
 const AppContent = () => {
   const location = useLocation();
@@ -53,6 +54,8 @@ const AppContent = () => {
   useEffect(() => {
     const validateToken = async () => {
       const token = localStorage.getItem('token');
+
+      // Skip validation on auth pages
       if (location.pathname === '/login' || location.pathname === '/register') {
         setIsInitialLoad(false);
         return;
@@ -60,14 +63,27 @@ const AppContent = () => {
 
       if (token) {
         try {
-          await api.get('/profile'); 
+          await api.get('/profile');
           setIsLoggedIn(true);
         } catch (error) {
-          console.error('Token validation failed:', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('userId');
-          setIsLoggedIn(false);
-          navigate('/');
+          const status = error.response?.status;
+
+          if (!error.response) {
+            // Server offline / Render sleeping — keep session, don't wipe token
+            console.warn('Server unreachable during token validation – keeping session.');
+            setIsLoggedIn(true);
+          } else if (status === 401 || status === 403) {
+            // Token genuinely expired or invalid — force logout
+            console.warn('Token rejected by server – logging out.');
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            setIsLoggedIn(false);
+            navigate('/');
+          } else {
+            // Unexpected server error — keep session
+            console.warn(`Unexpected status ${status} during validation – keeping session.`);
+            setIsLoggedIn(true);
+          }
         }
       } else {
         setIsLoggedIn(false);
@@ -75,11 +91,13 @@ const AppContent = () => {
           navigate('/');
         }
       }
+
       setIsInitialLoad(false);
     };
 
     validateToken();
 
+    // Keep auth state in sync across tabs and after login/logout
     const checkAuth = () => {
       const token = localStorage.getItem('token');
       setIsLoggedIn(!!token);
@@ -95,9 +113,11 @@ const AppContent = () => {
     '/games/recycle-rush', '/games/eco-quiz', '/games/eco-runner',
     '/challenges', '/donation'
   ];
-  
-  const isEcoLearnPath = location.pathname.startsWith('/ecolearn'); 
-  const isFoodWastePath = location.pathname.startsWith('/foodwaste') || location.pathname.startsWith('/food-waste');
+
+  const isEcoLearnPath = location.pathname.startsWith('/ecolearn');
+  const isFoodWastePath =
+    location.pathname.startsWith('/foodwaste') ||
+    location.pathname.startsWith('/food-waste');
 
   let NavbarComponent = null;
 
@@ -126,11 +146,7 @@ const AppContent = () => {
   }
 
   useEffect(() => {
-    if (NavbarComponent) {
-      document.body.style.paddingTop = 'var(--navbar-height)';
-    } else {
-      document.body.style.paddingTop = '0';
-    }
+    document.body.style.paddingTop = NavbarComponent ? 'var(--navbar-height)' : '0';
   }, [NavbarComponent]);
 
   return (
@@ -171,10 +187,11 @@ const AppContent = () => {
             <Route path="/food-waste/*" element={<FoodWasteRoutes />} />
             <Route path="/ecolearn/*" element={<EcoLearnRoutes />} />
             <Route path="/store/orders" element={<EcoStoreOrders />} />
+            <Route path="/corporate-dashboard" element={<CorporateDashboard />} />
           </>
         )}
       </Routes>
-      
+
       {/* GLOBAL CHATBOT - Rendered on every page */}
       <Chatbot />
     </>

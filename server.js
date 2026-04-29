@@ -23,6 +23,7 @@ const FoodDonation = require("./models/FoodDonation");
 const foodConversationRoutes = require("./routes/foodConversationRoutes");
 const ecolearnRoutes = require("./routes/ecolearnRoutes");
 const storeRoutes = require("./routes/storeRoutes");
+const corporateRoutes = require('./routes/corporateRoutes');
 
 const app = express();
 app.use(express.json({ limit: '150mb' }));
@@ -81,6 +82,7 @@ app.use("/api/food-donations", foodDonationRoutes);
 app.use("/api/food-conversations", foodConversationRoutes);
 app.use("/api/ecolearn", ecolearnRoutes);
 app.use("/api/store", storeRoutes);
+app.use('/api/corporate', corporateRoutes);
 
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running correctly' });

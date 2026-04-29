@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api'; // <-- Changed to centralized API
+import api from '../services/api';
 import { FiUser, FiMail, FiLock } from 'react-icons/fi';
 import './RegisterPage.css';
 
@@ -15,23 +15,45 @@ const RegisterPage = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const [activeField, setActiveField] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
+    setMessage('');
+    setLoadingMessage('Creating your account...');
+
+    // Show "waking up server" message after 4 seconds if still loading
+    const wakeUpTimer = setTimeout(() => {
+      setLoadingMessage('Waking up server, please wait...');
+    }, 4000);
 
     try {
-      // CLEANED FOR HOSTING: Using api service
       await api.post('/auth/register', formData);
 
+      clearTimeout(wakeUpTimer);
+      setLoadingMessage('');
       setMessage('Registration successful! Redirecting to login...');
       setError('');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
+      clearTimeout(wakeUpTimer);
       console.error('Registration Error:', err);
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+
+      if (!err.response) {
+        // Network error — server unreachable even after retries
+        setError('Server is unavailable. Please try again in a moment.');
+      } else if (err.response.status === 409 || err.response.status === 400) {
+        // Conflict (email/username already exists) or bad request
+        setError(err.response?.data?.message || 'This email or username is already taken.');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+
+      setLoadingMessage('');
       setMessage('');
     } finally {
       setIsLoading(false);
@@ -69,6 +91,7 @@ const RegisterPage = () => {
                   onBlur={() => setActiveField('')}
                   required
                   className="eco-input"
+                  disabled={isLoading}
                 />
                 <div className="input-highlight"></div>
               </div>
@@ -89,6 +112,7 @@ const RegisterPage = () => {
                   onBlur={() => setActiveField('')}
                   required
                   className="eco-input"
+                  disabled={isLoading}
                 />
                 <div className="input-highlight"></div>
               </div>
@@ -109,19 +133,25 @@ const RegisterPage = () => {
                   onBlur={() => setActiveField('')}
                   required
                   className="eco-input"
+                  disabled={isLoading}
                 />
                 <div className="input-highlight"></div>
               </div>
             </Form.Group>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="mt-4 w-100 register-button"
               disabled={isLoading}
             >
               {isLoading ? (
                 <div className="leaf-spinner">
                   <div className="leaf">🌱</div>
+                  {loadingMessage && (
+                    <span style={{ fontSize: '0.75rem', marginLeft: '8px' }}>
+                      {loadingMessage}
+                    </span>
+                  )}
                 </div>
               ) : (
                 'Create Account'
@@ -129,7 +159,12 @@ const RegisterPage = () => {
             </Button>
 
             <div className="additional-options">
-              <Button variant="link" className="eco-link" onClick={() => navigate("/login")}>
+              <Button
+                variant="link"
+                className="eco-link"
+                onClick={() => navigate('/login')}
+                disabled={isLoading}
+              >
                 Already have an account? Sign In
               </Button>
             </div>

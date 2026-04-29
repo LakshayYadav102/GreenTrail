@@ -123,12 +123,13 @@ function WalletPage() {
           </Card>
         </Col>
 
-        {/* EcoLearn Card */}
+        {/* GreenStream Card */}
         <Col md={6}>
           <Card className="wallet-card ecolearn">
             <Card.Body>
               <div className="card-header-flex">
-                <h4>📱 EcoLearn</h4>
+                {/* 🟢 UPDATED NAME */}
+                <h4>📱 GreenStream</h4>
                 <span className="earned-badge">+{breakdown.ecoLearn.total} 🪙</span>
               </div>
               <ul className="reward-list">

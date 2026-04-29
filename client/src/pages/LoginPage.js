@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api'; // <-- Changed to centralized API
+import api from '../services/api';
 import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi';
 import './LoginPage.css';
 
@@ -12,31 +12,65 @@ const LoginPage = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
+    setMessage('');
+    setLoadingMessage('Connecting...');
+
+    const wakeUpTimer = setTimeout(() => {
+      setLoadingMessage('Waking up server, please wait...');
+    }, 4000);
 
     try {
-      // CLEANED FOR HOSTING: Using api service
-      const response = await api.post('/auth/login', {
-        email,
-        password,
-      });
-      
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('userId', response.data.userId);
-      
-      // Tell App.js to update the navigation bar immediately
+      const response = await api.post('/auth/login', { email, password });
+
+      clearTimeout(wakeUpTimer);
+
+      // 🟢 NEW: Extract role and companyName
+      const { token, userId, role, companyName } = response.data;
+
+      // Save auth data
+      localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('userRole', role);
+
+      if (companyName) {
+        localStorage.setItem('companyName', companyName);
+      }
+
+      // Notify App.jsx
       window.dispatchEvent(new Event('storage'));
-      
-      setMessage('Login successful!');
-      setError('');
-      navigate('/');
+
+      setMessage('Login successful! Redirecting...');
+      setLoadingMessage('');
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      // 🟢 NEW: Role-based navigation
+      if (role === 'corporate') {
+        navigate('/corporate-dashboard');
+      } else {
+        navigate('/');
+      }
+
     } catch (err) {
+      clearTimeout(wakeUpTimer);
       console.error('Login Error:', err);
-      setError(err.response?.data?.message || 'Invalid credentials');
+
+      if (!err.response) {
+        setError('Server is unavailable. Please try again in a moment.');
+      } else if (err.response.status === 401 || err.response.status === 400) {
+        setError(err.response?.data?.message || 'Invalid credentials. Please check your email and password.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+
+      setLoadingMessage('');
       setMessage('');
     } finally {
       setIsLoading(false);
@@ -67,6 +101,7 @@ const LoginPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="eco-input"
+                  disabled={isLoading}
                 />
                 <div className="input-highlight"></div>
               </div>
@@ -84,6 +119,7 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="eco-input"
+                  disabled={isLoading}
                 />
                 <div className="input-highlight"></div>
               </div>
@@ -98,6 +134,11 @@ const LoginPage = () => {
               {isLoading ? (
                 <div className="leaf-spinner">
                   <div className="leaf">🌱</div>
+                  {loadingMessage && (
+                    <span style={{ fontSize: '0.75rem', marginLeft: '8px' }}>
+                      {loadingMessage}
+                    </span>
+                  )}
                 </div>
               ) : (
                 <>
@@ -108,7 +149,12 @@ const LoginPage = () => {
             </Button>
 
             <div className="additional-options">
-              <Button variant="link" className="eco-link" onClick={() => navigate('/register')}>
+              <Button
+                variant="link"
+                className="eco-link"
+                onClick={() => navigate('/register')}
+                disabled={isLoading}
+              >
                 Create New Trail
               </Button>
             </div>

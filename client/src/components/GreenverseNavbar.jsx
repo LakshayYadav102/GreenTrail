@@ -42,7 +42,7 @@ function GreenverseNavbar() {
       )
     },
     { 
-      name: "AR/VR Hub", 
+      name: "GreenScan", // 🟢 UPDATED NAME
       path: "https://greenversear.netlify.app/", 
       isExternal: true,
       icon: (
@@ -53,7 +53,7 @@ function GreenverseNavbar() {
       )
     },
     { 
-      name: "EcoLearn", 
+      name: "GreenStream", // 🟢 UPDATED NAME
       path: "/ecolearn/feed", 
       icon: (
         <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">

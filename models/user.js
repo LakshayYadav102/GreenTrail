@@ -19,7 +19,8 @@ const UserSchema = new mongoose.Schema({
   dob: { type: Date, default: null },
   address: { type: String, default: "" },
   profilePic: { type: String, default: "" },
-  role: { type: String, enum: ["user", "admin"], default: "user" },
+  role: { type: String, enum: ["user", "admin", "corporate"], default: "user" },
+  companyName: { type: String, default: "" }, // 🏢 NEW: Store company name for B2B dashboard
   donations: [donationSchema], // 🌱 Track donation history
 
   // Added social graph fields (followers & following)

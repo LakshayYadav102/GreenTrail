@@ -1,0 +1,160 @@
+/* Prefixing EVERYTHING with .gt-dashboard-page to isolate the CSS */
+
+.gt-dashboard-page {
+  /* This ensures the background covers the whole screen, even if content is short */
+  min-height: 100vh;
+  background-color: #0f1e14;
+}
+
+.gt-dashboard-page .gt-loading-container, 
+.gt-dashboard-page .gt-error-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gt-dashboard-page .gt-dashboard-container {
+  padding: 3rem 1rem 5rem;
+  max-width: 100%;
+  /* High-quality environmental forest background */
+  background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+  min-height: 100vh;
+}
+
+.gt-dashboard-page .gt-dashboard-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 25, 15, 0.75); /* Dark green overlay for contrast */
+  z-index: 1;
+}
+
+.gt-dashboard-page .gt-dashboard-container > * {
+  position: relative;
+  z-index: 2;
+}
+
+.gt-dashboard-page .gt-dashboard-title {
+  text-align: center;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.gt-dashboard-page .gt-dashboard-title::before {
+  content: '🍃';
+  font-size: 2.5rem;
+  animation: gt-leafSpin 4s infinite linear;
+}
+
+.gt-dashboard-page .gt-title-underline {
+  width: 150px;
+  height: 6px;
+  background: linear-gradient(90deg, #2ecc71, #f1c40f);
+  margin: 1rem auto;
+  border-radius: 5px;
+  animation: gt-growUnderline 1.5s ease-out forwards;
+  box-shadow: 0 2px 10px rgba(46, 204, 113, 0.5);
+}
+
+@keyframes gt-leafSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gt-growUnderline {
+  from { width: 0; }
+  to { width: 150px; }
+}
+
+/* ========================================================= */
+/* PREMIUM DARK GLASS ECO CARDS                              */
+/* ========================================================= */
+
+.gt-dashboard-page .gt-eco-card {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Dark Glass Setup */
+  background: rgba(15, 30, 20, 0.6); 
+  backdrop-filter: blur(15px) saturate(150%);
+  -webkit-backdrop-filter: blur(15px) saturate(150%);
+  overflow: hidden;
+}
+
+.gt-dashboard-page .gt-eco-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 45px rgba(46, 204, 113, 0.3);
+  border-color: rgba(46, 204, 113, 0.5);
+  background: rgba(20, 40, 25, 0.8);
+}
+
+.gt-dashboard-page .gt-card-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+.gt-dashboard-page .gt-eco-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.gt-dashboard-page .gt-eco-card .card-text {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+/* ========================================================= */
+/* GRAPH SECTION WRAPPER                                     */
+/* ========================================================= */
+
+.gt-dashboard-page .gt-graph-wrapper {
+  margin-top: 2rem;
+  background: rgba(15, 30, 20, 0.6);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+/* Force Recharts Legend text to be white */
+.gt-dashboard-page .recharts-default-legend .recharts-legend-item-text {
+  color: #ffffff !important;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .gt-dashboard-page .gt-dashboard-title { font-size: 2.8rem; }
+  .gt-dashboard-page .gt-dashboard-title::before { font-size: 2rem; }
+  .gt-dashboard-page .gt-card-icon { font-size: 2.5rem; }
+}
+
+@media (max-width: 576px) {
+  .gt-dashboard-page .gt-dashboard-container { padding: 1.5rem 1rem; }
+  .gt-dashboard-page .gt-dashboard-title { font-size: 2.2rem; flex-direction: column; gap: 0.2rem;}
+  .gt-dashboard-page .gt-dashboard-title::before { font-size: 1.8rem; }
+  .gt-dashboard-page .gt-title-underline { width: 100px; height: 4px; }
+  .gt-dashboard-page .gt-graph-wrapper { padding: 15px; }
+}

@@ -211,7 +211,8 @@ function EcoLearnFeed() {
 
         {videos.length === 0 && !error && (
           <div className="el-empty-state">
-            <h2>No eco videos yet 🌱</h2>
+            {/* 🟢 UPDATED EMPTY STATE TEXT */}
+            <h2>No GreenStream videos yet 🌱</h2>
             <p>Be the first to share!</p>
           </div>
         )}

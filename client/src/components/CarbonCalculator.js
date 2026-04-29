@@ -46,8 +46,10 @@ const CarbonCalculator = () => {
         return;
       }
 
+      // Added two_wheeler factor here
       const emissionFactors = {
         petrol: 0.21, diesel: 0.24, cng: 0.07,
+        two_wheeler: 0.09, 
         bus: 0.03, train: 0.01, flight_short: 0.15, 
         flight_long: 0.20, bicycle: 0, walking: 0
       };

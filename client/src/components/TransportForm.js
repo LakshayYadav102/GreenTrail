@@ -35,6 +35,7 @@ const TransportForm = ({ transportData, setTransportData }) => {
           <option value="petrol">Car (Petrol)</option>
           <option value="diesel">Car (Diesel)</option>
           <option value="cng">Car (CNG)</option>
+          <option value="two_wheeler">Two Wheeler / Motorbike</option>
           <option value="bus">Bus</option>
           <option value="train">Train</option>
           <option value="flight_short">Flight (Short Haul)</option>

@@ -21,12 +21,33 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new user
-    const newUser = new User({ username, email, password: hashedPassword });
+    // 🏢 NEW: Corporate Email Detection Logic
+    let assignedRole = 'user';
+    let assignedCompanyName = '';
+
+    // List the domains you want to treat as corporate for your demo
+    const corporateDomains = ['@techcorp.com', '@company.com', '@greenverseb2b.com'];
+    
+    if (corporateDomains.some(domain => email.endsWith(domain))) {
+      assignedRole = 'corporate';
+      // Extract company name (e.g., techcorp.com → techcorp)
+      assignedCompanyName = email.split('@')[1].split('.')[0]; 
+    }
+
+    // Create a new user with role + company
+    const newUser = new User({ 
+      username, 
+      email, 
+      password: hashedPassword,
+      role: assignedRole,
+      companyName: assignedCompanyName
+    });
+
     await newUser.save();
 
     console.log(`User registered successfully: ${username} (${email})`);
     res.status(201).json({ message: 'User registered successfully!' });
+
   } catch (err) {
     console.error('Error in Register Route:', err);
     res.status(500).json({ message: 'Server error' });
@@ -40,7 +61,7 @@ router.post('/login', async (req, res) => {
   try {
     console.log('Login Request Body:', req.body);
 
-    // Check if user exists in the database
+    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       console.error(`User not found with email: ${email}`);
@@ -49,7 +70,7 @@ router.post('/login', async (req, res) => {
 
     console.log('User Found in DB:', user);
 
-    // Compare the entered password with the hashed password
+    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     console.log('Password Match:', isMatch);
 
@@ -58,11 +79,24 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT if credentials are correct
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
     console.log('JWT Generated:', token);
 
-    res.status(200).json({ token, userId: user._id, email: user.email });
+    // 🟢 UPDATED RESPONSE with role + companyName
+    res.status(200).json({ 
+      token, 
+      userId: user._id, 
+      email: user.email,
+      role: user.role,
+      companyName: user.companyName
+    });
+
   } catch (err) {
     console.error('Error in Login Route:', err);
     res.status(500).json({ message: 'Server error' });

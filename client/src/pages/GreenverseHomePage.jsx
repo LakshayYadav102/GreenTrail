@@ -62,7 +62,7 @@ function GreenverseHomePage() {
       color: "#ab47bc"
     },
     { 
-      name: "AR/VR Experience", 
+      name: "GreenScan", // 🟢 UPDATED NAME
       description: "Step into immersive environmental experiences. See the true impact of climate change and interact with digital solutions.", 
       icon: (
         <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -75,7 +75,7 @@ function GreenverseHomePage() {
       color: "#ff5252"
     },
     { 
-      name: "EcoLearn", 
+      name: "GreenStream", // 🟢 UPDATED NAME
       description: "Your visual knowledge hub. Watch curated educational videos on sustainability, climate action, and eco-friendly living.", 
       icon: (
         <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -275,7 +275,6 @@ function GreenverseHomePage() {
                     className="gv-home-sat-position-wrapper"
                     style={{ transform: `rotate(${angle}deg) translate(var(--wheel-radius)) rotate(${-angle}deg)` }}
                   >
-                    {/* UPDATED: Injected a dynamic radial gradient to "fill" the bubbles! */}
                     <div
                       className={`gv-home-satellite ${hoveredModule === index ? 'active' : ''}`}
                       style={{
