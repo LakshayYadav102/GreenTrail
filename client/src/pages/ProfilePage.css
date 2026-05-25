@@ -23,7 +23,6 @@
   width: 100%;
 }
 
-/* FORCE CARDS TO BE FULL WIDTH */
 .gv-profile-card.glassmorphism {
   width: 100% !important;
   background: rgba(25, 25, 35, 0.85) !important;
@@ -56,7 +55,6 @@
   filter: drop-shadow(0 0 10px rgba(46, 204, 113, 0.4));
 }
 
-/* Avatar */
 .gv-avatar-section {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -113,7 +111,6 @@
   font-weight: 500;
 }
 
-/* Forms */
 .gv-form-label {
   color: #ffffff !important;
   font-weight: 600;
@@ -123,7 +120,6 @@
   display: block;
 }
 
-/* FORCE INPUTS TO BE WIDE AND VISIBLE */
 .gv-form-input {
   width: 100% !important;
   background-color: rgba(0, 0, 0, 0.4) !important;
@@ -150,7 +146,6 @@
   cursor: pointer;
 }
 
-/* Button */
 .gv-save-button {
   background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
   border: none !important;
@@ -170,4 +165,364 @@
 @media (max-width: 768px) {
   .gv-profile-title { font-size: 2.2rem; }
   .gv-greencoin-title { font-size: 1.8rem; }
+}
+
+/* ============================================================
+   CORPORATE MISSION CONTROL — User B only
+   ============================================================ */
+
+.gv-corp-wrapper {
+  width: 100%;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Header ── */
+.gv-corp-header {
+  background: rgba(15, 30, 20, 0.85);
+  border: 1px solid rgba(105, 240, 174, 0.3);
+  border-radius: 20px;
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.gv-corp-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gv-corp-name {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.gv-corp-badge {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);
+  color: #c8e6c9;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  width: fit-content;
+}
+
+.gv-corp-status {
+  font-size: 0.9rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.gv-corp-status.on-track { color: #69f0ae; }
+.gv-corp-status.over     { color: #ff5252; }
+
+.gv-corp-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.gv-corp-ring-label {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.75rem;
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Goal Cards ── */
+.gv-corp-goals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.gv-corp-goal-card {
+  background: rgba(15, 30, 20, 0.75);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.gv-corp-goal-label {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.gv-corp-goal-bar-track {
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.gv-corp-goal-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.8s ease;
+}
+
+.gv-corp-goal-stat {
+  font-size: 0.85rem;
+  margin: 0;
+  color: rgba(255,255,255,0.5);
+}
+
+.gv-corp-brsr-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #90caf9;
+  margin: 8px 0 4px;
+}
+
+.gv-corp-brsr-sub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+
+/* ── Mid Row: Feed + Leaderboard ── */
+.gv-corp-mid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.gv-corp-feed,
+.gv-corp-leaderboard {
+  background: rgba(15, 30, 20, 0.75);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.gv-corp-section-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.gv-corp-feed-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.gv-corp-feed-item:last-child { border-bottom: none; }
+
+.gv-corp-feed-icon { font-size: 1.4rem; }
+
+.gv-corp-feed-text { flex: 1; }
+
+.gv-corp-feed-label {
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.gv-corp-feed-meta {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.72rem;
+  margin: 0;
+}
+
+.gv-corp-feed-ict {
+  color: #69f0ae;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Leaderboard */
+.gv-corp-lb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: rgba(255,255,255,0.03);
+  transition: background 0.2s;
+}
+
+.gv-corp-lb-row.you {
+  background: rgba(105, 240, 174, 0.12);
+  border: 1px solid rgba(105, 240, 174, 0.3);
+}
+
+.gv-corp-lb-medal { font-size: 1.1rem; min-width: 28px; }
+
+.gv-corp-lb-name {
+  flex: 1;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gv-corp-lb-you-tag {
+  background: #69f0ae;
+  color: #0a1a0f;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.gv-corp-lb-ict {
+  color: #69f0ae;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.gv-corp-lb-rank {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.75rem;
+  margin-top: 10px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+/* ── Perks Wallet ── */
+.gv-corp-perks {
+  background: rgba(15, 30, 20, 0.75);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.gv-corp-perks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.gv-corp-perks-balance {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);
+  color: #69f0ae;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.gv-corp-perks-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.gv-corp-perk-card {
+  background: rgba(0,0,0,0.3);
+  border-radius: 14px;
+  padding: 18px 14px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.gv-corp-perk-card.affordable {
+  border-color: rgba(105, 240, 174, 0.25);
+}
+
+.gv-corp-perk-card.affordable:hover {
+  transform: translateY(-4px);
+  border-color: rgba(105, 240, 174, 0.5);
+}
+
+.gv-corp-perk-icon { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+
+.gv-corp-perk-label {
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  min-height: 34px;
+}
+
+.gv-corp-perk-cost {
+  color: #69f0ae;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.gv-corp-perk-btn {
+  width: 100%;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.gv-corp-perk-btn:hover:not(:disabled) { opacity: 0.85; }
+
+/* ── ESG CTA ── */
+.gv-corp-cta {
+  background: linear-gradient(135deg, #0d1b2a, #1b2838);
+  border: 1px solid rgba(105, 240, 174, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.gv-corp-cta-text {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.gv-corp-cta-btn {
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 32px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(13, 71, 161, 0.4);
+}
+
+.gv-corp-cta-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(13, 71, 161, 0.6);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .gv-corp-header      { flex-direction: column; gap: 20px; text-align: center; }
+  .gv-corp-header-left { align-items: center; }
+  .gv-corp-goals       { grid-template-columns: 1fr; }
+  .gv-corp-mid         { grid-template-columns: 1fr; }
+  .gv-corp-perks-grid  { grid-template-columns: repeat(2, 1fr); }
+  .gv-corp-name        { font-size: 1.5rem; }
 }

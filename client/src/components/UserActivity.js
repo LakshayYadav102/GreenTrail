@@ -94,7 +94,11 @@ const UserActivity = () => {
                       <div className="gt-record-icon">🚗</div>
                       <div className="gt-record-info">
                         <label>Transport</label>
-                        <strong>{activity.transportation} km</strong>
+                        <strong>
+  {activity.transportation > 0 
+    ? `${activity.transportation} km` 
+    : 'Not recorded'}
+</strong>
                       </div>
                     </div>
 

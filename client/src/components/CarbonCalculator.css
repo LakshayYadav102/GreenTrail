@@ -40,6 +40,16 @@
 .gt-calc-title-icon { color: #2ecc71; }
 .gt-calc-subtitle { font-size: 1.1rem; color: #94a3b8; margin: 0; }
 
+/* Fix invisible text in Live Algorithm Conversion panel */
+.gt-math-breakdown-card .text-muted {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+.gt-math-breakdown-card strong {
+  color: #ffffff !important;
+}
+
 /* GRID & CARDS */
 .gt-calc-grid {
   display: grid;
@@ -137,4 +147,432 @@ select.eco-input option, .gt-calc-challenge-select option {
 @media (max-width: 768px) {
   .gt-calc-title { font-size: 2rem; flex-direction: column; }
   .gt-calc-grid { grid-template-columns: 1fr; }
+}
+
+/* 🌟 GORGEOUS INPUT MODE CARDS */
+.gt-mode-selector {
+  display: flex;
+  gap: 20px;
+}
+
+.gt-mode-card {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gt-mode-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.gt-mode-card.active {
+  border-color: #3498db;
+  background: rgba(52, 152, 219, 0.15);
+  box-shadow: 0 0 20px rgba(52, 152, 219, 0.2);
+}
+
+.gt-mode-icon {
+  font-size: 2.2rem;
+}
+
+.gt-mode-text {
+  text-align: left;
+}
+
+.gt-mode-text h4 {
+  margin: 0 0 5px 0;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.gt-mode-text p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* 🌟 TRANSPARENCY ALGORITHM BOX */
+.gt-transparency-box {
+  margin-top: 25px;
+  padding: 20px;
+  background: rgba(52, 152, 219, 0.05);
+  border-left: 4px solid #3498db;
+  border-radius: 8px;
+  text-align: left;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.gt-transparency-box h5 {
+  color: #3498db;
+  font-weight: 800;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.gt-transparency-box p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.gt-math-formula {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.gt-math-result {
+  margin: 0 !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .gt-mode-selector {
+    flex-direction: column;
+  }
+}
+
+/* 🌟 DATE PICKER PRESETS & DISPLAY */
+.gt-date-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.gt-preset-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gt-preset-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.gt-preset-btn.active {
+  background: rgba(46, 204, 113, 0.2);
+  border-color: #2ecc71;
+  color: #2ecc71;
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+}
+
+.gt-date-display-bar {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 20px;
+  border-radius: 8px;
+  border-left: 3px solid #2ecc71;
+  font-size: 0.95rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+.gt-date-clock-icon {
+  color: #2ecc71;
+  font-size: 1.1rem;
+}
+
+/* 🌟 MATH BREAKDOWN TABLE UI */
+.gt-math-table {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 15px 25px;
+}
+
+.gt-math-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gt-math-row:last-child {
+  border-bottom: none;
+}
+
+.gt-math-label {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.gt-math-steps-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 2;
+  justify-content: flex-end;
+}
+
+.gt-math-step {
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.gt-math-arrow {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.9rem;
+}
+
+.gt-math-final {
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.gt-math-step small, .gt-math-final small {
+  font-weight: 400;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .gt-math-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .gt-math-steps-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+}/* ── TRANSPORT FORM ── */
+.gt-transport-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gt-transport-selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gt-transport-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gt-transport-field .form-label {
+  font-size: 0.78rem !important;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px !important;
+  opacity: 0.8;
+}
+
+/* Fix eco-input inside transport to not get clipped */
+.gt-transport-form .eco-input {
+  padding: 12px 16px !important;
+  font-size: 0.92rem !important;
+  appearance: auto;
+  -webkit-appearance: auto;
+  cursor: pointer;
+  width: 100% !important;
+}
+
+.gt-transport-selectors-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .gt-transport-selectors-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.gt-transport-add-btn {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  letter-spacing: 0.3px;
+}
+
+.gt-transport-add-btn:hover {
+  background: linear-gradient(135deg, #2e7d32, #388e3c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 204, 113, 0.3);
+}
+
+.gt-transport-empty {
+  background: rgba(0,0,0,0.25);
+  border: 1px dashed rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.gt-transport-empty p {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.gt-transport-list {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gt-transport-list-title {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 4px 0;
+}
+
+.gt-transport-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: background 0.2s;
+}
+
+.gt-transport-entry:hover {
+  background: rgba(255,255,255,0.07);
+}
+
+.gt-transport-entry-icon {
+  font-size: 1.5rem;
+  min-width: 28px;
+  text-align: center;
+}
+
+.gt-transport-entry-info {
+  flex: 1;
+  min-width: 0; /* allows text-overflow to work inside flex */
+}
+
+.gt-transport-entry-label {
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gt-transport-entry-range {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.76rem;
+  margin: 0;
+}
+
+.gt-transport-entry-co2 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.gt-transport-co2-val {
+  color: #69f0ae;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.gt-transport-co2-unit {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.7rem;
+}
+
+.gt-transport-co2-zero {
+  color: #4fc3f7;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.gt-transport-remove-btn {
+  background: rgba(255, 82, 82, 0.15);
+  color: #ff5252;
+  border: 1px solid rgba(255, 82, 82, 0.2);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gt-transport-remove-btn:hover {
+  background: rgba(255, 82, 82, 0.3);
+  border-color: #ff5252;
+}
+
+.gt-transport-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 4px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+}
+
+@media (max-width: 600px) {
+  .gt-transport-selectors {
+    grid-template-columns: 1fr;  /* stack on mobile */
+  }
 }

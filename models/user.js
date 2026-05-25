@@ -12,31 +12,28 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true }, // Password should be hashed
   totalCarbonFootprint: { type: Number, default: 0 }, // Lifetime carbon footprint
   
-  // 🟢 NEW: GreenCoin Wallet Balance
+  // 🟢 GreenCoin Wallet Balance (Used for Internal Carbon Trading)
   greenCoins: { type: Number, default: 0 }, 
   
   mobile: { type: String, default: "" },
   dob: { type: Date, default: null },
   address: { type: String, default: "" },
   profilePic: { type: String, default: "" },
+  
+  // 🏢 B2B / Enterprise ESG Fields
   role: { type: String, enum: ["user", "admin", "corporate"], default: "user" },
-  companyName: { type: String, default: "" }, // 🏢 NEW: Store company name for B2B dashboard
+  companyName: { type: String, default: "" }, 
+  department: { 
+    type: String, 
+    enum: ["Engineering", "Sales", "HR & Admin", "Marketing", "Operations", "Finance", "General"], 
+    default: "General" 
+  },
+
   donations: [donationSchema], // 🌱 Track donation history
 
   // Added social graph fields (followers & following)
-  followers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
-  ],
-
-  following: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
-  ]
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
 }, {
   timestamps: true   
 });

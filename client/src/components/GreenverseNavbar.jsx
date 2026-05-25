@@ -8,6 +8,9 @@ const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 function GreenverseNavbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("userRole");
+  const companyName = localStorage.getItem("companyName");
+
   const [scrolled, setScrolled] = useState(false);
   const [coins, setCoins] = useState(0);
   const [profilePic, setProfilePic] = useState(null);
@@ -42,7 +45,7 @@ function GreenverseNavbar() {
       )
     },
     { 
-      name: "GreenScan", // 🟢 UPDATED NAME
+      name: "GreenScan",
       path: "https://greenversear.netlify.app/", 
       isExternal: true,
       icon: (
@@ -53,7 +56,7 @@ function GreenverseNavbar() {
       )
     },
     { 
-      name: "GreenStream", // 🟢 UPDATED NAME
+      name: "GreenStream",
       path: "/ecolearn/feed", 
       icon: (
         <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
@@ -73,11 +76,14 @@ function GreenverseNavbar() {
 
   useEffect(() => {
     if (token) {
-      axios.get(`${apiBaseUrl}/api/profile/wallet`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => setCoins(res.data.greenCoins))
-      .catch(err => console.error("Failed to fetch wallet:", err));
+      // Only fetch wallet coins for non-auditor users
+      if (userRole !== 'auditor') {
+        axios.get(`${apiBaseUrl}/api/profile/wallet`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => setCoins(res.data.greenCoins))
+        .catch(err => console.error("Failed to fetch wallet:", err));
+      }
 
       axios.get(`${apiBaseUrl}/api/profile`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -96,14 +102,72 @@ function GreenverseNavbar() {
     } else {
       setLoadingProfile(false);
     }
-  }, [token]);
+  }, [token, userRole]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("companyName");
     window.location.href = "/login";
   };
 
+  // 🔴 USER C (Auditor): Minimal navbar — only logo, ESG Command Center link, and logout
+  if (userRole === 'auditor') {
+    return (
+      <nav className={`gv-navbar ${scrolled ? 'scrolled' : ''}`}>
+        <div className="gv-navbar-left">
+          <div className="gv-logo-wrapper">
+            <Link to="/corporate-dashboard" className="gv-logo">
+              <span className="gv-logo-icon">
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+              </span>
+              <span className="gv-logo-text">GreenVerse</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className="gv-navbar-center">
+          {/* 🏛️ Auditor role badge */}
+          <span style={{
+            background: 'linear-gradient(135deg, #1a237e, #283593)',
+            color: '#fff',
+            padding: '6px 16px',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            fontWeight: '700',
+            letterSpacing: '0.5px',
+            border: '1px solid rgba(255,255,255,0.2)'
+          }}>
+            🏛️ ESG Command Center — {companyName ? companyName.toUpperCase() : 'AUDITOR'}
+          </span>
+        </div>
+
+        <div className="gv-navbar-right">
+          <div className="gv-profile-circle-container" onClick={() => navigate("/profile", { state: { from: 'greenverse' } })}>
+            {loadingProfile ? (
+              <div className="gv-profile-spinner"></div>
+            ) : (
+              <img src={profilePic || "/default-avatar.png"} alt="Profile" className="gv-profile-image" />
+            )}
+          </div>
+          <button className="gv-logout-btn" onClick={handleLogout}>
+            <span className="gv-btn-icon">
+              <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+              </svg>
+            </span>
+            Logout
+          </button>
+        </div>
+      </nav>
+    );
+  }
+
+  // 🟡 USER B (Corporate Employee): Full navbar + Corporate Sync badge
+  // 🟢 USER A (Citizen): Full standard navbar
   return (
     <nav className={`gv-navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="gv-navbar-left">
@@ -134,13 +198,35 @@ function GreenverseNavbar() {
       </div>
 
       <div className="gv-navbar-center">
+        {/* 🟡 Corporate Sync badge — only visible for User B */}
+        {userRole === 'corporate' && (
+          <span style={{
+            background: 'linear-gradient(135deg, #1b5e20, #2e7d32)',
+            color: '#fff',
+            padding: '5px 14px',
+            borderRadius: '20px',
+            fontSize: '0.75rem',
+            fontWeight: '700',
+            letterSpacing: '0.5px',
+            marginRight: '8px',
+            border: '1px solid rgba(255,255,255,0.2)'
+          }}>
+            🏢 Corporate Sync — {companyName ? companyName.toUpperCase() : 'ACTIVE'}
+          </span>
+        )}
+
         <Link to={token ? "/wallet" : "/login"} className="gv-nav-link gv-wallet-link">
           <span className="gv-nav-icon">
             <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </span>
-          {token ? `${coins} Coins` : "Wallet"}
+          {/* 🟡 User B sees ICT tokens label, User A sees GreenCoins */}
+          {token
+            ? userRole === 'corporate'
+              ? `${coins} ICT`
+              : `${coins} Coins`
+            : "Wallet"}
         </Link>
         <Link to="/store" className="gv-nav-link">
           <span className="gv-nav-icon">
@@ -194,7 +280,7 @@ function GreenverseNavbar() {
         )}
       </div>
     </nav>
-  );  
+  );
 }
 
 export default GreenverseNavbar;

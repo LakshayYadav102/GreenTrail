@@ -1,8 +1,8 @@
 // components/carpooling/BookingModal.jsx
 import React, { useState } from "react";
 import api from "../../services/api";
-
 import "./BookingModal.css";
+
 
 function BookingModal({ ride, onClose, onBookingSuccess }) {
   const [seats, setSeats] = useState(1);
@@ -15,6 +15,8 @@ function BookingModal({ ride, onClose, onBookingSuccess }) {
       setError("Invalid number of seats");
       return;
     }
+
+
 
     setLoading(true);
     setError(null);
@@ -83,3 +85,5 @@ function BookingModal({ ride, onClose, onBookingSuccess }) {
 }
 
 export default BookingModal;
+
+

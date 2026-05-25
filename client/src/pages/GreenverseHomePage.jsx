@@ -6,6 +6,9 @@ import "./GreenverseHomePage.css";
 function GreenverseHomePage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("userRole");         // 🆕
+  const companyName = localStorage.getItem("companyName");   // 🆕
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   
@@ -15,6 +18,13 @@ function GreenverseHomePage() {
   
   const [hoveredModule, setHoveredModule] = useState(null);
   const featuresSectionRef = useRef(null);
+
+  // 🆕 Redirect User C away from homepage immediately
+  useEffect(() => {
+    if (token && userRole === 'auditor') {
+      navigate('/corporate-dashboard', { replace: true });
+    }
+  }, [token, userRole, navigate]);
 
   const quotes = [
     "Where every step shapes the future",
@@ -62,7 +72,7 @@ function GreenverseHomePage() {
       color: "#ab47bc"
     },
     { 
-      name: "GreenScan", // 🟢 UPDATED NAME
+      name: "GreenScan",
       description: "Step into immersive environmental experiences. See the true impact of climate change and interact with digital solutions.", 
       icon: (
         <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -75,7 +85,7 @@ function GreenverseHomePage() {
       color: "#ff5252"
     },
     { 
-      name: "GreenStream", // 🟢 UPDATED NAME
+      name: "GreenStream",
       description: "Your visual knowledge hub. Watch curated educational videos on sustainability, climate action, and eco-friendly living.", 
       icon: (
         <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -144,11 +154,27 @@ function GreenverseHomePage() {
   const scrollToFeatures = () => {
     featuresSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-  
 
   return (
     <>
       <GreenverseNavbar />
+
+      {/* 🆕 Corporate Sync Banner — only for User B */}
+      {token && userRole === 'corporate' && (
+        <div style={{
+          background: 'linear-gradient(90deg, #1b5e20, #2e7d32, #1b5e20)',
+          color: '#fff',
+          textAlign: 'center',
+          padding: '8px 16px',
+          fontSize: '0.82rem',
+          fontWeight: '600',
+          letterSpacing: '0.3px',
+          position: 'relative',
+          zIndex: 100
+        }}>
+          🏢 Corporate Sync Active — You are logged in as a <strong>{companyName ? companyName.toUpperCase() : 'CORPORATE'}</strong> employee. Your activities contribute to your company's BRSR compliance report.
+        </div>
+      )}
       
       <div className="gv-home-earth-background">
         <div className="gv-home-bg-overlay"></div>

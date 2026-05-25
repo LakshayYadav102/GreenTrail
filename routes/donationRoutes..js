@@ -2,16 +2,15 @@ const express = require('express');
 const router = express.Router();
 const Donation = require('../models/Donation');
 const Activity = require('../models/activity'); 
-const User = require('../models/user'); // 🟢 Required to update GreenCoins
+const User = require('../models/user');
 
 // Calculate lifetime carbon footprint
 router.get('/lifetime-carbon/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const activities = await Activity.find({ userId });
-
-    const totalEmissions = activities.reduce((sum, act) => sum + act.totalEmission, 0);
-    res.json({ lifetimeCarbon: totalEmissions }); // in kg
+    const totalEmissions = activities.reduce((sum, act) => sum + (act.totalEmission || 0), 0);
+    res.json({ lifetimeCarbon: totalEmissions });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -22,10 +21,8 @@ router.get('/trees-needed/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const activities = await Activity.find({ userId });
-
-    const totalEmissions = activities.reduce((sum, act) => sum + act.totalEmission, 0);
-    const treesNeeded = Math.ceil(totalEmissions / 21.77); // 1 tree ≈ 21.77kg CO₂/year
-
+    const totalEmissions = activities.reduce((sum, act) => sum + (act.totalEmission || 0), 0);
+    const treesNeeded = Math.ceil(totalEmissions / 21.77);
     res.json({ treesNeeded });
   } catch (err) {
     res.status(500).json({ error: 'Error calculating trees needed' });
@@ -38,10 +35,12 @@ router.post('/submit-transaction', async (req, res) => {
     const { userId, amount, transactionId } = req.body;
 
     if (!userId || !amount || !transactionId || amount < 100) {
-      return res.status(400).json({ error: 'Invalid input: userId, amount (minimum 100), and transactionId are required' });
+      return res.status(400).json({ 
+        error: 'Invalid input: userId, amount (minimum 100), and transactionId are required' 
+      });
     }
 
-    const treesSponsored = Math.floor(amount / 100); // ₹100 = 1 tree
+    const treesSponsored = Math.floor(amount / 100); 
     const donation = new Donation({
       user: userId,
       amount,
@@ -51,16 +50,22 @@ router.post('/submit-transaction', async (req, res) => {
 
     await donation.save();
 
-    // 🟢 Gamification: Reward GreenCoins for offsetting CO2
-    // Rule: 1 coin per 5kg CO2. 1 Tree = ~21.77kg CO2. 
-    // 21.77 / 5 = ~4.35. We award 4 GreenCoins per tree sponsored!
     const coinsEarned = Math.max(1, treesSponsored * 4);
 
     try {
-      await User.findByIdAndUpdate(userId, { $inc: { greenCoins: coinsEarned } });
-      console.log(`🎉 Awarded ${coinsEarned} GreenCoins to user ${userId} for planting ${treesSponsored} trees!`);
+      await User.findByIdAndUpdate(userId, { 
+        $inc: { greenCoins: coinsEarned },
+        $push: { 
+          donations: { 
+            amount: amount, 
+            treesPlanted: treesSponsored, 
+            date: new Date() 
+          } 
+        }
+      });
+      console.log(`Awarded ${coinsEarned} GreenCoins for user ${userId}`);
     } catch (rewardError) {
-      console.error("Failed to award coins for donation:", rewardError);
+      console.error('Failed to update user profile for donation:', rewardError);
     }
 
     res.status(201).json({ 
@@ -74,10 +79,12 @@ router.post('/submit-transaction', async (req, res) => {
   }
 });
 
-// Get donation history
+// Get donation history — sorted newest first, no limit
 router.get('/history/:userId', async (req, res) => {
   try {
-    const donations = await Donation.find({ user: req.params.userId }).sort({ date: -1 });
+    const donations = await Donation
+      .find({ user: req.params.userId })
+      .sort({ date: -1 });  // newest first, all records
     res.json({ donations }); 
   } catch (err) {
     console.error('Error fetching donation history:', err);

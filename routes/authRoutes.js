@@ -7,7 +7,8 @@ const router = express.Router();
 
 // Register Route
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  // 🌟 FIX: Extract department and companyName explicitly from req.body
+  const { username, email, password, department, companyName } = req.body;
 
   try {
     // Check if user already exists
@@ -21,31 +22,34 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 🏢 NEW: Corporate Email Detection Logic
+    // 🏢 Corporate and Auditor Email Detection Logic
     let assignedRole = 'user';
-    let assignedCompanyName = '';
+    let assignedCompanyName = companyName || '';
 
-    // List the domains you want to treat as corporate for your demo
     const corporateDomains = ['@techcorp.com', '@company.com', '@greenverseb2b.com'];
+    const auditorDomains = ['@auditortechcorp.com'];
     
     if (corporateDomains.some(domain => email.endsWith(domain))) {
       assignedRole = 'corporate';
-      // Extract company name (e.g., techcorp.com → techcorp)
-      assignedCompanyName = email.split('@')[1].split('.')[0]; 
+      if (!assignedCompanyName) assignedCompanyName = email.split('@')[1].split('.')[0]; 
+    } else if (auditorDomains.some(domain => email.endsWith(domain))) {
+      assignedRole = 'auditor';
+      if (!assignedCompanyName) assignedCompanyName = email.split('@')[1].split('.')[0];
     }
 
-    // Create a new user with role + company
+    // 🌟 FIX: Save the exact department selected from the frontend dropdown
     const newUser = new User({ 
       username, 
       email, 
       password: hashedPassword,
       role: assignedRole,
-      companyName: assignedCompanyName
+      companyName: assignedCompanyName,
+      department: department || 'General' // Saves the specific department!
     });
 
     await newUser.save();
 
-    console.log(`User registered successfully: ${username} (${email})`);
+    console.log(`User registered successfully: ${username} (${email}) [Dept: ${newUser.department}]`);
     res.status(201).json({ message: 'User registered successfully!' });
 
   } catch (err) {
@@ -59,23 +63,14 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    console.log('Login Request Body:', req.body);
-
-    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      console.error(`User not found with email: ${email}`);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    console.log('User Found in DB:', user);
-
-    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log('Password Match:', isMatch);
 
     if (!isMatch) {
-      console.error('Password does not match for email:', email);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
@@ -86,15 +81,13 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    console.log('JWT Generated:', token);
-
-    // 🟢 UPDATED RESPONSE with role + companyName
     res.status(200).json({ 
       token, 
       userId: user._id, 
       email: user.email,
       role: user.role,
-      companyName: user.companyName
+      companyName: user.companyName,
+      department: user.department
     });
 
   } catch (err) {

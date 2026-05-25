@@ -10,7 +10,7 @@ const FoodMessageSchema = new mongoose.Schema(
     message: {
       type: String,
       required: true,
-    },
+    }, 
     timestamp: {
       type: Date,
       default: Date.now,

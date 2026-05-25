@@ -1,7 +1,6 @@
 /* Prefixing EVERYTHING with .gt-dashboard-page to isolate the CSS */
 
 .gt-dashboard-page {
-  /* This ensures the background covers the whole screen, even if content is short */
   min-height: 100vh;
   background-color: #0f1e14;
 }
@@ -17,7 +16,6 @@
 .gt-dashboard-page .gt-dashboard-container {
   padding: 3rem 1rem 5rem;
   max-width: 100%;
-  /* High-quality environmental forest background */
   background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center;
@@ -30,7 +28,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(10, 25, 15, 0.75); /* Dark green overlay for contrast */
+  background: rgba(10, 25, 15, 0.75);
   z-index: 1;
 }
 
@@ -87,7 +85,6 @@
   border-radius: 20px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  /* Dark Glass Setup */
   background: rgba(15, 30, 20, 0.6); 
   backdrop-filter: blur(15px) saturate(150%);
   -webkit-backdrop-filter: blur(15px) saturate(150%);
@@ -142,6 +139,38 @@
 /* Force Recharts Legend text to be white */
 .gt-dashboard-page .recharts-default-legend .recharts-legend-item-text {
   color: #ffffff !important;
+}
+
+/* ========================================================= */
+/* BRSR EXPORT BUTTON                                        */
+/* ========================================================= */
+
+.gt-dashboard-page .gt-brsr-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease !important;
+}
+
+.gt-dashboard-page .gt-brsr-export-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 35px rgba(21, 101, 192, 0.7) !important;
+}
+
+.gt-dashboard-page .gt-brsr-export-btn:active {
+  transform: translateY(0px);
+}
+
+/* ========================================================= */
+/* CAP-AND-TRADE TABLE                                       */
+/* ========================================================= */
+
+.gt-dashboard-page .gt-cap-trade-table tr {
+  transition: background 0.2s ease;
+}
+
+.gt-dashboard-page .gt-cap-trade-table tr:hover {
+  filter: brightness(1.15);
 }
 
 /* Responsive Design */

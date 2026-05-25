@@ -1,4 +1,3 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -51,11 +50,13 @@ const LoginPage = () => {
 
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // 🟢 NEW: Role-based navigation
-      if (role === 'corporate') {
-        navigate('/corporate-dashboard');
+      // 🟢 NEW: 3-Tier Dynamic Role-based navigation
+      if (role === 'auditor') {
+        navigate('/corporate-dashboard'); // User C Direct Entry
+      } else if (role === 'corporate') {
+        navigate('/'); // User B (Loads client portal view with corporate layer)
       } else {
-        navigate('/');
+        navigate('/'); // User A Standard view
       }
 
     } catch (err) {

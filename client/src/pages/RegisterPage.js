@@ -1,16 +1,17 @@
-// src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { FiUser, FiMail, FiLock } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiBriefcase, FiGrid } from 'react-icons/fi';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    password: ''
+    password: '',
+    companyName: '', // New field
+    department: 'General' // New field
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -26,13 +27,18 @@ const RegisterPage = () => {
     setMessage('');
     setLoadingMessage('Creating your account...');
 
-    // Show "waking up server" message after 4 seconds if still loading
     const wakeUpTimer = setTimeout(() => {
       setLoadingMessage('Waking up server, please wait...');
     }, 4000);
 
     try {
-      await api.post('/auth/register', formData);
+      // 🟡 The companyName is converted to lowercase so the backend stats tracker matches it perfectly
+      const dataToSubmit = {
+        ...formData,
+        companyName: formData.companyName.toLowerCase().trim()
+      };
+
+      await api.post('/auth/register', dataToSubmit);
 
       clearTimeout(wakeUpTimer);
       setLoadingMessage('');
@@ -44,10 +50,8 @@ const RegisterPage = () => {
       console.error('Registration Error:', err);
 
       if (!err.response) {
-        // Network error — server unreachable even after retries
         setError('Server is unavailable. Please try again in a moment.');
       } else if (err.response.status === 409 || err.response.status === 400) {
-        // Conflict (email/username already exists) or bad request
         setError(err.response?.data?.message || 'This email or username is already taken.');
       } else {
         setError('Registration failed. Please try again.');
@@ -78,9 +82,7 @@ const RegisterPage = () => {
           <Form onSubmit={handleSubmit} className="eco-form">
             <Form.Group controlId="username" className="eco-form-group">
               <div className="input-decoration">
-                <div className="input-icon">
-                  <FiUser className="icon" />
-                </div>
+                <div className="input-icon"><FiUser className="icon" /></div>
                 <Form.Control
                   name="username"
                   type="text"
@@ -99,9 +101,7 @@ const RegisterPage = () => {
 
             <Form.Group controlId="email" className="eco-form-group">
               <div className="input-decoration">
-                <div className="input-icon">
-                  <FiMail className="icon" />
-                </div>
+                <div className="input-icon"><FiMail className="icon" /></div>
                 <Form.Control
                   name="email"
                   type="email"
@@ -120,9 +120,7 @@ const RegisterPage = () => {
 
             <Form.Group controlId="password" className="eco-form-group">
               <div className="input-decoration">
-                <div className="input-icon">
-                  <FiLock className="icon" />
-                </div>
+                <div className="input-icon"><FiLock className="icon" /></div>
                 <Form.Control
                   name="password"
                   type="password"
@@ -139,48 +137,72 @@ const RegisterPage = () => {
               </div>
             </Form.Group>
 
-            <Button
-              type="submit"
-              className="mt-4 w-100 register-button"
-              disabled={isLoading}
-            >
+            {/* 🟡 NEW: Company Name Field */}
+            <Form.Group controlId="companyName" className="eco-form-group">
+              <div className="input-decoration">
+                <div className="input-icon"><FiBriefcase className="icon" /></div>
+                <Form.Control
+                  name="companyName"
+                  type="text"
+                  placeholder="Company Name (Optional)"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  onFocus={() => setActiveField('companyName')}
+                  onBlur={() => setActiveField('')}
+                  className="eco-input"
+                  disabled={isLoading}
+                />
+                <div className="input-highlight"></div>
+              </div>
+            </Form.Group>
+
+            {/* 🟡 NEW: Department Dropdown */}
+            {formData.companyName && (
+              <Form.Group controlId="department" className="eco-form-group">
+                <div className="input-decoration">
+                  <div className="input-icon"><FiGrid className="icon" /></div>
+                  <Form.Select
+                    name="department"
+                    value={formData.department}
+                    onChange={handleChange}
+                    className="eco-input"
+                    disabled={isLoading}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#fff', border: 'none' }}
+                  >
+                    <option value="General" style={{ color: '#000' }}>General / No Department</option>
+                    <option value="Engineering" style={{ color: '#000' }}>Engineering</option>
+                    <option value="Sales" style={{ color: '#000' }}>Sales</option>
+                    <option value="HR & Admin" style={{ color: '#000' }}>HR & Admin</option>
+                    <option value="Marketing" style={{ color: '#000' }}>Marketing</option>
+                    <option value="Operations" style={{ color: '#000' }}>Operations</option>
+                    <option value="Finance" style={{ color: '#000' }}>Finance</option>
+                  </Form.Select>
+                  <div className="input-highlight"></div>
+                </div>
+              </Form.Group>
+            )}
+
+            <Button type="submit" className="mt-4 w-100 register-button" disabled={isLoading}>
               {isLoading ? (
                 <div className="leaf-spinner">
                   <div className="leaf">🌱</div>
-                  {loadingMessage && (
-                    <span style={{ fontSize: '0.75rem', marginLeft: '8px' }}>
-                      {loadingMessage}
-                    </span>
-                  )}
+                  {loadingMessage && <span style={{ fontSize: '0.75rem', marginLeft: '8px' }}>{loadingMessage}</span>}
                 </div>
-              ) : (
-                'Create Account'
-              )}
+              ) : 'Create Account'}
             </Button>
 
             <div className="additional-options">
-              <Button
-                variant="link"
-                className="eco-link"
-                onClick={() => navigate('/login')}
-                disabled={isLoading}
-              >
+              <Button variant="link" className="eco-link" onClick={() => navigate('/login')} disabled={isLoading}>
                 Already have an account? Sign In
               </Button>
             </div>
           </Form>
 
           {message && (
-            <Alert variant="success" className="eco-alert mt-3">
-              <span className="alert-icon">🌱</span>
-              {message}
-            </Alert>
+            <Alert variant="success" className="eco-alert mt-3"><span className="alert-icon">🌱</span>{message}</Alert>
           )}
           {error && (
-            <Alert variant="danger" className="eco-alert mt-3">
-              <span className="alert-icon">⚠️</span>
-              {error}
-            </Alert>
+            <Alert variant="danger" className="eco-alert mt-3"><span className="alert-icon">⚠️</span>{error}</Alert>
           )}
         </div>
       </Container>

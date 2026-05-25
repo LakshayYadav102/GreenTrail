@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary"); // 🟢 Added
-const cloudinary = require("../config/cloudinary"); // 🟢 Added (Make sure this path points to your cloudinary.js file!)
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
@@ -15,7 +15,7 @@ const EcoVideo = require("../models/EcoVideo");
 
 const router = express.Router();
 
-// 🟢 NEW: Cloudinary Storage Setup for Profile Pictures
+// Cloudinary Storage Setup for Profile Pictures
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -96,7 +96,8 @@ router.get("/wallet-details", async (req, res) => {
     let videoCoins = 0;
     videos.forEach(v => {
       videoViews += (v.views || 0);
-      videoCoins += Math.floor((v.views || 0) / 50);
+      // 🌟 THE FIX: +2 base coins per upload, plus 1 for every 50 views
+      videoCoins += 2 + Math.floor((v.views || 0) / 50); 
     });
 
     const calculatedTotal = greenTrailTotal + carpoolTotal + foodCoins + videoCoins;
@@ -150,7 +151,6 @@ router.post("/upload", upload.single("profilePic"), async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // 🟢 NEW: Cloudinary returns the full absolute URL in req.file.path
     if (!req.file || !req.file.path) {
       return res.status(400).json({ message: "No image uploaded" });
     }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate, Navigate } from "react-router-dom";
 import api from "./services/api";
 
 // Navbars
@@ -45,6 +45,28 @@ import CorporateDashboard from './pages/CorporateDashboard';
 // Global Components
 import Chatbot from "./components/Chatbot";
 
+// 🟡 Route guard: blocks User C from consumer routes, redirects to their dashboard
+const ProtectedConsumerRoute = ({ children }) => {
+  const userRole = localStorage.getItem('userRole');
+  if (userRole === 'auditor') {
+    return <Navigate to="/corporate-dashboard" replace />;
+  }
+  return children;
+};
+
+// 🟡 Route guard: blocks non-auditors from the corporate dashboard
+const ProtectedAuditorRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('userRole');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  if (userRole !== 'auditor') {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -77,6 +99,8 @@ const AppContent = () => {
             console.warn('Token rejected by server – logging out.');
             localStorage.removeItem('token');
             localStorage.removeItem('userId');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('companyName');
             setIsLoggedIn(false);
             navigate('/');
           } else {
@@ -119,9 +143,17 @@ const AppContent = () => {
     location.pathname.startsWith('/foodwaste') ||
     location.pathname.startsWith('/food-waste');
 
+  // 🟡 User C gets NO external navbar — their dashboard has its own GreenverseNavbar
+  const isCorporateDashboard = location.pathname === '/corporate-dashboard';
+
   let NavbarComponent = null;
 
-  if (!hideNavbarPages.includes(location.pathname) && !isEcoLearnPath && !isFoodWastePath) {
+  if (
+    !hideNavbarPages.includes(location.pathname) &&
+    !isEcoLearnPath &&
+    !isFoodWastePath &&
+    !isCorporateDashboard  // 🟡 suppress global navbar for User C
+  ) {
     if (location.pathname === '/profile') {
       const source = location.state?.from || sessionStorage.getItem('lastContext');
       if (source === 'carpool') {
@@ -153,6 +185,7 @@ const AppContent = () => {
     <>
       {NavbarComponent && <NavbarComponent />}
       <Routes>
+        {/* ── PUBLIC ROUTES ── */}
         <Route path="/" element={<GreenverseHomePage />} />
         <Route path="/old-home" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -160,40 +193,51 @@ const AppContent = () => {
         <Route path="/store" element={<EcoStoreHomePage />} />
         <Route path="/foodwaste" element={<FoodWasteHomePage />} />
         <Route path="/ecolearn" element={<EcoLearnHomePage />} />
+
+        {/* ── USER C EXCLUSIVE ROUTE (auditor only) ── */}
+        <Route
+          path="/corporate-dashboard"
+          element={
+            <ProtectedAuditorRoute>
+              <CorporateDashboard />
+            </ProtectedAuditorRoute>
+          }
+        />
+
+        {/* ── USER A + B PROTECTED ROUTES (logged in, non-auditor) ── */}
         {isLoggedIn && (
           <>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/track" element={<CarbonCalculator />} />
-            <Route path="/user-activity" element={<UserActivity />} />
-            <Route path="/games" element={<FunGamesPage />} />
-            <Route path="/games/recycle-rush" element={<RecycleRush />} />
-            <Route path="/games/eco-quiz" element={<EcoQuiz />} />
-            <Route path="/game-loading" element={<GameLoadingScreen />} />
-            <Route path="/games/eco-runner" element={<EcoRunner />} />
-            <Route path="/challenges" element={<Challenges />} />
+            <Route path="/dashboard" element={<ProtectedConsumerRoute><DashboardPage /></ProtectedConsumerRoute>} />
+            <Route path="/track" element={<ProtectedConsumerRoute><CarbonCalculator /></ProtectedConsumerRoute>} />
+            <Route path="/user-activity" element={<ProtectedConsumerRoute><UserActivity /></ProtectedConsumerRoute>} />
+            <Route path="/games" element={<ProtectedConsumerRoute><FunGamesPage /></ProtectedConsumerRoute>} />
+            <Route path="/games/recycle-rush" element={<ProtectedConsumerRoute><RecycleRush /></ProtectedConsumerRoute>} />
+            <Route path="/games/eco-quiz" element={<ProtectedConsumerRoute><EcoQuiz /></ProtectedConsumerRoute>} />
+            <Route path="/game-loading" element={<ProtectedConsumerRoute><GameLoadingScreen /></ProtectedConsumerRoute>} />
+            <Route path="/games/eco-runner" element={<ProtectedConsumerRoute><EcoRunner /></ProtectedConsumerRoute>} />
+            <Route path="/challenges" element={<ProtectedConsumerRoute><Challenges /></ProtectedConsumerRoute>} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/donation" element={<DonationPage />} />
-            <Route path="/blogs" element={<BlogList />} />
-            <Route path="/blogs/:id" element={<BlogDetails />} />
-            <Route path="/blogs/create" element={<BlogEditor />} />
-            <Route path="/carpool" element={<DashboardCarpool />} />
-            <Route path="/ride/offer" element={<OfferRide />} />
-            <Route path="/ride/find" element={<FindRide />} />
-            <Route path="/ride/:id" element={<RideDetails />} />
-            <Route path="/my-trips" element={<MyTrips />} />
-            <Route path="/ev-stations" element={<EVStations />} />
-            <Route path="/ride/request" element={<RideRequest />} />
-            <Route path="/wallet" element={<WalletPage />} />
-            <Route path="/food-waste/*" element={<FoodWasteRoutes />} />
-            <Route path="/ecolearn/*" element={<EcoLearnRoutes />} />
-            <Route path="/store/orders" element={<EcoStoreOrders />} />
-            <Route path="/corporate-dashboard" element={<CorporateDashboard />} />
+            <Route path="/donation" element={<ProtectedConsumerRoute><DonationPage /></ProtectedConsumerRoute>} />
+            <Route path="/blogs" element={<ProtectedConsumerRoute><BlogList /></ProtectedConsumerRoute>} />
+            <Route path="/blogs/:id" element={<ProtectedConsumerRoute><BlogDetails /></ProtectedConsumerRoute>} />
+            <Route path="/blogs/create" element={<ProtectedConsumerRoute><BlogEditor /></ProtectedConsumerRoute>} />
+            <Route path="/carpool" element={<ProtectedConsumerRoute><DashboardCarpool /></ProtectedConsumerRoute>} />
+            <Route path="/ride/offer" element={<ProtectedConsumerRoute><OfferRide /></ProtectedConsumerRoute>} />
+            <Route path="/ride/find" element={<ProtectedConsumerRoute><FindRide /></ProtectedConsumerRoute>} />
+            <Route path="/ride/:id" element={<ProtectedConsumerRoute><RideDetails /></ProtectedConsumerRoute>} />
+            <Route path="/my-trips" element={<ProtectedConsumerRoute><MyTrips /></ProtectedConsumerRoute>} />
+            <Route path="/ev-stations" element={<ProtectedConsumerRoute><EVStations /></ProtectedConsumerRoute>} />
+            <Route path="/ride/request" element={<ProtectedConsumerRoute><RideRequest /></ProtectedConsumerRoute>} />
+            <Route path="/wallet" element={<ProtectedConsumerRoute><WalletPage /></ProtectedConsumerRoute>} />
+            <Route path="/food-waste/*" element={<ProtectedConsumerRoute><FoodWasteRoutes /></ProtectedConsumerRoute>} />
+            <Route path="/ecolearn/*" element={<ProtectedConsumerRoute><EcoLearnRoutes /></ProtectedConsumerRoute>} />
+            <Route path="/store/orders" element={<ProtectedConsumerRoute><EcoStoreOrders /></ProtectedConsumerRoute>} />
           </>
         )}
       </Routes>
 
-      {/* GLOBAL CHATBOT - Rendered on every page */}
-      <Chatbot />
+      {/* GLOBAL CHATBOT - hide on corporate dashboard for clean auditor UI */}
+      {!isCorporateDashboard && <Chatbot />}
     </>
   );
 };

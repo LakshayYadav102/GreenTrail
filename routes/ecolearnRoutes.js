@@ -80,9 +80,20 @@ router.post(
 
       await newVideo.save();
 
-      res.status(201).json({
-        success: true,
-        message: "Video uploaded successfully",
+// 🟢 Award 2 GreenCoins/ICT immediately on upload
+try {
+  await User.findByIdAndUpdate(
+    req.userId,
+    { $inc: { greenCoins: 2 } }
+  );
+  console.log(`🎉 Awarded 2 ICT to user ${req.userId} for uploading a video`);
+} catch (rewardError) {
+  console.error("Failed to award upload ICT:", rewardError);
+}
+
+res.status(201).json({
+  success: true,
+  message: "Video uploaded successfully",
         video: {
           id: newVideo._id,
           videoUrl,
