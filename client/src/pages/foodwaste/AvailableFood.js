@@ -212,7 +212,18 @@ function AvailableFood() {
                       </div>
                     </div>
 
+                    {food.foodImage && (
+  <div className="fw-food-image-wrapper">
+    <img
+      src={food.foodImage}
+      alt="Donated Food"
+      className="fw-food-image"
+    />
+  </div>
+)}
+
                     <div className="fw-detail-list">
+
                       <div className="fw-list-item">
                         <span className="fw-list-icon">⏳</span>
                         <div className="fw-list-text">

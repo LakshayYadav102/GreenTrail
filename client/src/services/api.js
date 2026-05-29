@@ -1,33 +1,59 @@
 import axios from 'axios';
 
+/* =========================
+   SWITCH ENVIRONMENT HERE
+========================= */
+
+// LOCAL
+const BASE_URL = 'http://localhost:5000';
+
+// HOSTED (Render)
+// const BASE_URL = 'https://greentrail-w8h3.onrender.com';
+
+
+
+/* =========================
+   AXIOS INSTANCE
+========================= */
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL 
-    ? `${process.env.REACT_APP_API_URL}/api` 
-    : 'http://localhost:5000/api',
-  timeout: 30000, // Increased to 30s for Render cold starts
+  baseURL: `${BASE_URL}/api`,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Automatically add the JWT token to every request
+
+/* =========================
+   ADD JWT TOKEN
+========================= */
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
-// Retry logic for cold starts (network errors or 503s)
+
+/* =========================
+   RETRY LOGIC FOR RENDER
+========================= */
+
 api.interceptors.response.use(
   (response) => response,
+
   async (error) => {
     const config = error.config;
 
-    // Only retry on network errors or 503 (service unavailable = cold start)
     const isRetryable =
-      !error.response || error.response.status === 503 || error.code === 'ECONNABORTED';
+      !error.response ||
+      error.response.status === 503 ||
+      error.code === 'ECONNABORTED';
 
     if (isRetryable && config && !config.__retryCount) {
       config.__retryCount = 0;
@@ -35,9 +61,13 @@ api.interceptors.response.use(
 
     if (isRetryable && config && config.__retryCount < 3) {
       config.__retryCount += 1;
-      // Exponential backoff: 2s, 4s, 8s
+
       const delay = 2000 * config.__retryCount;
-      await new Promise((resolve) => setTimeout(resolve, delay));
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, delay)
+      );
+
       return api(config);
     }
 

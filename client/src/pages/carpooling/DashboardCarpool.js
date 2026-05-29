@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button, Modal } from "react-bootstrap";
+import { FaInfoCircle } from "react-icons/fa";
 import "./DashboardCarpool.css";
 
-// Eco-Transit specific quotes
 const quotes = [
   "Share the ride, split the emissions.",
   "Fewer cars today, a greener tomorrow.",
@@ -11,53 +12,177 @@ const quotes = [
   "Driving change, one shared seat at a time."
 ];
 
+// ── STEP DATA ──────────────────────────────────────────────────────────────
+const STEPS = [
+  {
+    icon: "🏠",
+    color: "#2ecc71",
+    bg: "rgba(46,204,113,0.12)",
+    title: "Trip starts — Location A captured",
+    desc: "GPS coordinates saved securely (e.g. Noida Sector 62)"
+  },
+  {
+    icon: "🚗",
+    color: "#61dafb",
+    bg: "rgba(97,218,251,0.10)",
+    title: "Ride in progress",
+    desc: "Passenger travels with the driver"
+  },
+  {
+    icon: "🏢",
+    color: "#2ecc71",
+    bg: "rgba(46,204,113,0.12)",
+    title: "Trip ends — Location B captured",
+    desc: "GPS coordinates saved (e.g. Gurgaon Cyber Hub)"
+  },
+  {
+    icon: "✅",
+    color: "#27ae60",
+    bg: "rgba(39,174,96,0.15)",
+    title: "Distance verified → ICT rewards released",
+    desc: "Rewards only unlock if route distance matches claimed journey"
+  }
+];
+
+const BENEFITS = [
+  { icon: "🚫", text: "Prevents fake ride claims" },
+  { icon: "⚠️", text: "Stops ICT farming abuse" },
+  { icon: "📜", text: "Builds trusted eco-transport records" },
+  { icon: "🌱", text: "Makes sustainability rewards authentic" }
+];
+
+// ── GEO VERIFICATION MODAL ─────────────────────────────────────────────────
+const GeoVerificationModal = () => {
+  const [show, setShow] = useState(false);
+
+  return (
+    <>
+      {/* Info trigger button */}
+      <Button
+        variant="outline-info"
+        size="sm"
+        onClick={() => setShow(true)}
+        className="geo-info-btn"
+        aria-label="Learn about geo-verification"
+      >
+        <FaInfoCircle size={17} />
+      </Button>
+
+      {/* Modal */}
+      <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        centered
+        size="md"
+        className="geo-modal"
+        contentClassName="geo-modal-content"
+      >
+        {/* Header */}
+        <div className="gm-header">
+          <div className="gm-header-left">
+            <div className="gm-header-icon">🌍</div>
+            <div>
+              <h5 className="gm-title">Geo-Verified Ride System</h5>
+              <p className="gm-subtitle">How location validation protects ICT rewards</p>
+            </div>
+          </div>
+          <button className="gm-close" onClick={() => setShow(false)} aria-label="Close">✕</button>
+        </div>
+
+        {/* Body */}
+        <div className="gm-body">
+
+          {/* Trip flow */}
+          <p className="gm-section-label">How a verified trip works</p>
+          <div className="gm-steps">
+            {STEPS.map((step, i) => (
+              <div className="gm-step" key={i}>
+                <div className="gm-step-left">
+                  <div className="gm-step-dot" style={{ background: step.bg, color: step.color }}>
+                    <span>{step.icon}</span>
+                  </div>
+                  {i < STEPS.length - 1 && <div className="gm-step-line" />}
+                </div>
+                <div className="gm-step-content">
+                  <strong>{step.title}</strong>
+                  <span>{step.desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="gm-divider" />
+
+          {/* Benefits */}
+          <p className="gm-section-label">Why this matters</p>
+          <div className="gm-benefits">
+            {BENEFITS.map((b, i) => (
+              <div className="gm-benefit" key={i}>
+                <span className="gm-benefit-icon">{b.icon}</span>
+                <span>{b.text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="gm-divider" />
+
+          {/* Infrastructure note */}
+          <div className="gm-infra">
+            <div className="gm-infra-title">
+              <span>🗺️</span> Current mapping infrastructure
+            </div>
+            <p>
+              We currently use free mapping APIs from <strong>OpenStreetMap</strong> for route
+              verification. As the platform grows, we plan to integrate the full{" "}
+              <strong>Google Maps API</strong> ecosystem for live traffic, geo-fencing precision,
+              and enterprise-level route verification.
+            </p>
+          </div>
+
+          {/* Privacy note */}
+          <div className="gm-privacy">
+            <span>🔒</span>
+            <span>Your route data is used only for trip verification and sustainability validation.</span>
+          </div>
+
+        </div>
+      </Modal>
+    </>
+  );
+};
+
+// ── MAIN DASHBOARD ─────────────────────────────────────────────────────────
 function DashboardCarpool() {
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeHover, setActiveHover] = useState(null);
-
-  // Typing Effect States
   const [quoteText, setQuoteText] = useState("");
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
+  useEffect(() => { setIsLoaded(true); }, []);
 
-  // GLITCH-FREE TYPING ANIMATION LOGIC
   useEffect(() => {
     let typingTimer;
-    
     const handleTyping = () => {
       const fullQuote = quotes[quoteIndex];
-
       if (!isDeleting) {
-        // Typing forward
         setQuoteText(fullQuote.substring(0, quoteText.length + 1));
-        
-        // If word is finished, wait 2 seconds, then start deleting
         if (quoteText === fullQuote) {
           typingTimer = setTimeout(() => setIsDeleting(true), 2000);
         } else {
-          // Normal typing speed
           typingTimer = setTimeout(handleTyping, 80);
         }
       } else {
-        // Deleting backward
         setQuoteText(fullQuote.substring(0, quoteText.length - 1));
-        
-        // If completely deleted, move to next quote and start typing
-        if (quoteText === '') {
+        if (quoteText === "") {
           setIsDeleting(false);
           setQuoteIndex((prev) => (prev + 1) % quotes.length);
         } else {
-          // Deleting speed
           typingTimer = setTimeout(handleTyping, 40);
         }
       }
     };
-
     typingTimer = setTimeout(handleTyping, isDeleting ? 40 : 80);
     return () => clearTimeout(typingTimer);
   }, [quoteText, isDeleting, quoteIndex]);
@@ -129,23 +254,23 @@ function DashboardCarpool() {
         <div className="floating-shape shape-4"></div>
       </div>
 
-      <div className={`carpool-dashboard-container ${isLoaded ? 'loaded' : ''}`}>
+      <div className={`carpool-dashboard-container ${isLoaded ? "loaded" : ""}`}>
         <div className="dashboard-glass">
           <div className="dashboard-header">
             <div className="title-wrapper">
-              <h1 className="main-title">
-                <span className="title-gradient">Carpooling Hub</span>
-                <div className="title-underline"></div>
-              </h1>
-              
-              {/* REPLACED STATIC TEXT WITH TYPING ANIMATION */}
-              <div className="subtitle-container" style={{ minHeight: '30px' }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+                <h1 className="main-title">
+                  <span className="title-gradient">Carpooling Hub</span>
+                  <div className="title-underline"></div>
+                </h1>
+                <GeoVerificationModal />
+              </div>
+              <div className="subtitle-container" style={{ minHeight: "30px" }}>
                 <p className="subtitle">
                   {quoteText}
-                  <span className="typing-cursor" style={{ color: '#2ecc71', fontWeight: 'bold' }}>|</span>
+                  <span className="typing-cursor" style={{ color: "#2ecc71", fontWeight: "bold" }}>|</span>
                 </p>
               </div>
-              
             </div>
           </div>
 
@@ -153,25 +278,22 @@ function DashboardCarpool() {
             {buttons.map((button, index) => (
               <div
                 key={button.id}
-                className={`action-card ${activeHover === button.id ? 'active' : ''}`}
+                className={`action-card ${activeHover === button.id ? "active" : ""}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
                 onMouseEnter={() => setActiveHover(button.id)}
                 onMouseLeave={() => setActiveHover(null)}
                 onClick={() => navigate(button.path)}
               >
                 <div className="card-background"></div>
-                
                 <div className="card-content">
                   <div className="card-icon">{button.icon}</div>
                   <h3 className="card-title">{button.label}</h3>
                   <p className="card-description">{button.description}</p>
-                  
                   <button className="card-button">
                     <span className="button-text">Get Started</span>
                     <div className="button-arrow">→</div>
                   </button>
                 </div>
-
                 <div className="card-glow"></div>
               </div>
             ))}

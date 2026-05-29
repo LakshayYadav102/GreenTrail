@@ -13,23 +13,25 @@ const VEHICLE_OPTIONS = [
   { value: 'walking',      label: 'Walking',              icon: '🚶', factor: 0    },
 ];
 
-// Distance range bands — mid-point used for calculation
 const DISTANCE_RANGES = [
-  { label: '0 – 5 km',    min: 0,   max: 5,    mid: 2.5  },
-  { label: '5 – 10 km',   min: 5,   max: 10,   mid: 7.5  },
-  { label: '10 – 20 km',  min: 10,  max: 20,   mid: 15   },
-  { label: '20 – 40 km',  min: 20,  max: 40,   mid: 30   },
-  { label: '40 – 70 km',  min: 40,  max: 70,   mid: 55   },
-  { label: '70 – 100 km', min: 70,  max: 100,  mid: 85   },
-  { label: '100 – 150 km',min: 100, max: 150,  mid: 125  },
-  { label: '150 – 200 km',min: 150, max: 200,  mid: 175  },
-  { label: '200+ km',     min: 200, max: 300,  mid: 250  },
+  { label: '0 – 5 km',     min: 0,   max: 5,   mid: 2.5  },
+  { label: '5 – 10 km',    min: 5,   max: 10,  mid: 7.5  },
+  { label: '10 – 20 km',   min: 10,  max: 20,  mid: 15   },
+  { label: '20 – 40 km',   min: 20,  max: 40,  mid: 30   },
+  { label: '40 – 70 km',   min: 40,  max: 70,  mid: 55   },
+  { label: '70 – 100 km',  min: 70,  max: 100, mid: 85   },
+  { label: '100 – 150 km', min: 100, max: 150, mid: 125  },
+  { label: '150 – 200 km', min: 150, max: 200, mid: 175  },
+  { label: '200+ km',      min: 200, max: 300, mid: 250  },
 ];
 
 const TransportForm = ({ transportData, setTransportData }) => {
   const vehicles = transportData.vehicles || [];
   const [selectedVehicle, setSelectedVehicle] = useState('petrol');
   const [selectedRange, setSelectedRange]     = useState(DISTANCE_RANGES[0].label);
+
+  const userRole    = localStorage.getItem('userRole');
+  const isCorporate = userRole === 'corporate';
 
   const addVehicle = () => {
     const alreadyAdded = vehicles.some(
@@ -41,27 +43,67 @@ const TransportForm = ({ transportData, setTransportData }) => {
     const vehicle = VEHICLE_OPTIONS.find(v => v.value === selectedVehicle);
 
     const newEntry = {
-      vehicleType:   selectedVehicle,
-      vehicleLabel:  vehicle.label,
-      vehicleIcon:   vehicle.icon,
-      distanceRange: selectedRange,
-      distanceMid:   range.mid, 
+      vehicleType:    selectedVehicle,
+      vehicleLabel:   vehicle.label,
+      vehicleIcon:    vehicle.icon,
+      distanceRange:  selectedRange,
+      distanceMid:    range.mid,
       emissionFactor: vehicle.factor,
     };
 
-    const updated = [...vehicles, newEntry];
-    setTransportData({ ...transportData, vehicles: updated });
+    setTransportData({ ...transportData, vehicles: [...vehicles, newEntry] });
   };
 
   const removeVehicle = (index) => {
-    const updated = vehicles.filter((_, i) => i !== index);
-    setTransportData({ ...transportData, vehicles: updated });
+    setTransportData({ ...transportData, vehicles: vehicles.filter((_, i) => i !== index) });
   };
 
   const previewCO2 = (entry) => (entry.distanceMid * entry.emissionFactor).toFixed(2);
 
   return (
     <div className="gt-transport-form">
+
+      {/* ── CORPORATE NOTICE BANNER ── */}
+      {isCorporate && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '10px',
+          background: 'linear-gradient(135deg, rgba(255,193,7,0.08) 0%, rgba(255,152,0,0.06) 100%)',
+          border: '1px solid rgba(255,193,7,0.3)',
+          borderLeft: '3px solid #ffc107',
+          borderRadius: '10px',
+          padding: '12px 14px',
+          marginBottom: '18px',
+        }}>
+          <span style={{ fontSize: '16px', flexShrink: 0, marginTop: '1px' }}>📋</span>
+          <div>
+            <p style={{
+              margin: 0,
+              color: '#ffd54f',
+              fontWeight: 600,
+              fontSize: '0.78rem',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              marginBottom: '3px',
+            }}>
+              Corporate Employee Notice
+            </p>
+            <p style={{
+              margin: 0,
+              color: 'rgba(255,255,255,0.7)',
+              fontSize: '0.8rem',
+              lineHeight: '1.5',
+            }}>
+              Only log your <strong style={{ color: 'rgba(255,255,255,0.9)' }}>office commute</strong> — 
+              the vehicle and distance you use to travel to and from work each day.
+              Your registered address is already on file. If the distance you enter differs 
+              significantly from what we have on record,{' '}
+              <strong style={{ color: '#ffb74d' }}>your entry will be flagged for manual review</strong>.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── VEHICLE SELECTOR ── */}
       <div className="gt-transport-selectors">
@@ -71,12 +113,9 @@ const TransportForm = ({ transportData, setTransportData }) => {
             value={selectedVehicle}
             onChange={e => setSelectedVehicle(e.target.value)}
             className="eco-input"
-            title={VEHICLE_OPTIONS.find(v => v.value === selectedVehicle)?.label || ''}
           >
             {VEHICLE_OPTIONS.map(v => (
-              <option key={v.value} value={v.value}>
-                {v.icon} {v.label}
-              </option>
+              <option key={v.value} value={v.value}>{v.icon} {v.label}</option>
             ))}
           </select>
         </div>
@@ -95,22 +134,22 @@ const TransportForm = ({ transportData, setTransportData }) => {
         </div>
       </div>
 
-      {/* ── ADD BUTTON (UX FIX) ── */}
+      {/* ── ADD BUTTON ── */}
       <button
         type="button"
         className="gt-transport-add-btn"
         onClick={addVehicle}
-        style={vehicles.length === 0 ? { 
-          backgroundColor: '#f39c12', 
-          color: '#000', 
+        style={vehicles.length === 0 ? {
+          backgroundColor: '#f39c12',
+          color: '#000',
           transform: 'scale(1.02)',
-          boxShadow: '0 0 15px rgba(243, 156, 18, 0.5)'
+          boxShadow: '0 0 15px rgba(243,156,18,0.5)',
         } : {}}
       >
         {vehicles.length === 0 ? '👈 Click Here to Add Vehicle' : '+ Add Another Vehicle'}
       </button>
 
-      {/* ── ADDED VEHICLES LIST ── */}
+      {/* ── VEHICLE LIST ── */}
       {vehicles.length === 0 ? (
         <div className="gt-transport-empty">
           <p>No vehicles added yet. Select a vehicle and distance range above and click <strong>Add Vehicle</strong>.</p>

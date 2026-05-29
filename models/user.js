@@ -29,7 +29,86 @@ const UserSchema = new mongoose.Schema({
     default: "General" 
   },
 
+// 🛡️ Enterprise Trust & Verification Engine
+
+// Employee-entered commute distance
+distanceToOffice: {
+  type: Number,
+  default: 0
+},
+
+// Auditor-approved verified commute distance
+verifiedDistanceToOffice: {
+  type: Number,
+  default: 0
+},
+
+// Current home address
+homeAddress: {
+  type: String,
+  default: ""
+},
+
+// Company office location
+officeAddress: {
+  type: String,
+  default: ""
+},
+
+// Address proof upload (Aadhar / Bill / Rental Agreement etc.)
+addressProof: {
+  type: String,
+  default: ""
+},
+
+// Monthly electricity proof
+electricityBillProof: {
+  type: String,
+  default: ""
+},
+
+// Monthly LPG proof
+lpgBillProof: {
+  type: String,
+  default: ""
+},
+
+// Auditor verification state
+commuteVerificationStatus: {
+  type: String,
+  enum: ["pending", "verified", "rejected"],
+  default: "pending"
+},
+
+// Credibility engine
+credibilityScore: {
+  type: Number,
+  default: 2.5,
+  min: 0,
+  max: 5
+},
+
+// Tracks total awarded ICTs after verification multiplier
+totalICTsAwarded: {
+  type: Number,
+  default: 0
+},
+
+// Whether employee is currently trusted
+isVerifiedByAuditor: {
+  type: Boolean,
+  default: false
+},
+
+// Last auditor review date
+lastAuditDate: {
+  type: Date,
+  default: null
+},
+
   donations: [donationSchema], // 🌱 Track donation history
+
+  
 
   // Added social graph fields (followers & following)
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

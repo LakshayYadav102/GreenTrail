@@ -33,7 +33,7 @@ const CircleRing = ({ used, total, color, size = 120 }) => {
   );
 };
 
-// ── Corporate Mission Control ───────────────────────────────────────────────
+// ── Corporate Mission Control (The ESG Dashboard) ───────────────────────────
 const CorporateMissionControl = ({ user }) => {
   const [dynamicData, setDynamicData] = useState({
     leaderboard:        [],
@@ -87,10 +87,8 @@ const CorporateMissionControl = ({ user }) => {
 
   const medal = (i) => ["🥇", "🥈", "🥉"][i] || `#${i + 1}`;
 
-  // 🌟 FIX: Calculate 85% of the NET lifetime footprint instead of Gross
   const reportableNet = Math.floor(dynamicData.netLifetime * 0.85);
 
-  // 🌟 TOOLTIP EXPLANATION FOR BRSR (Updated to reflect Net calculation)
   const brsrTooltip = (
     <Tooltip id="brsr-tooltip" style={{ fontSize: "0.85rem", textAlign: "left" }}>
       <strong>Scope 3 Attribution:</strong> Corporate BRSR compliance only requires tracking emissions attributable to business operations. We apply an 85% modifier to your <strong>Net Footprint</strong> to isolate your final corporate-liable data.
@@ -105,8 +103,6 @@ const CorporateMissionControl = ({ user }) => {
 
   return (
     <div className="gv-corp-wrapper">
-
-      {/* ── MISSION HEADER ── */}
       <div className="gv-corp-header">
         <div className="gv-corp-header-left">
           <h2 className="gv-corp-name">{user?.username}</h2>
@@ -116,16 +112,66 @@ const CorporateMissionControl = ({ user }) => {
           <span className={`gv-corp-status ${isOnTrack ? "on-track" : "over"}`}>
             {isOnTrack ? "🟢 On Track" : "🔴 Over Budget"}
           </span>
+
+          {/* Added as per request */}
+          <div
+            style={{
+              marginTop: "10px",
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap"
+            }}
+          >
+            <span
+              style={{
+                padding: "6px 14px",
+                borderRadius: "20px",
+                fontSize: "0.78rem",
+                fontWeight: "700",
+                background:
+                  user?.commuteVerificationStatus === "verified"
+                    ? "rgba(0,200,83,0.12)"
+                    : user?.commuteVerificationStatus === "pending"
+                    ? "rgba(255,179,0,0.12)"
+                    : "rgba(255,82,82,0.12)",
+
+                color:
+                  user?.commuteVerificationStatus === "verified"
+                    ? "#69f0ae"
+                    : user?.commuteVerificationStatus === "pending"
+                    ? "#ffd54f"
+                    : "#ff8a80",
+              }}
+            >
+              {user?.commuteVerificationStatus === "verified"
+                ? "✅ ESG Verified"
+                : user?.commuteVerificationStatus === "pending"
+                ? "🟡 ESG Pending"
+                : "❌ ESG Rejected"}
+            </span>
+
+            <span
+              style={{
+                padding: "6px 14px",
+                borderRadius: "20px",
+                fontSize: "0.78rem",
+                fontWeight: "700",
+                background: "rgba(144,202,249,0.12)",
+                color: "#90caf9"
+              }}
+            >
+              ⭐ {user?.credibilityScore || 2.5}/5 Trust Score
+            </span>
+          </div>
         </div>
+
         <div className="gv-corp-header-right">
           <CircleRing used={netMonthly} total={monthlyBudget} color="#69f0ae" size={110} />
           <p className="gv-corp-ring-label">Monthly Net CO₂</p>
         </div>
       </div>
 
-      {/* ── GOAL CARDS ── */}
       <div className="gv-corp-goals">
-
         <div className="gv-corp-goal-card">
           <p className="gv-corp-goal-label">📅 This Month</p>
           <div className="gv-corp-goal-bar-track">
@@ -174,7 +220,6 @@ const CorporateMissionControl = ({ user }) => {
           </p>
         </div>
 
-        {/* 🌟 UPDATED BRSR CARD WITH FIXED MATH */}
         <div className="gv-corp-goal-card">
           <p className="gv-corp-goal-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>📋 BRSR Contribution</span>
@@ -188,15 +233,12 @@ const CorporateMissionControl = ({ user }) => {
           <p className="gv-corp-brsr-sub">
             Gross: {footprint} kg · Offset: {dynamicData.lifetimeOffset} kg · Net: {dynamicData.netLifetime} kg
             <br/>
-            <span style={{ color: "#90caf9" }}>{reportableNet} kg (85% Attributable)</span> added to {user?.companyName?.toUpperCase()}'s report
+            <span style={{ color: "#90caf9" }}>{reportableNet} kg (85% Attributable)</span> added to company report
           </p>
         </div>
-
       </div>
 
-      {/* ── ACTIVITY FEED + LEADERBOARD ── */}
       <div className="gv-corp-mid">
-
         <div className="gv-corp-feed">
           <h4 className="gv-corp-section-title">⚡ Your Recent Impact</h4>
           {dynamicData.activityFeed.length > 0 ? (
@@ -242,10 +284,8 @@ const CorporateMissionControl = ({ user }) => {
             {" "}out of {dynamicData.totalInDept} in the company.
           </p>
         </div>
-
       </div>
 
-      {/* ── PERKS WALLET ── */}
       <div className="gv-corp-perks">
         <div className="gv-corp-perks-header">
           <h4 className="gv-corp-section-title" style={{ marginBottom: 0 }}>
@@ -278,12 +318,11 @@ const CorporateMissionControl = ({ user }) => {
           })}
         </div>
       </div>
-
     </div>
   );
 };
 
-// ── MAIN PROFILE PAGE ──────────────────────────────────────────────────────
+// ── MAIN PROFILE PAGE (Settings & Proofs) ──────────────────────────────────
 const ProfilePage = () => {
   const [user, setUser]               = useState(null);
   const [loading, setLoading]         = useState(true);
@@ -291,8 +330,21 @@ const ProfilePage = () => {
   const [successMessage, setSuccess]  = useState("");
   const [profilePic, setProfilePic]   = useState(null);
   const [uploading, setUploading]     = useState(false);
+
+  const [documents, setDocuments] = useState({
+    addressProof: null,
+    electricityBillProof: null,
+    lpgBillProof: null,
+  });
+
   const [updatedUser, setUpdatedUser] = useState({
-    username: "", mobile: "", dob: "", address: ""
+    username: "",
+    mobile: "",
+    dob: "",
+    address: "",
+    distanceToOffice: "",
+    homeAddress: "",
+    officeAddress: "",
   });
 
   const userRole    = localStorage.getItem("userRole");
@@ -309,6 +361,12 @@ const ProfilePage = () => {
         mobile:   res.data.mobile   || "",
         dob:      res.data.dob ? res.data.dob.split("T")[0] : "",
         address:  res.data.address  || "",
+        distanceToOffice:
+          res.data.distanceToOffice !== undefined
+            ? res.data.distanceToOffice
+            : "",
+        homeAddress: res.data.homeAddress || "",
+        officeAddress: res.data.officeAddress || "",
       });
       setProfilePic(res.data.profilePic);
     } catch (err) {
@@ -320,6 +378,13 @@ const ProfilePage = () => {
 
   const handleChange = (e) =>
     setUpdatedUser({ ...updatedUser, [e.target.name]: e.target.value });
+
+  const handleDocumentChange = (e) => {
+    setDocuments({
+      ...documents,
+      [e.target.name]: e.target.files[0],
+    });
+  };
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -356,6 +421,42 @@ const ProfilePage = () => {
     }
   };
 
+  const handleDocumentUpload = async () => {
+    try {
+      const formData = new FormData();
+
+      if (documents.addressProof) {
+        formData.append("addressProof", documents.addressProof);
+      }
+      if (documents.electricityBillProof) {
+        formData.append("electricityBillProof", documents.electricityBillProof);
+      }
+      if (documents.lpgBillProof) {
+        formData.append("lpgBillProof", documents.lpgBillProof);
+      }
+
+      setUploading(true);
+
+      await api.post(
+        "/profile/upload-documents",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setSuccess("Corporate documents uploaded successfully!");
+      fetchUserProfile();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to upload verification documents.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) return (
     <div style={{
       minHeight: "100vh", display: "flex",
@@ -378,6 +479,7 @@ const ProfilePage = () => {
           {successMessage && <Alert variant="success" className="alert-pop">{successMessage}</Alert>}
         </div>
 
+        {/* Corporate ESG Dashboard */}
         {isCorporate && user && <CorporateMissionControl user={user} />}
 
         {!isCorporate && (
@@ -395,6 +497,7 @@ const ProfilePage = () => {
           </Card>
         )}
 
+        {/* ── PROFILE SETTINGS FORM ── */}
         <Card className="gv-profile-card glassmorphism w-100">
           <Card.Body className="p-4 p-md-5 w-100">
 
@@ -468,7 +571,170 @@ const ProfilePage = () => {
                     />
                   </Form.Group>
                 </Col>
+
+                {isCorporate && (
+                  <>
+                    <Col xs={12} md={6} className="px-md-3 px-0 mb-3">
+                      <Form.Group className="text-start w-100">
+                        <Form.Label className="gv-form-label text-info fw-bold">
+                          🏠 Home Address
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="homeAddress"
+                          value={updatedUser.homeAddress}
+                          onChange={handleChange}
+                          className="gv-form-input border-info"
+                          placeholder="Enter your home address"
+                        />
+                      </Form.Group>
+                    </Col>
+
+                    <Col xs={12} md={6} className="px-md-3 px-0 mb-3">
+                      <Form.Group className="text-start w-100">
+                        <Form.Label className="gv-form-label text-info fw-bold">
+                          🏢 Office Address
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="officeAddress"
+                          value={updatedUser.officeAddress}
+                          onChange={handleChange}
+                          className="gv-form-input border-info"
+                          placeholder="Enter your office location"
+                        />
+                      </Form.Group>
+                    </Col>
+                  </>
+                )}
+
+                {isCorporate && (
+                  <Col xs={12} className="px-md-3 px-0 mb-3">
+                    <Form.Group className="text-start w-100">
+                      <Form.Label className="gv-form-label text-warning fw-bold">
+                        Distance to Office (One-way in km)
+                      </Form.Label>
+                      <Form.Control
+                        type="number" name="distanceToOffice"
+                        value={updatedUser.distanceToOffice} onChange={handleChange}
+                        className="gv-form-input border-warning" 
+                        placeholder="e.g. 15"
+                      />
+                      <Form.Text className="text-white-50" style={{fontSize: '0.75rem'}}>
+                        This establishes your baseline commute. Required for smart footprint tracking.
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                )}
               </Row>
+
+              {/* Corporate Document Upload Section */}
+              {isCorporate && (
+                <div className="mt-4 p-4 text-start mx-md-3 mx-0" style={{ background: 'rgba(243, 156, 18, 0.1)', border: '1px solid #f39c12', borderRadius: '15px' }}>
+                  <h5 className="text-warning fw-bold mb-1">📋 Monthly Compliance Proofs</h5>
+                  <p className="text-white-50 small mb-4">
+                    Upload your utility bills to verify your household emissions. 
+                    <strong> Required by the 1st of every month (Currently accepting May 2026).</strong>
+                  </p>
+                  
+                  <Row>
+                    <Col md={4} className="mb-3">
+                      <Form.Label className="text-white small">Current Address Proof</Form.Label>
+                      <Form.Control 
+                        type="file" 
+                        size="sm" 
+                        className="bg-dark text-white" 
+                        accept="image/*,.pdf"
+                        name="addressProof"
+                        onChange={handleDocumentChange}
+                      />
+                      {user?.addressProof && (
+                        <a
+                          href={user.addressProof}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "#69f0ae",
+                            fontSize: "0.8rem",
+                            fontWeight: "600",
+                            textDecoration: "none",
+                            display: "block",
+                            marginTop: "8px"
+                          }}
+                        >
+                          ✅ View uploaded document
+                        </a>
+                      )}
+                    </Col>
+                    <Col md={4} className="mb-3">
+                      <Form.Label className="text-white small">Electricity Bill (May)</Form.Label>
+                      <Form.Control 
+                        type="file" 
+                        size="sm" 
+                        className="bg-dark text-white" 
+                        accept="image/*,.pdf"
+                        name="electricityBillProof"
+                        onChange={handleDocumentChange}
+                      />
+                      {user?.electricityBillProof && (
+                        <a
+                          href={user.electricityBillProof}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "#69f0ae",
+                            fontSize: "0.8rem",
+                            fontWeight: "600",
+                            textDecoration: "none",
+                            display: "block",
+                            marginTop: "8px"
+                          }}
+                        >
+                          ✅ View uploaded document
+                        </a>
+                      )}
+                    </Col>
+                    <Col md={4} className="mb-3">
+                      <Form.Label className="text-white small">LPG Bill (May)</Form.Label>
+                      <Form.Control 
+                        type="file" 
+                        size="sm" 
+                        className="bg-dark text-white" 
+                        accept="image/*,.pdf"
+                        name="lpgBillProof"
+                        onChange={handleDocumentChange}
+                      />
+                      {user?.lpgBillProof && (
+                        <a
+                          href={user.lpgBillProof}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "#69f0ae",
+                            fontSize: "0.8rem",
+                            fontWeight: "600",
+                            textDecoration: "none",
+                            display: "block",
+                            marginTop: "8px"
+                          }}
+                        >
+                          ✅ View uploaded document
+                        </a>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Button
+                    variant="warning"
+                    className="mt-3 fw-bold"
+                    onClick={handleDocumentUpload}
+                    disabled={uploading}
+                  >
+                    {uploading ? "Uploading Documents..." : "Upload Verification Documents"}
+                  </Button>
+                </div>
+              )}
+
               <div className="text-center mt-4 w-100">
                 <Button
                   type="submit" variant="success"
@@ -477,7 +743,7 @@ const ProfilePage = () => {
                 >
                   {loading
                     ? <><Spinner animation="border" size="sm" className="me-2" />Saving...</>
-                    : "Save Changes"}
+                    : "Save Profile & Documents"}
                 </Button>
               </div>
             </Form>

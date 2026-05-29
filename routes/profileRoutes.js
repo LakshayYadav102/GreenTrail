@@ -15,22 +15,63 @@ const EcoVideo = require("../models/EcoVideo");
 
 const router = express.Router();
 
-// Cloudinary Storage Setup for Profile Pictures
+// Cloudinary Storage Setup
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: "greenverse_profiles",
-    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+  params: async (req, file) => {
+
+    let folderName = "greenverse_profiles";
+
+    if (file.fieldname === "addressProof") {
+      folderName = "greenverse_documents/address_proofs";
+    }
+
+    if (file.fieldname === "electricityBillProof") {
+      folderName = "greenverse_documents/electricity_bills";
+    }
+
+    if (file.fieldname === "lpgBillProof") {
+      folderName = "greenverse_documents/lpg_bills";
+    }
+
+    if (file.fieldname === "profilePic") {
+      folderName = "greenverse_profiles";
+    }
+
+    const isPdf = file.mimetype === "application/pdf";
+
+    return {
+      folder: folderName,
+      resource_type: isPdf ? "raw" : "image",
+      allowed_formats: isPdf
+        ? ["pdf"]
+        : ["jpg", "png", "jpeg", "webp"],
+    };
   },
 });
 
 const upload = multer({ storage });
 
 const verifyToken = (req) => {
-  const token = req.header("Authorization");
-  if (!token) throw new Error("No token, authorization denied");
-  const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
-  return decoded.userId; 
+
+  const authHeader =
+    req.headers.authorization ||
+    req.header("Authorization");
+
+  if (!authHeader) {
+    throw new Error("No token, authorization denied");
+  }
+
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : authHeader;
+
+  const decoded = jwt.verify(
+    token,
+    process.env.JWT_SECRET
+  );
+
+  return decoded.userId;
 };
 
 // Fetch User Profile
@@ -61,7 +102,12 @@ router.get("/wallet", async (req, res) => {
 router.get("/wallet-details", async (req, res) => {
   try {
     const userId = verifyToken(req);
-    const user = await User.findById(userId).select("greenCoins");
+    
+    // Fetch user with verification fields
+    const user = await User.findById(userId).select(
+      "greenCoins role commuteVerificationStatus credibilityScore isVerifiedByAuditor verifiedDistanceToOffice"
+    );
+
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // 1. GreenTrail
@@ -96,7 +142,6 @@ router.get("/wallet-details", async (req, res) => {
     let videoCoins = 0;
     videos.forEach(v => {
       videoViews += (v.views || 0);
-      // 🌟 THE FIX: +2 base coins per upload, plus 1 for every 50 views
       videoCoins += 2 + Math.floor((v.views || 0) / 50); 
     });
 
@@ -109,13 +154,54 @@ router.get("/wallet-details", async (req, res) => {
       console.log(`Retroactively synced wallet for user ${userId} to ${calculatedTotal} coins.`);
     }
 
+    // ─────────────────────────────────────────────
+    // VERIFIED ICT ENGINE
+    // ─────────────────────────────────────────────
+    let verificationMultiplier = 1;
+
+    if (user.role === "corporate") {
+      switch (user.commuteVerificationStatus) {
+        case "verified":
+          verificationMultiplier = 1;
+          break;
+        case "pending":
+          verificationMultiplier = 0.7;
+          break;
+        case "rejected":
+          verificationMultiplier = 0.3;
+          break;
+        default:
+          verificationMultiplier = 0.5;
+      }
+
+      // credibility adjustment
+      if (user.credibilityScore >= 4.5) {
+        verificationMultiplier += 0.15;
+      }
+      if (user.credibilityScore <= 2) {
+        verificationMultiplier -= 0.15;
+      }
+
+      verificationMultiplier = Math.max(0.2, Math.min(1.2, verificationMultiplier));
+    }
+
+    const verifiedICT = Math.floor(finalCoins * verificationMultiplier);
+
     res.json({
-      totalCoins: finalCoins, 
+      totalCoins: finalCoins,
+      verifiedICT,
+      verificationMultiplier,
       breakdown: {
         greenTrail: { activitiesCount, activityCoins, treesPlanted, treeCoins, total: greenTrailTotal },
         carpool: { ridesOffered, rideOfferCoins, bookings, bookingCoins, total: carpoolTotal },
         foodWaste: { donationsCount: foodDonations.length, foodCarbonSaved: Number(foodCarbonSaved.toFixed(2)), total: foodCoins },
         ecoLearn: { videosCount: videos.length, videoViews, total: videoCoins }
+      },
+      verification: {
+        status: user.commuteVerificationStatus,
+        credibility: user.credibilityScore,
+        verified: user.isVerifiedByAuditor,
+        verifiedDistance: user.verifiedDistanceToOffice
       }
     });
   } catch (error) {
@@ -125,22 +211,57 @@ router.get("/wallet-details", async (req, res) => {
 
 // Update User Profile
 router.put("/", async (req, res) => {
+
   try {
-    const userId = verifyToken(req); 
-    const { username, mobile, dob, address } = req.body;
-    
+
+    const userId = verifyToken(req);
+
+    const {
+      username,
+      mobile,
+      dob,
+      address,
+      distanceToOffice,
+      homeAddress,
+      officeAddress
+    } = req.body;
+
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
 
     user.username = username || user.username;
     user.mobile = mobile || user.mobile;
     user.dob = dob || user.dob;
     user.address = address || user.address;
 
+    user.distanceToOffice =
+      distanceToOffice !== undefined
+        ? Number(distanceToOffice)
+        : user.distanceToOffice;
+
+    user.homeAddress = homeAddress || user.homeAddress;
+    user.officeAddress = officeAddress || user.officeAddress;
+
+    if (distanceToOffice || homeAddress || officeAddress) {
+      user.commuteVerificationStatus = "pending";
+      user.isVerifiedByAuditor = false;
+    }
+
     await user.save();
-    res.json({ message: "Profile updated successfully", user });
+
+    res.json({
+      message: "Profile updated successfully",
+      user
+    });
+
   } catch (error) {
-    res.status(401).json({ message: error.message });
+    console.error("Profile Update Error:", error);
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -155,7 +276,7 @@ router.post("/upload", upload.single("profilePic"), async (req, res) => {
       return res.status(400).json({ message: "No image uploaded" });
     }
 
-    user.profilePic = req.file.path; // Save Cloudinary URL to DB
+    user.profilePic = req.file.path;
     await user.save();
     
     res.json({ message: "Profile picture updated", profilePic: user.profilePic });
@@ -164,5 +285,55 @@ router.post("/upload", upload.single("profilePic"), async (req, res) => {
     res.status(500).json({ message: "Failed to upload image" });
   }
 });
+
+// Upload Corporate Verification Documents
+router.post(
+  "/upload-documents",
+  upload.fields([
+    { name: "addressProof", maxCount: 1 },
+    { name: "electricityBillProof", maxCount: 1 },
+    { name: "lpgBillProof", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+
+      const userId = verifyToken(req);
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Save uploaded document URLs (simplified - Cloudinary now handles resource_type)
+      if (req.files?.addressProof?.[0]) {
+        user.addressProof = req.files.addressProof[0].path;
+      }
+
+      if (req.files?.electricityBillProof?.[0]) {
+        user.electricityBillProof = req.files.electricityBillProof[0].path;
+      }
+
+      if (req.files?.lpgBillProof?.[0]) {
+        user.lpgBillProof = req.files.lpgBillProof[0].path;
+      }
+
+      // Reset verification status on new upload
+      user.commuteVerificationStatus = "pending";
+      user.isVerifiedByAuditor = false;
+
+      await user.save();
+
+      res.json({
+        message: "Documents uploaded successfully",
+        user
+      });
+
+    } catch (error) {
+      console.error("Corporate Document Upload Error:", error);
+      res.status(500).json({ message: "Failed to upload documents" });
+    }
+  }
+);
 
 module.exports = router;

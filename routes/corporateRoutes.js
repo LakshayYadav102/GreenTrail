@@ -8,6 +8,7 @@ const Ride = require('../models/Ride');
 const Booking = require('../models/Booking');
 const FoodDonation = require('../models/FoodDonation');
 const EcoVideo = require('../models/EcoVideo');
+const FacilityEmission = require('../models/FacilityEmission');
 
 router.get('/stats/:companyName', async (req, res) => {
   try {
@@ -196,7 +197,6 @@ router.get('/stats/:companyName', async (req, res) => {
   }
 });
 
-// ── /employee-profile/:userId ───────────────────────────────────────────────
 router.get('/employee-profile/:userId', async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).lean();
@@ -204,11 +204,36 @@ router.get('/employee-profile/:userId', async (req, res) => {
 
     const company = user.companyName;
 
-    const leaderboardData = await User.find({ companyName: company })
+    // ── CHANGED: fetch extra fields needed for multiplier calculation ──
+    const rawLeaderboard = await User.find({ companyName: company })
       .sort({ greenCoins: -1 })
       .limit(10)
-      .select('username greenCoins department')
+      .select('username greenCoins department commuteVerificationStatus credibilityScore')
       .lean();
+
+    // ── CHANGED: apply credibility multiplier to each leaderboard entry ──
+    const computeVerifiedICT = (u) => {
+      let multiplier = 1;
+      switch (u.commuteVerificationStatus) {
+        case 'verified':  multiplier = 1;   break;
+        case 'pending':   multiplier = 0.7; break;
+        case 'rejected':  multiplier = 0.3; break;
+        default:          multiplier = 0.5;
+      }
+      if (u.credibilityScore >= 4.5) multiplier += 0.15;
+      if (u.credibilityScore <= 2)   multiplier -= 0.15;
+      multiplier = Math.max(0.2, Math.min(1.2, multiplier));
+      return Math.floor((u.greenCoins || 0) * multiplier);
+    };
+
+    const leaderboardData = rawLeaderboard
+      .map(u => ({
+        _id:        u._id,
+        username:   u.username,
+        department: u.department,
+        greenCoins: computeVerifiedICT(u), // ← now verifiedICT, not raw coins
+      }))
+      .sort((a, b) => b.greenCoins - a.greenCoins); // re-sort after multiplier
 
     const allCompanyUsers = await User
       .find({ companyName: company })
@@ -220,9 +245,9 @@ router.get('/employee-profile/:userId', async (req, res) => {
       u => u._id.toString() === user._id.toString()
     ) + 1;
 
-    const now            = new Date();
-    const thirtyDaysAgo  = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-    const ninetyDaysAgo  = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
+    const now           = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+    const ninetyDaysAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
 
     const userActivities = await Activity.find({
       $or: [{ userId: user._id }, { userId: user._id.toString() }]
@@ -348,6 +373,183 @@ router.get('/employee-profile/:userId', async (req, res) => {
   } catch (error) {
     console.error('Employee Profile Error:', error);
     res.status(500).json({ message: 'Failed to fetch dynamic employee data' });
+  }
+});
+
+// ─────────────────────────────────────────────
+// ESG VERIFICATION HUB
+// ─────────────────────────────────────────────
+
+// GET pending employee verifications
+router.get('/pending-verifications/:companyName', async (req, res) => {
+
+  try {
+
+    const company =
+      req.params.companyName.toLowerCase();
+
+    const employees = await User.find({
+  companyName: company,
+  role: 'corporate'
+})
+    .select('-password')
+    .lean();
+
+    res.json(employees);
+
+  } catch (error) {
+
+    console.error(
+      'Verification Fetch Error:',
+      error
+    );
+
+    res.status(500).json({
+      message: 'Failed to fetch pending employees'
+    });
+  }
+});
+
+
+// VERIFY EMPLOYEE
+router.put('/verify-employee/:employeeId', async (req, res) => {
+
+  try {
+
+    const {
+      verifiedDistanceToOffice,
+      credibilityScore
+    } = req.body;
+
+    const employee =
+      await User.findById(req.params.employeeId);
+
+    if (!employee) {
+      return res.status(404).json({
+        message: 'Employee not found'
+      });
+    }
+
+    employee.verifiedDistanceToOffice =
+      verifiedDistanceToOffice;
+
+    employee.credibilityScore =
+      credibilityScore || 4.5;
+
+    employee.commuteVerificationStatus =
+      'verified';
+
+    employee.isVerifiedByAuditor = true;
+
+    employee.lastAuditDate =
+      new Date();
+
+    await employee.save();
+
+    res.json({
+      message: 'Employee verified successfully'
+    });
+
+  } catch (error) {
+
+    console.error(
+      'Employee Verification Error:',
+      error
+    );
+
+    res.status(500).json({
+      message: 'Verification failed'
+    });
+  }
+});
+
+
+// REJECT EMPLOYEE
+router.put('/reject-employee/:employeeId', async (req, res) => {
+
+  try {
+
+    const employee =
+      await User.findById(req.params.employeeId);
+
+    if (!employee) {
+      return res.status(404).json({
+        message: 'Employee not found'
+      });
+    }
+
+    employee.commuteVerificationStatus =
+      'rejected';
+
+    employee.isVerifiedByAuditor =
+      false;
+
+    employee.credibilityScore =
+      Math.max(
+        1,
+        employee.credibilityScore - 0.5
+      );
+
+    employee.lastAuditDate =
+      new Date();
+
+    await employee.save();
+
+    res.json({
+      message: 'Employee rejected'
+    });
+
+  } catch (error) {
+
+    console.error(
+      'Employee Reject Error:',
+      error
+    );
+
+    res.status(500).json({
+      message: 'Rejection failed'
+    });
+  }
+});
+
+// 🟢 GET: Fetch Facility Ledger Data
+router.get('/facility-ledger/:company', async (req, res) => {
+  try {
+    const companyName = req.params.company.toLowerCase();
+    const ledger = await FacilityEmission.find({ companyName }).sort({ loggedAt: 1 });
+    res.json(ledger);
+  } catch (error) {
+    console.error("Error fetching facility ledger:", error);
+    res.status(500).json({ message: 'Failed to fetch ledger' });
+  }
+});
+
+// 🟢 POST: Add New Facility Emission Entry
+router.post('/facility-ledger/:company', async (req, res) => {
+  try {
+    const companyName = req.params.company.toLowerCase();
+    const { month, electricity, servers, fleet, totalTons } = req.body;
+    
+    // Check if month already exists to prevent duplicate entries
+    const existingEntry = await FacilityEmission.findOne({ companyName, month });
+    if (existingEntry) {
+      return res.status(400).json({ message: `Data for ${month} is already logged.` });
+    }
+
+    const newEntry = new FacilityEmission({
+      companyName,
+      month,
+      electricity,
+      servers,
+      fleet,
+      totalTons
+    });
+
+    await newEntry.save();
+    res.status(201).json(newEntry);
+  } catch (error) {
+    console.error("Error saving facility emission:", error);
+    res.status(500).json({ message: 'Failed to save entry' });
   }
 });
 

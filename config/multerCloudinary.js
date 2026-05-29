@@ -10,6 +10,7 @@ const storage = new CloudinaryStorage({
       resource_type: "video",
       allowed_formats: ["mp4", "mov", "webm", "avi"],
       chunk_size:       6000000,
+      
       // Optional: add quality optimization
       // transformation: [{ quality: "auto:good" }, { fetch_format: "auto" }],
     };

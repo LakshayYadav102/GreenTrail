@@ -6,8 +6,8 @@ import "./GreenverseHomePage.css";
 function GreenverseHomePage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const userRole = localStorage.getItem("userRole");         // 🆕
-  const companyName = localStorage.getItem("companyName");   // 🆕
+  const userRole = localStorage.getItem("userRole");         
+  const companyName = localStorage.getItem("companyName");   
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -18,8 +18,11 @@ function GreenverseHomePage() {
   
   const [hoveredModule, setHoveredModule] = useState(null);
   const featuresSectionRef = useRef(null);
+  
+  // NEW STATE: Toggle for the Impact Calculation Info
+  const [showImpactInfo, setShowImpactInfo] = useState(false);
 
-  // 🆕 Redirect User C away from homepage immediately
+  // Redirect User C (Auditor) away from homepage immediately
   useEffect(() => {
     if (token && userRole === 'auditor') {
       navigate('/corporate-dashboard', { replace: true });
@@ -159,7 +162,7 @@ function GreenverseHomePage() {
     <>
       <GreenverseNavbar />
 
-      {/* 🆕 Corporate Sync Banner — only for User B */}
+      {/* Corporate Sync Banner — only for User B */}
       {token && userRole === 'corporate' && (
         <div style={{
           background: 'linear-gradient(90deg, #1b5e20, #2e7d32, #1b5e20)',
@@ -348,6 +351,93 @@ function GreenverseHomePage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── GENUINE PLATFORM IMPACT TRACKER ── */}
+        <section className="gv-home-impact-section">
+          <div className="gv-home-impact-container">
+            
+            <h2 className="gv-home-impact-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+              Platform Infrastructure Impact
+              <span 
+                style={{ cursor: 'pointer', color: '#4fc3f7', display: 'flex', alignItems: 'center' }} 
+                onClick={() => setShowImpactInfo(!showImpactInfo)}
+                title="How do we calculate this?"
+              >
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="28" height="28">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+              </span>
+            </h2>
+
+            {showImpactInfo && (
+              <div style={{
+                background: 'rgba(0, 30, 15, 0.85)',
+                border: '1px solid #2ecc71',
+                borderRadius: '12px',
+                padding: '20px',
+                margin: '0 auto 30px auto',
+                maxWidth: '800px',
+                textAlign: 'left',
+                color: '#e0e0e0',
+                fontSize: '0.95rem',
+                position: 'relative',
+                boxShadow: '0 8px 32px rgba(0, 255, 100, 0.1)',
+                backdropFilter: 'blur(8px)'
+              }}>
+                <button 
+                  onClick={() => setShowImpactInfo(false)}
+                  style={{ position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+                <h4 style={{ color: '#2ecc71', marginTop: 0, marginBottom: '15px', fontSize: '1.2rem' }}>
+                  📊 How are these metrics calculated?
+                </h4>
+                <p style={{ marginBottom: '15px', lineHeight: '1.6' }}>
+                  GreenVerse is currently in its <strong>prototype phase</strong>, utilizing free-tier cloud services (Render, Netlify, MongoDB Atlas, Cloudinary). The numbers below reflect an <strong>annualized estimation</strong> based on standard cloud infrastructure power consumption:
+                </p>
+                <ul style={{ paddingLeft: '20px', marginBottom: '20px', lineHeight: '1.8' }}>
+                  <li><strong>Infrastructure Emissions (45 kg CO₂):</strong> Running lightweight full-stack servers and databases 24/7 for a year consumes ~100-115 kWh. At the global average grid intensity (~0.4 kg CO₂/kWh), this yields an estimated ~45 kg CO₂ annually.</li>
+                  <li><strong>Sequestered Offset (264 kg CO₂):</strong> A mature tree absorbs approximately 22 kg of CO₂ per year. We mapped this to the 12 trees actively planted by our team during community drives (12 trees × 22 kg = 264 kg CO₂).</li>
+                  <li><strong>Net Carbon Impact (-219 kg CO₂):</strong> 45 kg (Emitted) - 264 kg (Sequestered) = -219 kg CO₂.</li>
+                </ul>
+                <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', borderLeft: '4px solid #4fc3f7' }}>
+                  <p style={{ margin: 0, fontStyle: 'italic', color: '#fff' }}>
+                    <strong>🚀 Production Roadmap:</strong> Once published for a real user base, we will migrate to dynamic tracking. We will integrate live cloud billing APIs (like AWS/GCP Carbon Footprint tools) to fetch exact compute usage and translate it into real-time, dynamic footprint data.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <p className="gv-home-impact-subtitle">
+              Transparency is our core value. Here is the real-time carbon footprint of running the GreenVerse servers, databases, and APIs.
+            </p>
+            <div className="gv-home-impact-grid">
+              
+              <div className="gv-home-impact-card">
+                <div className="gv-impact-icon" style={{ color: "#ff5252" }}>🔥</div>
+                <h3>45 kg CO₂</h3>
+                <p>Infrastructure Emissions</p>
+                <small>Render, Netlify, Cloudinary & APIs</small>
+              </div>
+
+              <div className="gv-home-impact-card">
+                <div className="gv-impact-icon" style={{ color: "#2ecc71" }}>🌳</div>
+                <h3>264 kg CO₂</h3>
+                <p>Sequestered (Offset)</p>
+                <small>12 Trees Planted in Community Drives</small>
+              </div>
+
+              <div className="gv-home-impact-card highlight">
+                <div className="gv-impact-icon" style={{ color: "#4fc3f7" }}>✨</div>
+                <h3>-219 kg CO₂</h3>
+                <p>Net Carbon Impact</p>
+                <small style={{ color: "#69f0ae", fontWeight: "bold" }}>Officially Carbon Negative</small>
+              </div>
+
             </div>
           </div>
         </section>

@@ -1,3 +1,4 @@
+import api from "../services/api";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,6 +14,7 @@ function GreenverseNavbar() {
 
   const [scrolled, setScrolled] = useState(false);
   const [coins, setCoins] = useState(0);
+  const [verifiedICT, setVerifiedICT] = useState(0); // ← NEW: credibility-multiplied ICT
   const [profilePic, setProfilePic] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -74,20 +76,30 @@ function GreenverseNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (token) {
-      // Only fetch wallet coins for non-auditor users
-      if (userRole !== 'auditor') {
-        axios.get(`${apiBaseUrl}/api/profile/wallet`, {
-          headers: { Authorization: `Bearer ${token}` }
+useEffect(() => {
+  if (token && userRole !== 'auditor') {
+    if (userRole === 'corporate') {
+      // Use api service (auto-attaches token) instead of raw axios
+      api.get("/profile/wallet-details")
+        .then(res => {
+          setVerifiedICT(res.data.verifiedICT || 0);
+          setCoins(res.data.totalCoins || 0);
         })
-        .then(res => setCoins(res.data.greenCoins))
+        .catch(err => {
+          console.error("Failed to fetch wallet-details:", err);
+          // Fallback
+          api.get("/profile/wallet")
+            .then(res => setCoins(res.data.greenCoins || 0))
+            .catch(e => console.error("Fallback wallet fetch failed:", e));
+        });
+    } else {
+      api.get("/profile/wallet")
+        .then(res => setCoins(res.data.greenCoins || 0))
         .catch(err => console.error("Failed to fetch wallet:", err));
-      }
+    }
 
-      axios.get(`${apiBaseUrl}/api/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+    // Profile pic — also switch to api service
+    api.get("/profile")
       .then(res => {
         if (res.data.profilePic) {
           const picUrl = res.data.profilePic;
@@ -99,10 +111,10 @@ function GreenverseNavbar() {
       })
       .catch(err => console.error("Failed to fetch profile pic:", err))
       .finally(() => setLoadingProfile(false));
-    } else {
-      setLoadingProfile(false);
-    }
-  }, [token, userRole]);
+  } else {
+    setLoadingProfile(false);
+  }
+}, [token, userRole]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -112,7 +124,7 @@ function GreenverseNavbar() {
     window.location.href = "/login";
   };
 
-  // 🔴 USER C (Auditor): Minimal navbar — only logo, ESG Command Center link, and logout
+  // 🔴 Auditor navbar
   if (userRole === 'auditor') {
     return (
       <nav className={`gv-navbar ${scrolled ? 'scrolled' : ''}`}>
@@ -130,7 +142,6 @@ function GreenverseNavbar() {
         </div>
 
         <div className="gv-navbar-center">
-          {/* 🏛️ Auditor role badge */}
           <span style={{
             background: 'linear-gradient(135deg, #1a237e, #283593)',
             color: '#fff',
@@ -166,8 +177,7 @@ function GreenverseNavbar() {
     );
   }
 
-  // 🟡 USER B (Corporate Employee): Full navbar + Corporate Sync badge
-  // 🟢 USER A (Citizen): Full standard navbar
+  // 🟡 Corporate + 🟢 Citizen navbar
   return (
     <nav className={`gv-navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="gv-navbar-left">
@@ -198,7 +208,6 @@ function GreenverseNavbar() {
       </div>
 
       <div className="gv-navbar-center">
-        {/* 🟡 Corporate Sync badge — only visible for User B */}
         {userRole === 'corporate' && (
           <span style={{
             background: 'linear-gradient(135deg, #1b5e20, #2e7d32)',
@@ -221,13 +230,14 @@ function GreenverseNavbar() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </span>
-          {/* 🟡 User B sees ICT tokens label, User A sees GreenCoins */}
+          {/* ── CHANGED: corporate now shows verifiedICT, not raw coins ── */}
           {token
             ? userRole === 'corporate'
-              ? `${coins} ICT`
+              ? `${verifiedICT} ICT`
               : `${coins} Coins`
             : "Wallet"}
         </Link>
+
         <Link to="/store" className="gv-nav-link">
           <span className="gv-nav-icon">
             <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
@@ -236,6 +246,7 @@ function GreenverseNavbar() {
           </span>
           EcoStore
         </Link>
+
         <Link to="/blogs" className="gv-nav-link">
           <span className="gv-nav-icon">
             <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
@@ -269,7 +280,9 @@ function GreenverseNavbar() {
           <>
             <Link to="/login" className="gv-nav-link">
               <span className="gv-nav-icon">
-                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
               </span>
               Login
             </Link>

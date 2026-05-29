@@ -64,7 +64,12 @@ function WalletPage() {
     );
   }
 
-  const { totalCoins, breakdown } = walletData;
+  const {
+    totalCoins,
+    verifiedICT,
+    verificationMultiplier,
+    breakdown
+  } = walletData;
 
   // ── CORPORATE WALLET ──────────────────────────────────────────────────────
   if (isCorporate) {
@@ -85,10 +90,42 @@ function WalletPage() {
           </p>
           <div className="coin-display">
             <span className="coin-icon">🌿</span>
-            <span className="coin-balance">{totalICT}</span>
+            
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }}
+            >
+              <span className="coin-balance">
+                {verifiedICT}
+              </span>
+
+              <span
+                style={{
+                  color: "#90caf9",
+                  fontSize: "0.85rem",
+                  marginTop: "4px"
+                }}
+              >
+                of {totalICT} total ICT
+              </span>
+            </div>
           </div>
+
           <p style={{ color: "#c8e6c9" }}>
-            Internal Carbon Tokens earned · 1 ICT = 1 kg CO₂e saved
+            Internal Carbon Tokens earned
+          </p>
+
+          <p
+            style={{
+              color: "#ffd54f",
+              fontSize: "0.8rem",
+              marginTop: "8px"
+            }}
+          >
+            ESG Verification Multiplier: ×{verificationMultiplier?.toFixed(2)}
           </p>
         </div>
 
@@ -131,6 +168,159 @@ function WalletPage() {
               ? `✅ You are ${monthlyBudget - carbonUsed} kg under budget. Surplus ICTs are tradeable on the internal floor.`
               : `⚠️ Over budget by ${carbonUsed - monthlyBudget} kg. Your department must purchase allowances from under-polluting teams.`}
           </p>
+        </div>
+
+        {/* ── ESG Verification Status ── */}
+        <div style={{
+          background: "#101c28",
+          borderRadius: "16px",
+          padding: "22px",
+          marginBottom: "24px",
+          border:
+            userRole === "corporate"
+              ? walletData?.verification?.status === "verified"
+                ? "1px solid #00c853"
+                : walletData?.verification?.status === "pending"
+                ? "1px solid #ffb300"
+                : "1px solid #ff5252"
+              : "1px solid rgba(255,255,255,0.08)"
+        }}>
+
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "12px"
+          }}>
+
+            <div>
+              <h4 style={{
+                color: "#fff",
+                marginBottom: "6px"
+              }}>
+                🛡️ ESG Verification Status
+              </h4>
+              <p style={{
+                color: "rgba(255,255,255,0.6)",
+                marginBottom: 0,
+                fontSize: "0.85rem"
+              }}>
+                Your ICT rewards are weighted based on
+                enterprise ESG authenticity verification.
+              </p>
+            </div>
+
+            <div>
+              <span style={{
+                padding: "10px 18px",
+                borderRadius: "30px",
+                fontWeight: "700",
+                background:
+                  walletData?.verification?.status === "verified"
+                    ? "rgba(0,200,83,0.15)"
+                    : walletData?.verification?.status === "pending"
+                    ? "rgba(255,179,0,0.15)"
+                    : "rgba(255,82,82,0.15)",
+
+                color:
+                  walletData?.verification?.status === "verified"
+                    ? "#69f0ae"
+                    : walletData?.verification?.status === "pending"
+                    ? "#ffd54f"
+                    : "#ff8a80",
+
+                border:
+                  walletData?.verification?.status === "verified"
+                    ? "1px solid #00c853"
+                    : walletData?.verification?.status === "pending"
+                    ? "1px solid #ffb300"
+                    : "1px solid #ff5252",
+              }}>
+                {
+                  walletData?.verification?.status === "verified"
+                    ? "✅ Verified ESG"
+                    : walletData?.verification?.status === "pending"
+                    ? "🟡 Pending Verification"
+                    : "❌ Rejected ESG"
+                }
+              </span>
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: "18px",
+            display: "flex",
+            gap: "18px",
+            flexWrap: "wrap"
+          }}>
+            <div style={{
+              background: "rgba(255,255,255,0.04)",
+              padding: "14px 18px",
+              borderRadius: "12px",
+              minWidth: "180px"
+            }}>
+              <p style={{
+                color: "#aaa",
+                fontSize: "0.75rem",
+                marginBottom: "4px"
+              }}>
+                Credibility Score
+              </p>
+              <h5 style={{
+                color: "#fff",
+                marginBottom: 0
+              }}>
+                ⭐ {walletData?.verification?.credibility || 2.5}/5
+              </h5>
+            </div>
+
+            <div style={{
+              background: "rgba(255,255,255,0.04)",
+              padding: "14px 18px",
+              borderRadius: "12px",
+              minWidth: "180px"
+            }}>
+              <p style={{
+                color: "#aaa",
+                fontSize: "0.75rem",
+                marginBottom: "4px"
+              }}>
+                Verified Commute
+              </p>
+              <h5 style={{
+                color: "#fff",
+                marginBottom: 0
+              }}>
+                📏 {walletData?.verification?.verifiedDistance || 0} km
+              </h5>
+            </div>
+
+            <div style={{
+              background: "rgba(255,255,255,0.04)",
+              padding: "14px 18px",
+              borderRadius: "12px",
+              minWidth: "180px"
+            }}>
+              <p style={{
+                color: "#aaa",
+                fontSize: "0.75rem",
+                marginBottom: "4px"
+              }}>
+                Audit Status
+              </p>
+              <h5 style={{
+                color: "#fff",
+                marginBottom: 0
+              }}>
+                {
+                  walletData?.verification?.verified
+                    ? "Approved"
+                    : "Awaiting Review"
+                }
+              </h5>
+            </div>
+          </div>
         </div>
 
         <h3 className="breakdown-title">How You Earned Your ICTs</h3>
