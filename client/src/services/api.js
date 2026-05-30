@@ -5,10 +5,10 @@ import axios from 'axios';
 ========================= */
 
 // LOCAL
-//const BASE_URL = 'http://localhost:5000';
+const BASE_URL = 'http://localhost:5000';
 
 // HOSTED (Render)
-const BASE_URL = 'https://greentrail-w8h3.onrender.com';
+//const BASE_URL = 'https://greentrail-w8h3.onrender.com';
 
 
 
