@@ -34,7 +34,7 @@ const io = socketIo(server, {
   cors: {
     origin: [
       'http://localhost:3000', 
-      'https://greenverse1.netlify.app', 
+      'https://greenversee.netlify.app', 
       'https://green-trail-27d683.netlify.app'
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
