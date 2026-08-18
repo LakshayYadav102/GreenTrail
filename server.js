@@ -49,7 +49,7 @@ console.log("[ENV LOAD CHECK] CLOUDINARY_URL:", process.env.CLOUDINARY_URL || "M
 app.use(cors({
   origin: [
     'http://localhost:3000', 
-    'https://greenverse1.netlify.app', 
+    'https://greenversee.netlify.app', 
     'https://green-trail-27d683.netlify.app'
   ],
   credentials: true,
